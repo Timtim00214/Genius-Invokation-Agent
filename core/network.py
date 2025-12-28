@@ -134,6 +134,7 @@ class GenshinTCGBot:
             "Accept": "text/event-stream"
         }
 
+
         print(Fore.YELLOW + f"📡 正在接入神经链路 (SSE)...")
         print(Fore.MAGENTA + f"   Endpoint: {sse_path}")
 
@@ -161,7 +162,36 @@ class GenshinTCGBot:
             except Exception as e:
                 print(Fore.RED + f"❌ 监听中断: {e}")
                 break
+    async def send_action(self, payload):
+        """
+        向服务器发送操作指令
+        Endpoint: POST /rooms/{roomId}/play (通常是这个，或者是 /action)
+        """
+        if not self.token or not self.room_id:
+            print(Fore.RED + "❌ 无法发送指令: 未连接房间")
+            return False
 
+        url = f"/rooms/{self.room_id}/play" # 如果报错404，尝试改成 /action
+        headers = {
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/json"
+        }
+
+        print(Fore.YELLOW + f"📤 正在发送指令 Payload: {json.dumps(payload, indent=None)}")
+
+        try:
+            # 动作指令必须快速响应，设置 5秒 超时防止死锁
+            resp = await self.client.post(url, json=payload, headers=headers, timeout=5.0)
+            
+            if resp.status_code == 200 or resp.status_code == 201:
+                print(Fore.GREEN + f"✅ 指令发送成功!")
+                return True
+            else:
+                print(Fore.RED + f"❌ 指令发送失败 ({resp.status_code}): {resp.text}")
+                return False
+        except Exception as e:
+            print(Fore.RED + f"💥 发送异常: {e}")
+            return False
     async def handle_game_event(self, raw_data):
         """ 战术仪表盘：解析并清洗战场数据 """
         try:
@@ -244,9 +274,11 @@ async def main():
         await bot.listen_to_game()
     else:
         print(Fore.RED + "⛔ 程序终止")
-
+        
+"""
 if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
         print(Fore.YELLOW + "\n👋 用户手动中断")
+"""
