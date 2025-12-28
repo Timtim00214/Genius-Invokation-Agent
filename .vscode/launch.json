@@ -2,18 +2,19 @@
     // 使用 IntelliSense 了解相关属性。 
     // 悬停以查看现有属性的描述。
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "启动七圣召唤 AI (Main)",
+            "name": "启动七圣召唤 AI",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",  // 强制指定运行 main.py
+            "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
-            "justMyCode": false, // 设为 false 可以让跳进库函数调试，如果觉得乱就设为 true
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}" //  确保能找到 core 文件夹
-            }
+            "cwd": "${workspaceFolder}",
+            "justMyCode": true,
+            // 👇 新增这一行，强制使用 UTF-8 解决乱码
+            "env": { "PYTHONIOENCODING": "utf-8" }
         }
     ]
 }

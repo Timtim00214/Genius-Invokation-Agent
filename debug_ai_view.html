@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 视角接入中...</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <h1>🤖 正在接入 AI 视角...</h1>
+    <div class="loader"></div>
+    <p>Target: http://localhost:5173/rooms/5343</p>
+    <p>Player: guest-q6nizno0hzyzwxlljpcn3gh0</p>
+    
+    <script>
+        // 1. 模拟 AI 的身份信息
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjowLCJzdWIiOiJndWVzdC1xNm5pem5vMGh6eXp3eGxsanBjbjNnaDAiLCJpYXQiOjE3NjY5Mjc1NTMsImV4cCI6MTc3MDU1NjM1M30.GEoMsmhC5mwc2KdhS_cZ4tU9NAAIkAFXkAWXMLfzWEA";
+        const playerId = "guest-q6nizno0hzyzwxlljpcn3gh0";
+        
+        console.log("Injecting credentials...");
+        
+        // 2. 注入 LocalStorage (涵盖常见的键名)
+        localStorage.setItem('accessToken', token); 
+        localStorage.setItem('token', token);
+        localStorage.setItem('playerId', playerId);
+        
+        // 3. 延迟跳转，确保存储写入完成
+        setTimeout(() => {
+            window.location.href = "http://localhost:5173/rooms/5343";
+        }, 500);
+    </script>
+</body>
+</html>
+        
