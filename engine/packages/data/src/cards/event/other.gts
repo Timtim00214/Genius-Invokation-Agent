@@ -1,0 +1,3179 @@
+// Copyright (C) 2024-2025 Guyutongxue
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import {
+  type EntityDefinition,
+  type CardHandle,
+  DamageType,
+  DiceType,
+  Reaction,
+  originalDiceCostOfCard,
+  $,
+  type CombatStatusHandle,
+  type IQuery,
+} from "@gi-tcg/core/data";
+import {
+  BurningFlame,
+  CatalyzingField,
+  CostReduction,
+  DendroCore,
+  EfficientSwitch,
+  Empowerment,
+  ResistantForm,
+  Shield,
+} from "../../commons.gts";
+import { BountifulCore } from "../../characters/hydro/nilou.gts";
+
+/**
+ * @id 303211
+ * @name 冰箭丘丘人
+ * @description
+ * 结束阶段：造成1点冰元素伤害。
+ * 可用次数：2
+ */
+define summon {
+  id 303211 as CryoHilichurlShooter;
+  hint DamageType.Cryo, 1;
+  on endPhase {
+    usage 2;
+    :damage(DamageType.Cryo, 1);
+  };
+};
+
+/**
+ * @id 303212
+ * @name 水丘丘萨满
+ * @description
+ * 结束阶段：造成1点水元素伤害。
+ * 可用次数：2
+ */
+define summon {
+  id 303212 as HydroSamachurl;
+  hint DamageType.Hydro, 1;
+  on endPhase {
+    usage 2;
+    :damage(DamageType.Hydro, 1);
+  };
+};
+
+/**
+ * @id 303213
+ * @name 冲锋丘丘人
+ * @description
+ * 结束阶段：造成1点火元素伤害。
+ * 可用次数：2
+ */
+define summon {
+  id 303213 as HilichurlBerserker;
+  hint DamageType.Pyro, 1;
+  on endPhase {
+    usage 2;
+    :damage(DamageType.Pyro, 1);
+  };
+};
+
+/**
+ * @id 303214
+ * @name 雷箭丘丘人
+ * @description
+ * 结束阶段：造成1点雷元素伤害。
+ * 可用次数：2
+ */
+define summon {
+  id 303214 as ElectroHilichurlShooter;
+  hint DamageType.Electro, 1;
+  on endPhase {
+    usage 2;
+    :damage(DamageType.Electro, 1);
+  };
+};
+
+/**
+ * @id 303216
+ * @name 愚人众伏兵·冰萤术士
+ * @description
+ * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点冰元素伤害。（每回合1次）
+ * 可用次数：2
+ */
+define combatStatus {
+  id 303216 as FatuiAmbusherCryoCicinMage;
+  on useSkill {
+    usage 2;
+    usage perRound, 1;
+    :damage(DamageType.Cryo, 1, $.my.active);
+  };
+};
+
+/**
+ * @id 303217
+ * @name 愚人众伏兵·藏镜仕女
+ * @description
+ * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点水元素伤害。（每回合1次）
+ * 可用次数：2
+ */
+define combatStatus {
+  id 303217 as FatuiAmbusherMirrorMaiden;
+  on useSkill {
+    usage 2;
+    usage perRound, 1;
+    :damage(DamageType.Hydro, 1, $.my.active);
+  };
+};
+
+/**
+ * @id 303218
+ * @name 愚人众伏兵·火铳游击兵
+ * @description
+ * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点火元素伤害。（每回合1次）
+ * 可用次数：2
+ */
+define combatStatus {
+  id 303218 as FatuiAmbusherPyroslingerBracer;
+  on useSkill {
+    usage 2;
+    usage perRound, 1;
+    :damage(DamageType.Pyro, 1, $.my.active);
+  };
+};
+
+/**
+ * @id 303219
+ * @name 愚人众伏兵·雷锤前锋军
+ * @description
+ * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点雷元素伤害。（每回合1次）
+ * 可用次数：2
+ */
+define combatStatus {
+  id 303219 as FatuiAmbusherElectrohammerVanguard;
+  on useSkill {
+    usage 2;
+    usage perRound, 1;
+    :damage(DamageType.Electro, 1, $.my.active);
+  };
+};
+
+/**
+ * @id 331102
+ * @name 元素共鸣：粉碎之冰
+ * @cost 1*Cryo
+ * @description
+ * 本回合中，我方当前出战角色下一次造成的伤害+2。
+ * （牌组包含至少2个冰元素角色，才能加入牌组）
+ */
+define card {
+  id 331102 as ElementalResonanceShatteringIce;
+  since "v3.3.0";
+  cost DiceType.Cryo, 1;
+  tags resonance;
+  :characterStatus(ElementalResonanceShatteringIceInEffect, $.my.active);
+};
+
+/**
+ * @id 303112
+ * @name 元素共鸣：粉碎之冰（生效中）
+ * @description
+ * 当前我方出战角色在本回合中，下一次造成的伤害+2。
+ */
+define status {
+  id 303112 as private ElementalResonanceShatteringIceInEffect;
+  since "v3.3.0";
+  oneDuration;
+  once increaseSkillDamage {
+    :e.increaseDamage(2);
+  };
+};
+
+/**
+ * @id 331202
+ * @name 元素共鸣：愈疗之水
+ * @cost 1*Hydro
+ * @description
+ * 治疗我方出战角色2点。然后，治疗所有我方后台角色1点。
+ * （牌组包含至少2个水元素角色，才能加入牌组）
+ */
+define card {
+  id 331202 as ElementalResonanceSoothingWater;
+  since "v3.3.0";
+  cost DiceType.Hydro, 1;
+  tags resonance;
+  filter :( :query($.my.character.var("health", "<", "maxHealth")) );
+  :heal(2, $.my.active);
+  :heal(1, $.my.standby);
+};
+
+/**
+ * @id 331302
+ * @name 元素共鸣：热诚之火
+ * @cost 1*Pyro
+ * @description
+ * 本回合中，我方当前出战角色下一次引发火元素相关反应时，造成的伤害+3。
+ * （牌组包含至少2个火元素角色，才能加入牌组）
+ */
+define card {
+  id 331302 as ElementalResonanceFerventFlames;
+  since "v3.3.0";
+  cost DiceType.Pyro, 1;
+  tags resonance;
+  :characterStatus(ElementalResonanceFerventFlamesInEffect, $.my.active);
+};
+
+/**
+ * @id 303132
+ * @name 元素共鸣：热诚之火（生效中）
+ * @description
+ * 本回合中，所附属角色下一次引发火元素相关反应时，造成的伤害+3。
+ */
+define status {
+  id 303132 as private ElementalResonanceFerventFlamesInEffect;
+  since "v3.3.0";
+  oneDuration;
+  once increaseSkillDamage {
+    when :( :e.isReactionRelatedTo(DamageType.Pyro) );
+    :e.increaseDamage(3);
+  };
+};
+
+/**
+ * @id 331402
+ * @name 元素共鸣：强能之雷
+ * @cost 1*Electro
+ * @description
+ * 我方出战角色和下一名充能未满的角色获得1点充能。
+ * （牌组包含至少2个雷元素角色，才能加入牌组）
+ */
+define card {
+  id 331402 as ElementalResonanceHighVoltage;
+  since "v3.3.0";
+  cost DiceType.Electro, 1;
+  tags resonance;
+  filter :( :query($.my.character.var("energy", "<", "maxEnergy")) );
+  :gainEnergy(1, $.my.active);
+  :gainEnergy(1, $.my.standby.var("energy", "<", "maxEnergy").limit(1));
+};
+
+/**
+ * @id 303133
+ * @name 元素共鸣：迅捷之风（生效中）
+ * @description
+ * 我方下次执行「切换角色」行动时：少花费1个元素骰。
+ */
+define combatStatus {
+  id 303133 as ElementalResonanceImpetuousWindsInEffect01;
+  once deductOmniDiceSwitch {
+    :e.deductOmniCost(1);
+  };
+};
+
+/**
+ * @id 303136
+ * @name 元素共鸣：迅捷之风（生效中）
+ * @description
+ * 我方下次执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。
+ */
+define combatStatus {
+  id 303136 as ElementalResonanceImpetuousWindsInEffect03;
+  once beforeFastSwitch {
+    :e.setFastAction();
+  };
+};
+
+/**
+ * @id 303134
+ * @name 元素共鸣：迅捷之风（生效中）
+ * @description
+ * 我方下次触发扩散反应时对目标以外的所有敌方角色造成的伤害+1。
+ */
+define combatStatus {
+  id 303134 as ElementalResonanceImpetuousWindsInEffect02;
+  on increaseDamage {
+    when :(
+      (
+        [
+          Reaction.SwirlCryo,
+          Reaction.SwirlElectro,
+          Reaction.SwirlHydro,
+          Reaction.SwirlPyro,
+        ] as (Reaction | null)[]
+      ).includes(:e.damageInfo.fromReaction) && !:e.target.isMine()
+    );
+    :e.increaseDamage(1);
+  };
+  on reaction {
+    when :(
+      :e.reactionInfo.fromDamage &&
+        :e.reactionInfo.fromDamage.source.who === :self.who &&
+        :e.relatedTo(DamageType.Anemo)
+    );
+    listenTo all;
+    :dispose();
+  };
+};
+
+/**
+ * @id 331502
+ * @name 元素共鸣：迅捷之风
+ * @cost 1*Anemo
+ * @description
+ * 我方下次执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」，并且少花费1个元素骰。
+ * 我方下次触发扩散反应时对目标以外的所有敌方角色造成的伤害+1。
+ * （牌组包含至少2个风元素角色，才能加入牌组）
+ */
+define card {
+  id 331502 as ElementalResonanceImpetuousWinds;
+  since "v3.3.0";
+  cost DiceType.Anemo, 1;
+  tags resonance;
+  :combatStatus(ElementalResonanceImpetuousWindsInEffect01);
+  :combatStatus(ElementalResonanceImpetuousWindsInEffect02);
+  :combatStatus(ElementalResonanceImpetuousWindsInEffect03);
+};
+
+/**
+ * @id 303162
+ * @name 护盾
+ * @description
+ * 为我方出战角色提供3点护盾。
+ */
+define combatStatus {
+  id 303162 as ResonanceShield;
+  shield 3;
+};
+
+/**
+ * @id 331602
+ * @name 元素共鸣：坚定之岩
+ * @cost 1*Geo
+ * @description
+ * 为我方出战角色提供3点护盾。
+ * （牌组包含至少2个岩元素角色，才能加入牌组）
+ */
+define card {
+  id 331602 as ElementalResonanceEnduringRock;
+  since "v3.3.0";
+  cost DiceType.Geo, 1;
+  tags resonance;
+  :combatStatus(ResonanceShield);
+};
+
+/**
+ * @id 303173
+ * @name 元素共鸣：蔓生之草（生效中）
+ * @description
+ */
+define combatStatus {
+  id 303173 as ElementalResonanceSprawlingGreeneryInEffectHydro;
+  once playCard {
+    if (
+      :query(
+        $.my.combatStatus.def(DendroCore).union($.my.summon.def(BountifulCore)),
+      )
+    ) {
+      :damage(DamageType.Hydro, 1, $.opp.active);
+    }
+  };
+};
+
+/**
+ * @id 303174
+ * @name 元素共鸣：蔓生之草（生效中）
+ * @description
+ */
+define combatStatus {
+  id 303174 as ElementalResonanceSprawlingGreeneryInEffectElectro;
+  once playCard {
+    if (:query($.my.combatStatus.def(CatalyzingField))) {
+      :damage(DamageType.Electro, 1, $.opp.active);
+    }
+  };
+};
+
+/**
+ * @id 303175
+ * @name 元素共鸣：蔓生之草（生效中）
+ * @description
+ */
+define combatStatus {
+  id 303175 as ElementalResonanceSprawlingGreeneryInEffectPyro;
+  once playCard {
+    if (:query($.my.summon.def(BurningFlame))) {
+      :damage(DamageType.Pyro, 1, $.opp.active);
+    }
+  };
+};
+
+/**
+ * @id 331702
+ * @name 元素共鸣：蔓生之草
+ * @cost 1*Dendro
+ * @description
+ * 若我方场上存在燃烧烈焰/草原核或丰穰之核/激化领域，则对对方出战角色造成1点火元素伤害/水元素伤害/雷元素伤害。
+ * （牌组包含至少2个草元素角色，才能加入牌组）
+ */
+define card {
+  id 331702 as ElementalResonanceSprawlingGreenery;
+  since "v3.3.0";
+  cost DiceType.Dendro, 1;
+  tags resonance;
+  filter :(
+    :query(
+      $.my.combatStatus
+        .def(DendroCore)
+        .union($.my.summon.def(BountifulCore))
+        .union($.my.combatStatus.def(CatalyzingField))
+        .union($.my.summon.def(BurningFlame)),
+    )
+  );
+  :combatStatus(ElementalResonanceSprawlingGreeneryInEffectHydro);
+  :combatStatus(ElementalResonanceSprawlingGreeneryInEffectElectro);
+  :combatStatus(ElementalResonanceSprawlingGreeneryInEffectPyro);
+};
+
+/**
+ * @id 331721
+ * @name 月兆·满辉
+ * @cost
+ * @description
+ * 赋予我方随机1张手牌以及牌组顶的卡牌费用降低。
+ * （牌组包含至少2个「挪德卡莱」角色，才能加入牌组）
+ */
+define card {
+  id 331721 as MoonsignAscendantGleam;
+  since "v6.5.0";
+  tags resonance;
+  const handCandidates = :queryAll($.macros.myHandsNotFree);
+  if (handCandidates.length > 0) {
+    const handCard = :random(handCandidates);
+    :attachCostReduction(handCard);
+  }
+  // queryAll 返回顺序是底到顶，牌顶是最后一张
+  const pileCard = :queryAll($.macros.myPileNotFree).at(-1);
+  if (pileCard) {
+    :attachCostReduction(pileCard);
+  }
+};
+
+/**
+ * @id 331101
+ * @name 元素共鸣：交织之冰
+ * @cost
+ * @description
+ * 生成1个冰元素骰。
+ * （牌组包含至少2个冰元素角色，才能加入牌组）
+ */
+define card {
+  id 331101 as ElementalResonanceWovenIce;
+  since "v3.3.0";
+  tags resonance;
+  :generateDice(DiceType.Cryo, 1);
+};
+
+/**
+ * @id 331201
+ * @name 元素共鸣：交织之水
+ * @cost
+ * @description
+ * 生成1个水元素骰。
+ * （牌组包含至少2个水元素角色，才能加入牌组）
+ */
+define card {
+  id 331201 as ElementalResonanceWovenWaters;
+  since "v3.3.0";
+  tags resonance;
+  :generateDice(DiceType.Hydro, 1);
+};
+
+/**
+ * @id 331301
+ * @name 元素共鸣：交织之火
+ * @cost
+ * @description
+ * 生成1个火元素骰。
+ * （牌组包含至少2个火元素角色，才能加入牌组）
+ */
+define card {
+  id 331301 as ElementalResonanceWovenFlames;
+  since "v3.3.0";
+  tags resonance;
+  :generateDice(DiceType.Pyro, 1);
+};
+
+/**
+ * @id 331401
+ * @name 元素共鸣：交织之雷
+ * @cost
+ * @description
+ * 生成1个雷元素骰。
+ * （牌组包含至少2个雷元素角色，才能加入牌组）
+ */
+define card {
+  id 331401 as ElementalResonanceWovenThunder;
+  since "v3.3.0";
+  tags resonance;
+  :generateDice(DiceType.Electro, 1);
+};
+
+/**
+ * @id 331501
+ * @name 元素共鸣：交织之风
+ * @cost
+ * @description
+ * 生成1个风元素骰。
+ * （牌组包含至少2个风元素角色，才能加入牌组）
+ */
+define card {
+  id 331501 as ElementalResonanceWovenWinds;
+  since "v3.3.0";
+  tags resonance;
+  :generateDice(DiceType.Anemo, 1);
+};
+
+/**
+ * @id 331601
+ * @name 元素共鸣：交织之岩
+ * @cost
+ * @description
+ * 生成1个岩元素骰。
+ * （牌组包含至少2个岩元素角色，才能加入牌组）
+ */
+define card {
+  id 331601 as ElementalResonanceWovenStone;
+  since "v3.3.0";
+  tags resonance;
+  :generateDice(DiceType.Geo, 1);
+};
+
+/**
+ * @id 331701
+ * @name 元素共鸣：交织之草
+ * @cost
+ * @description
+ * 生成1个草元素骰。
+ * （牌组包含至少2个草元素角色，才能加入牌组）
+ */
+define card {
+  id 331701 as ElementalResonanceWovenWeeds;
+  since "v3.3.0";
+  tags resonance;
+  :generateDice(DiceType.Dendro, 1);
+};
+
+/**
+ * @id 303181
+ * @name 风与自由（生效中）
+ * @description
+ * 本回合中，我方角色使用技能后：将下一个我方后台角色切换到场上。
+ */
+define combatStatus {
+  id 303181 as WindAndFreedomInEffect;
+  oneDuration;
+  on useSkill {
+    :switchActive($.my.next);
+  };
+};
+
+/**
+ * @id 331801
+ * @name 风与自由
+ * @cost
+ * @description
+ * 本回合中，我方角色使用技能后：将下一个我方后台角色切换到场上。
+ * （牌组包含至少2个「蒙德」角色，才能加入牌组）
+ */
+define card {
+  id 331801 as WindAndFreedom;
+  since "v3.7.0";
+  filter :( :query($.my.standby) );
+  :combatStatus(WindAndFreedomInEffect);
+};
+
+/**
+ * @id 331802
+ * @name 岩与契约
+ * @cost 3*Void
+ * @description
+ * 下回合行动阶段开始时：生成3点万能元素，抓1张牌。
+ * （牌组包含至少2个「璃月」角色，才能加入牌组）
+ */
+define card {
+  id 331802 as StoneAndContracts;
+  since "v3.7.0";
+  cost DiceType.Void, 3;
+  :combatStatus(StoneAndContractsInEffect);
+};
+
+/**
+ * @id 303182
+ * @name 岩与契约（生效中）
+ * @description
+ * 行动阶段开始时：生成3点万能元素，抓1张牌，然后移除此效果。
+ */
+define combatStatus {
+  id 303182 as private StoneAndContractsInEffect;
+  since "v3.7.0";
+  once actionPhase {
+    :generateDice(DiceType.Omni, 3);
+    :drawCards(1);
+  };
+};
+
+/**
+ * @id 331803
+ * @name 雷与永恒
+ * @cost
+ * @description
+ * 将我方所有元素骰转换为万能元素。
+ * （牌组包含至少2个「稻妻」角色，才能加入牌组）
+ */
+define card {
+  id 331803 as ThunderAndEternity;
+  since "v3.7.0";
+  :convertDice(DiceType.Omni, "all");
+};
+
+/**
+ * @id 331804
+ * @name 草与智慧
+ * @cost 1*Aligned
+ * @description
+ * 抓1张牌。然后，选择任意手牌替换。
+ * （牌组包含至少2个「须弥」角色，才能加入牌组）
+ */
+define card {
+  id 331804 as NatureAndWisdom;
+  since "v3.7.0";
+  cost DiceType.Aligned, 1;
+  :drawCards(1);
+  :switchCards();
+};
+
+/**
+ * @id 331805
+ * @name 水与正义
+ * @cost 2*Void
+ * @description
+ * 平均分配我方未被击倒的角色的生命值，然后治疗所有我方角色1点。
+ * （牌组包含至少2个「枫丹」角色，才能加入牌组）
+ */
+define card {
+  id 331805 as WaterAndJustice;
+  since "v4.7.0";
+  cost DiceType.Void, 2;
+  filter :( :query($.my.character.var("health", "<", "maxHealth")) );
+  const chs = :queryAll($.my.character);
+  const chCount = chs.length;
+  const totalHealth = chs.reduce((acc, ch) => acc + ch.health, 0);
+  const avgHealth = Math.floor(totalHealth / chCount);
+  const remainder = totalHealth % chCount;
+  for (let i = 0; i < chCount; i++) {
+    const currentHealth = chs[i].health;
+    const expectHealth = avgHealth + (i < remainder ? 1 : 0);
+    if (currentHealth > expectHealth) {
+      :damage(DamageType.Piercing, currentHealth - expectHealth, chs[i]);
+    } else if (currentHealth < expectHealth) {
+      :heal(expectHealth - currentHealth, chs[i], { kind: "distribution" });
+    }
+  }
+  :eventBoundary();
+  :heal(1, $.my.character);
+};
+
+/**
+ * @id 303240
+ * @name 还魂诗
+ * @description
+ * 本回合内，所附属角色被击倒时：如可能，消耗等同于此牌「重燃」的元素骰，使角色免于被击倒，并治疗该角色到2点生命值。然后此牌「重燃」+1。
+ */
+define status {
+  id 303240 as OdeOfResurrection;
+  oneDuration;
+  variable reignite, 1;
+  on beforeDefeated {
+    when :( :player.dice.length >= :variables.reignite );
+    :absorbDice("seq", :variables.reignite);
+    :immune(1);
+    :variables.reignite += 1;
+  };
+};
+
+/**
+ * @id 331806
+ * @name 火与战争
+ * @cost 1*Aligned
+ * @description
+ * 选一个我方角色，使其附属「重燃」为1的还魂诗。（本回合内该角色被击倒时，消耗等同于「重燃」的元素骰，使角色免于被击倒，并治疗该角色到1点生命值，然后「重燃」+1）
+ * （牌组包含至少2个「纳塔」角色，才能加入牌组）
+ */
+define card {
+  id 331806 as FireAndWar;
+  since "v5.7.0";
+  cost DiceType.Aligned, 1;
+  addTarget $.my.character;
+  :characterStatus(OdeOfResurrection, :e.targets[0]);
+};
+
+/**
+ * @id 303184
+ * @name 月与故乡（生效中）
+ * @description
+ * 行动阶段开始时：创建所记录的卡牌加入手牌。
+ */
+define combatStatus {
+  id 303184 as MoonAndHomelandInEffect02;
+  variable cardDefId, 0 {
+    visible false;
+    forceOverwrite;
+  };
+  once actionPhase {
+    const cardDefId = :variables.cardDefId as CardHandle;
+    if (cardDefId) {
+      :createHandCard(cardDefId);
+    }
+  };
+};
+
+/**
+ * @id 303183
+ * @name 月与故乡（生效中）
+ * @description
+ * 本回合内我方打出下张卡牌后：在下个回合开始时，创建1张所打出的卡牌加入手牌。
+ */
+define combatStatus {
+  id 303183 as MoonAndHomelandInEffect01;
+  oneDuration;
+  once playCard {
+    when :( :e.card.definition.id !== MoonAndHomeland );
+    :combatStatus(MoonAndHomelandInEffect02, "my", {
+      overrideVariables: {
+        cardDefId: :e.card.definition.id,
+      },
+    });
+  };
+};
+
+/**
+ * @id 331807
+ * @name 月与故乡
+ * @cost
+ * @description
+ * 本回合内我方打出下张卡牌后：在下个回合开始时，创建1张所打出的卡牌加入手牌。
+ * （牌组包含至少2个「挪德卡莱」角色，才能加入牌组）
+ */
+define card {
+  id 331807 as MoonAndHomeland;
+  since "v6.5.0";
+  :combatStatus(MoonAndHomelandInEffect01);
+};
+
+/**
+ * @id 332001
+ * @name 最好的伙伴！
+ * @cost 2*Void
+ * @description
+ * 生成2个万能元素。
+ */
+define card {
+  id 332001 as TheBestestTravelCompanion;
+  since "v3.3.0";
+  cost DiceType.Void, 2;
+  :generateDice(DiceType.Omni, 2);
+};
+
+/**
+ * @id 332002
+ * @name 换班时间
+ * @cost
+ * @description
+ * 我方下次执行「切换角色」行动时：少花费1个元素骰。
+ */
+define card {
+  id 332002 as ChangingShifts;
+  since "v3.3.0";
+  filter :( :query($.my.standby) );
+  :combatStatus(ChangingShiftsInEffect);
+};
+
+/**
+ * @id 303202
+ * @name 换班时间（生效中）
+ * @description
+ * 我方下次执行「切换角色」行动时：少花费1个元素骰。
+ */
+define combatStatus {
+  id 303202 as private ChangingShiftsInEffect;
+  since "v3.3.0";
+  once deductOmniDiceSwitch {
+    :e.deductOmniCost(1);
+  };
+};
+
+/**
+ * @id 332003
+ * @name 一掷乾坤
+ * @cost
+ * @description
+ * 选择任意元素骰重投，可重投2次。
+ */
+define card {
+  id 332003 as TossUp;
+  since "v3.3.0";
+  filter :( :player.dice.length > 0 );
+  :rerollDice(2);
+};
+
+/**
+ * @id 332004
+ * @name 运筹帷幄
+ * @cost 1*Aligned
+ * @description
+ * 抓2张牌。
+ */
+define card {
+  id 332004 as Strategize;
+  since "v3.3.0";
+  cost DiceType.Aligned, 1;
+  :drawCards(2);
+};
+
+/**
+ * @id 303205
+ * @name 本大爷还没有输！（冷却中）
+ * @description
+ * 本回合无法再打出「本大爷还没有输！」。
+ */
+define combatStatus {
+  id 303205 as IHaventLostYetCooldown;
+  oneDuration;
+};
+
+/**
+ * @id 332005
+ * @name 本大爷还没有输！
+ * @cost
+ * @description
+ * 本回合有我方角色被击倒，才能打出：生成1个万能元素，我方当前出战角色获得1点充能。（每回合中，最多只能打出1张「本大爷还没有输！」。）
+ */
+define card {
+  id 332005 as IHaventLostYet;
+  since "v3.3.0";
+  filter :(
+    :player.hasDefeated &&
+      !:query($.my.combatStatus.def(IHaventLostYetCooldown))
+  );
+  :generateDice(DiceType.Omni, 1);
+  :gainEnergy(1, $.my.active);
+  :combatStatus(IHaventLostYetCooldown);
+};
+
+/**
+ * @id 332006
+ * @name 交给我吧！
+ * @cost
+ * @description
+ * 我方下次执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。
+ */
+define card {
+  id 332006 as LeaveItToMe;
+  since "v3.3.0";
+  filter :( :query($.my.standby) );
+  :combatStatus(LeaveItToMeInEffect);
+};
+
+/**
+ * @id 303206
+ * @name 交给我吧！（生效中）
+ * @description
+ * 我方下次执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。
+ */
+define combatStatus {
+  id 303206 as private LeaveItToMeInEffect;
+  since "v3.3.0";
+  once beforeFastSwitch {
+    :e.setFastAction();
+  };
+};
+
+/**
+ * @id 332007
+ * @name 鹤归之时
+ * @cost 1*Aligned
+ * @description
+ * 我方下一次使用技能后：将下一个我方后台角色切换到场上。
+ */
+define card {
+  id 332007 as WhenTheCraneReturned;
+  since "v3.3.0";
+  filter :( :query($.my.standby) );
+  cost DiceType.Aligned, 1;
+  :combatStatus(WhenTheCraneReturnedInEffect);
+};
+
+/**
+ * @id 303207
+ * @name 鹤归之时（生效中）
+ * @description
+ * 我方下一次使用技能后：将下一个我方后台角色切换到场上。
+ */
+define combatStatus {
+  id 303207 as WhenTheCraneReturnedInEffect;
+  since "v3.3.0";
+  once useSkill {
+    :switchActive($.my.next);
+  };
+};
+
+/**
+ * @id 332008
+ * @name 星天之兆
+ * @cost 2*Void
+ * @description
+ * 我方当前出战角色获得1点充能。
+ */
+define card {
+  id 332008 as Starsigns;
+  since "v3.3.0";
+  cost DiceType.Void, 2;
+  filter :( :query($.my.active.var("energy", "<", "maxEnergy")) );
+  :query($.my.active)?.gainEnergy(1);
+};
+
+/**
+ * @id 332009
+ * @name 白垩之术
+ * @cost 1*Aligned
+ * @description
+ * 从最多2个我方后台角色身上，转移1点充能到我方出战角色。
+ */
+define card {
+  id 332009 as CalxsArts;
+  since "v3.3.0";
+  cost DiceType.Aligned, 1;
+  filter :(
+    :query($.my.standby.var("energy", ">", 0)) &&
+      :query($.my.active.var("energy", "<", "maxEnergy"))
+  );
+  const chs = :queryAll($.my.standby.limit(2));
+  let count = 0;
+  for (const ch of chs) {
+    count += ch.loseEnergy();
+  }
+  :query($.my.active)?.gainEnergy(count);
+};
+
+/**
+ * @id 332010
+ * @name 诸武精通
+ * @cost
+ * @description
+ * 将一个装备在我方角色的「武器」装备牌，转移给另一个武器类型相同的我方角色，并重置其效果的「每回合」次数限制。
+ */
+define card {
+  id 332010 as MasterOfWeaponry;
+  since "v3.3.0";
+  addTarget $.my.character.has($.equipped.tag("weapon"));
+  addTarget :(
+    :queryAll(
+      $.my.character.tagOf("weapon", :e.targets[0]).exclude(:e.targets[0]),
+    ).map((c) => c.latest())
+  );
+  const weapon = :e.targets[0].hasWeapon()!;
+  weapon.resetUsagePerRound();
+  const target = :e.targets[1];
+  const area = {
+    type: "characters" as const,
+    who: target.who,
+    characterId: target.id,
+  };
+  const targetOldWeapon = target.hasWeapon();
+  if (targetOldWeapon) {
+    :dispose(targetOldWeapon);
+  }
+  :moveEntity(weapon, area);
+};
+
+/**
+ * @id 332011
+ * @name 神宝迁宫祝词
+ * @cost
+ * @description
+ * 将一个装备在我方角色的「圣遗物」装备牌，转移给另一个我方角色，并重置其效果的「每回合」次数限制。
+ */
+define card {
+  id 332011 as BlessingOfTheDivineRelicsInstallation;
+  since "v3.3.0";
+  addTarget $.my.character.has($.equipped.tag("artifact"));
+  addTarget :(
+    :queryAll($.my.character.exclude(:e.targets[0])).map((c) => c.latest())
+  );
+  const artifact = :e.targets[0].hasArtifact()!;
+  artifact.resetUsagePerRound();
+  const target = :e.targets[1];
+  const area = {
+    type: "characters" as const,
+    who: target.who,
+    characterId: target.id,
+  };
+  const targetOldArtifact = target.hasArtifact();
+  if (targetOldArtifact) {
+    :dispose(targetOldArtifact);
+  }
+  :moveEntity(artifact, area);
+};
+
+/**
+ * @id 332012
+ * @name 快快缝补术
+ * @cost 1*Aligned
+ * @description
+ * 选择一个我方「召唤物」，使其「可用次数」+1。
+ */
+define card {
+  id 332012 as QuickKnit;
+  since "v3.3.0";
+  cost DiceType.Aligned, 1;
+  addTarget $.my.summon;
+  :e.targets[0].variables.usage! += 1;
+};
+
+/**
+ * @id 332013
+ * @name 送你一程
+ * @cost 2*Void
+ * @description
+ * 选择一个敌方「召唤物」，使其「可用次数」-2。
+ */
+define card {
+  id 332013 as SendOff;
+  since "v3.3.0";
+  cost DiceType.Void, 2;
+  addTarget $.opp.summon;
+  :e.targets[0].consumeUsage(2);
+};
+
+/**
+ * @id 332014
+ * @name 护法之誓
+ * @cost 4*Aligned
+ * @description
+ * 消灭所有「召唤物」。（不分敌我！）
+ */
+define card {
+  id 332014 as GuardiansOath;
+  since "v3.3.0";
+  cost DiceType.Aligned, 4;
+  :dispose($.summon);
+};
+
+/**
+ * @id 332015
+ * @name 深渊的呼唤
+ * @cost 2*Aligned
+ * @description
+ * 召唤一个随机「丘丘人」召唤物！
+ * （牌组包含至少2个「魔物」角色，才能加入牌组）
+ */
+define card {
+  id 332015 as AbyssalSummons;
+  since "v3.3.0";
+  cost DiceType.Aligned, 2;
+  const candidates = [
+    CryoHilichurlShooter,
+    HydroSamachurl,
+    HilichurlBerserker,
+    ElectroHilichurlShooter,
+  ];
+  const existingSummons = :queryAll($.my.summon);
+  const filteredCandidates = candidates.filter(
+    (c) => !existingSummons.some((s) => s.definition.id === c),
+  );
+  const target = :random(
+    filteredCandidates.length > 0 ? filteredCandidates : candidates,
+  );
+  :summon(target);
+};
+
+/**
+ * @id 332016
+ * @name 愚人众的阴谋
+ * @cost 2*Aligned
+ * @description
+ * 在对方场上，生成1个随机类型的「愚人众伏兵」。
+ * （牌组包含至少2个「愚人众」角色，才能加入牌组）
+ */
+define card {
+  id 332016 as FatuiConspiracy;
+  since "v3.7.0";
+  cost DiceType.Aligned, 2;
+  const candidates = [
+    FatuiAmbusherCryoCicinMage,
+    FatuiAmbusherMirrorMaiden,
+    FatuiAmbusherPyroslingerBracer,
+    FatuiAmbusherElectrohammerVanguard,
+  ];
+  const existingCombatStatuses = :queryAll($.opp.combatStatus);
+  const filteredCandidates = candidates.filter(
+    (c) => !existingCombatStatuses.some((cs) => cs.definition.id === c),
+  );
+  const target = :random(
+    filteredCandidates.length > 0 ? filteredCandidates : candidates,
+  );
+  :combatStatus(target, "opp");
+};
+
+/**
+ * @id 332017
+ * @name 下落斩
+ * @cost 3*Aligned
+ * @description
+ * 战斗行动：切换到目标角色，然后该角色进行「普通攻击」。
+ */
+define card {
+  id 332017 as PlungingStrike;
+  since "v3.7.0";
+  cost DiceType.Aligned, 3;
+  tags action;
+  addTarget $.my.standby.exclude($.has($.typeStatus.tag("disableSkill")));
+  :switchActive(:e.targets[0]);
+  :useSkill("normal");
+};
+
+/**
+ * @id 332018
+ * @name 重攻击
+ * @cost 1*Aligned
+ * @description
+ * 本回合中，当前我方出战角色下次「普通攻击」造成的伤害+1。
+ * 此次「普通攻击」为重击时：伤害额外+1。
+ */
+define card {
+  id 332018 as HeavyStrike;
+  since "v3.7.0";
+  cost DiceType.Aligned, 1;
+  :characterStatus(HeavyStrikeInEffect, $.my.active);
+};
+
+/**
+ * @id 303220
+ * @name 重攻击（生效中）
+ * @description
+ * 本回合中，角色下次「普通攻击」造成的伤害+1。
+ * 此次「普通攻击」为重击时：伤害额外+1。
+ */
+define status {
+  id 303220 as private HeavyStrikeInEffect;
+  since "v3.7.0";
+  oneDuration;
+  once increaseSkillDamage {
+    when :( :e.viaSkillType("normal") );
+    :e.increaseDamage(1);
+    if (:isUsingChargedSkill(:e.via)) {
+      :e.increaseDamage(1);
+    }
+  };
+};
+
+/**
+ * @id 332019
+ * @name 温妮莎传奇
+ * @cost 3*Aligned
+ * @description
+ * 生成4个不同类型的基础元素骰。
+ */
+define card {
+  id 332019 as TheLegendOfVennessa;
+  since "v3.7.0";
+  cost DiceType.Aligned, 3;
+  :generateDice("randomElement", 4);
+};
+
+/**
+ * @id 332020
+ * @name 永远的友谊
+ * @cost 2*Aligned
+ * @description
+ * 手牌数小于4的牌手抓牌，直到手牌数各为4张。
+ */
+define card {
+  id 332020 as FriendshipEternal;
+  since "v3.7.0";
+  cost DiceType.Aligned, 2;
+  if (:player.hands.length < 4) {
+    :drawCards(4 - :player.hands.length, { who: "my" });
+  }
+  if (:oppPlayer.hands.length < 4) {
+    :drawCards(4 - :oppPlayer.hands.length, { who: "opp" });
+  }
+};
+
+/**
+ * @id 332021
+ * @name 大梦的曲调
+ * @cost
+ * @description
+ * 我方下次打出「武器」或「圣遗物」手牌时：少花费1个元素骰。
+ */
+define card {
+  id 332021 as RhythmOfTheGreatDream;
+  since "v3.8.0";
+  :combatStatus(RhythmOfTheGreatDreamInEffect);
+};
+
+/**
+ * @id 302021
+ * @name 大梦的曲调（生效中）
+ * @description
+ * 我方下次打出「武器」或「圣遗物」手牌时：少花费1个元素骰。
+ */
+define combatStatus {
+  id 302021 as private RhythmOfTheGreatDreamInEffect;
+  since "v3.8.0";
+  once deductOmniDiceCard {
+    when :( :e.hasOneOfCardTag("weapon", "artifact") );
+    :e.deductOmniCost(1);
+  };
+};
+
+/**
+ * @id 332022
+ * @name 藏锋何处
+ * @cost
+ * @description
+ * 将一个我方角色所装备的「武器」返回手牌。
+ * 本回合中，我方下次打出「武器」手牌时：少花费2个元素骰。
+ */
+define card {
+  id 332022 as WhereIsTheUnseenRazor;
+  since "v4.0.0";
+  addTarget $.my.character.has($.equipped.tag("weapon"));
+  :e.targets[0].unequipWeapon();
+  :combatStatus(WhereIsTheUnseenRazorInEffect);
+};
+
+/**
+ * @id 303222
+ * @name 藏锋何处（生效中）
+ * @description
+ * 本回合中，我方下次打出「武器」手牌时：少花费2个元素骰。
+ */
+define combatStatus {
+  id 303222 as private WhereIsTheUnseenRazorInEffect;
+  since "v4.0.0";
+  oneDuration;
+  once deductOmniDiceCard {
+    when :( :e.hasCardTag("weapon") );
+    :e.deductOmniCost(2);
+  };
+};
+
+/**
+ * @id 332023
+ * @name 拳力斗技！
+ * @cost
+ * @description
+ * 我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中一位牌手先宣布结束时，未宣布结束的牌手抓2张牌。
+ */
+define card {
+  id 332023 as Pankration;
+  since "v4.1.0";
+  filter :( :player.dice.length >= 8 && !:oppPlayer.declaredEnd );
+  :combatStatus(PankrationInEffect);
+};
+
+/**
+ * @id 303223
+ * @name 拳力斗技！（生效中）
+ * @description
+ * 本回合中，一位牌手先宣布结束时：未宣布结束的牌手抓2张牌。
+ */
+define combatStatus {
+  id 303223 as private PankrationInEffect;
+  since "v4.1.0";
+  once declareEnd {
+    listenTo all;
+    if (:player.declaredEnd) {
+      :drawCards(2, { who: "opp" });
+    } else {
+      :drawCards(2, { who: "my" });
+    }
+  };
+};
+
+define extension {
+  idHint 332024 as LyresongIsFirstExtension;
+  schema ({ first: "pair<boolean>" });
+  initialState ({ first: [true, true] });
+  description "打出琴音之诗前该方该轮次未打出过其他行动牌";
+  mutateWhen onRoundEnd, ((c) => (c.first = [true, true]));
+  mutateWhen onPlayCard, ((c, e) => (c.first[e.who] = false));
+};
+
+/**
+ * @id 303232
+ * @name 琴音之诗（生效中）
+ * @description
+ * 本回合中，我方下次打出「圣遗物」手牌时：少花费1个元素骰。
+ */
+define combatStatus {
+  id 303232 as LyresongInEffect1;
+  oneDuration;
+  once deductOmniDiceCard {
+    when :( :e.hasCardTag("artifact") );
+    :e.deductOmniCost(1);
+  };
+};
+
+/**
+ * @id 303224
+ * @name 琴音之诗（生效中）
+ * @description
+ * 本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。
+ */
+define combatStatus {
+  id 303224 as LyresongInEffect2;
+  oneDuration;
+  once deductOmniDiceCard {
+    when :( :e.hasCardTag("artifact") );
+    :e.deductOmniCost(2);
+  };
+};
+
+/**
+ * @id 332024
+ * @name 琴音之诗
+ * @cost
+ * @description
+ * 将一个我方角色所装备的「圣遗物」返回手牌。
+ * 本回合中，我方下次打出「圣遗物」手牌时：少花费1个元素骰。如果打出此牌前我方未打出过其他行动牌，则改为少花费2个元素骰。
+ */
+define card {
+  id 332024 as Lyresong;
+  since "v4.2.0";
+  associateExtension LyresongIsFirstExtension;
+  addTarget $.my.character.has($.equipped.tag("artifact"));
+  :e.targets[0].unequipArtifact();
+  if (:getExtensionState().first[:self.who]) {
+    :combatStatus(LyresongInEffect2);
+  } else {
+    :combatStatus(LyresongInEffect1);
+  }
+};
+
+/**
+ * @id 332025
+ * @name 野猪公主
+ * @cost
+ * @description
+ * 本回合中，我方每有1张装备在角色身上的「装备牌」被弃置时：获得1个万能元素。（最多获得2个）
+ * （角色被击倒时弃置装备牌，或者覆盖装备「武器」「圣遗物」或「特技」，都可以触发此效果）
+ */
+define card {
+  id 332025 as TheBoarPrincess;
+  since "v4.3.0";
+  :combatStatus(TheBoarPrincessInEffect);
+};
+
+/**
+ * @id 303225
+ * @name 野猪公主（生效中）
+ * @description
+ * 本回合中，我方每有1张装备在角色身上的「装备牌」被弃置时：获得1个万能元素。
+ * 可用次数：2
+ * （角色被击倒时弃置装备牌，或者覆盖装备「武器」「圣遗物」或「特技」，都可以触发此效果）
+ */
+define combatStatus {
+  id 303225 as TheBoarPrincessInEffect;
+  since "v4.3.0";
+  usage 2;
+  oneDuration;
+  on entityDispose {
+    when :( :e.entity.definition.type === "equipment" );
+    :generateDice(DiceType.Omni, 1);
+    :consumeUsage();
+  };
+};
+
+/**
+ * @id 332026
+ * @name 坍陷与契机
+ * @cost
+ * @description
+ * 我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中，双方牌手进行「切换角色」行动时需要额外花费1个元素骰。
+ */
+define card {
+  id 332026 as FallsAndFortune;
+  since "v4.3.0";
+  filter :( :player.dice.length >= 8 && !:oppPlayer.declaredEnd );
+  :combatStatus(FallsAndFortuneInEffect);
+};
+
+/**
+ * @id 303226
+ * @name 坍陷与契机（生效中）
+ * @description
+ * 本回合中，双方牌手进行「切换角色」行动时：需要额外花费1个元素骰。
+ */
+define combatStatus {
+  id 303226 as FallsAndFortuneInEffect;
+  since "v4.3.0";
+  oneDuration;
+  on addDice {
+    when :( :e.action.type === "switchActive" );
+    listenTo all;
+    :e.addCost(DiceType.Void, 1);
+  };
+};
+
+/**
+ * @id 332027
+ * @name 浮烁的四叶印
+ * @cost
+ * @description
+ * 目标角色附属四叶印：每个回合的结束阶段，我方都切换到此角色。
+ */
+define card {
+  id 332027 as FlickeringFourleafSigil;
+  since "v4.3.0";
+  addTarget $.my.character;
+  :characterStatus(FourLeafSigil, :e.targets[0]);
+};
+
+/**
+ * @id 303227
+ * @name 四叶印
+ * @description
+ * 结束阶段：切换到所附属角色。
+ */
+define status {
+  id 303227 as private FourLeafSigil;
+  since "v4.3.0";
+  on endPhase {
+    :switchActive(:self.master);
+  };
+};
+
+/**
+ * @id 332028
+ * @name 机关铸成之链
+ * @cost 1*Aligned
+ * @description
+ * 对我方「出战角色」造成1点物理伤害。从牌组中随机抽取1张「圣遗物」牌。
+ */
+define card {
+  id 332028 as MachineAssemblyLine;
+  since "v4.4.0";
+  cost DiceType.Aligned, 1;
+  :damage(DamageType.Physical, 1, $.my.active);
+  :drawCards(1, { withTag: "artifact" });
+};
+
+/**
+ * @id 332029
+ * @name 净觉花
+ * @cost
+ * @description
+ * 选择一张我方支援区的牌，将其弃置。然后，在我方手牌中随机生成2张支援牌。
+ * 本回合中，我方下次打出支援牌时：少花费1个元素骰。
+ */
+define card {
+  id 332029 as SunyataFlower;
+  since "v4.4.0";
+  addTarget $.my.support;
+  :dispose(:e.targets[0]);
+  const candidates = :allCardDefinitions("support");
+  const card0 = :random(candidates);
+  const card1 = :random(candidates);
+  :createHandCard(card0.id as CardHandle);
+  :createHandCard(card1.id as CardHandle);
+  :combatStatus(SunyataFlowerInEffect);
+};
+
+/**
+ * @id 303229
+ * @name 净觉花（生效中）
+ * @description
+ * 本回合中，我方下次打出支援牌时：少花费1个元素骰。
+ */
+define combatStatus {
+  id 303229 as private SunyataFlowerInEffect;
+  since "v4.4.0";
+  oneDuration;
+  once deductOmniDiceCard {
+    when :( :e.action.skill.caller.definition.type === "support" );
+    :e.deductOmniCost(1);
+  };
+};
+
+/**
+ * @id 332030
+ * @name 可控性去危害化式定向爆破
+ * @cost 1*Aligned
+ * @description
+ * 对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：双方所有召唤物的可用次数-1。
+ */
+define card {
+  id 332030 as ControlledDirectionalBlast;
+  since "v4.5.0";
+  cost DiceType.Aligned, 1;
+  filter :( :queryAll($.opp.summon.union($.opp.support)).length >= 4 );
+  for (const summon of :queryAll($.summon)) {
+    summon.consumeUsage();
+  }
+};
+
+/**
+ * @id 302202
+ * @name 太郎丸的存款
+ * @cost
+ * @description
+ * 生成1个万能元素。
+ */
+define card {
+  id 302202 as TaroumarusSavings;
+  since "v4.6.0";
+  undiscoverable;
+  :generateDice(DiceType.Omni, 1);
+};
+
+/**
+ * @id 302203
+ * @name 「清洁工作」
+ * @cost
+ * @description
+ * 我方出战角色下次造成的伤害+1。（可叠加，最多叠加到+2）
+ */
+define card {
+  id 302203 as CalledInForCleanup;
+  since "v4.6.0";
+  undiscoverable;
+  :combatStatus(CalledInForCleanupActive);
+};
+
+/**
+ * @id 302204
+ * @name 「清洁工作」（生效中）
+ * @description
+ * 我方出战角色下次造成的伤害+1。（可叠加，最多叠加到+2）
+ */
+define combatStatus {
+  id 302204 as private CalledInForCleanupActive;
+  since "v4.6.0";
+  variable damage, 1 {
+    append;
+    range 2;
+  };
+  once increaseSkillDamage {
+    :e.increaseDamage(:variables.damage);
+  };
+};
+
+/**
+ * @id 303231
+ * @name 海底宝藏（冷却中）
+ * @description
+ * 本回合此角色不会再受到来自「海底宝藏」的治疗。
+ */
+define status {
+  id 303231 as private UnderseaTreasureOnCD;
+  oneDuration;
+};
+
+/**
+ * @id 303230
+ * @name 海底宝藏
+ * @cost
+ * @description
+ * 生成1个随机基础元素骰，治疗我方出战角色1点。（每个角色每回合最多受到1次来自本效果的治疗）
+ */
+define card {
+  id 303230 as UnderseaTreasure;
+  since "v4.6.0";
+  undiscoverable;
+  :generateDice("randomElement", 1);
+  if (!:query($.my.active.has($.typeStatus.def(UnderseaTreasureOnCD)))) {
+    :heal(1, $.my.active);
+    :characterStatus(UnderseaTreasureOnCD, $.my.active);
+  }
+};
+
+/**
+ * @id 332031
+ * @name 海中寻宝
+ * @cost 2*Aligned
+ * @description
+ * 生成6张海底宝藏，随机地置入我方牌库中。
+ */
+define card {
+  id 332031 as UnderwaterTreasureHunt;
+  since "v4.6.0";
+  cost DiceType.Aligned, 2;
+  :createPileCards(UnderseaTreasure, 6, "random");
+};
+
+/**
+ * @id 124053
+ * @name 噬骸能量块
+ * @description
+ * 本回合无法再打出噬骸能量块。
+ */
+define combatStatus {
+  id 124053 as BonecrunchersEnergyBlockCombatStatus;
+  oneDuration;
+};
+
+/**
+ * @id 124051
+ * @name 噬骸能量块
+ * @description
+ * 随机舍弃1张当前元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。（每回合最多打出1张）
+ */
+define card {
+  id 124051 as BonecrunchersEnergyBlock;
+  since "v4.7.0";
+  undiscoverable;
+  filter :(
+    !:query($.my.combatStatus.def(BonecrunchersEnergyBlockCombatStatus))
+  );
+  :discardMaxCostHands(1);
+  const activeCh = :query($.my.active)!;
+  :generateDice(activeCh.element(), 1);
+  :combatStatus(BonecrunchersEnergyBlockCombatStatus);
+};
+
+/**
+ * @id 301021
+ * @name 禁忌知识（冷却中）
+ * @description
+ * 本回合无法再打出「禁忌知识」。
+ */
+define combatStatus {
+  id 301021 as ForbiddenKnowledgeCoolDown;
+  oneDuration;
+};
+
+/**
+ * @id 301020
+ * @name 禁忌知识
+ * @cost
+ * @description
+ * 无法使用此牌进行元素调和，且每回合最多只能打出1张「禁忌知识」。
+ * 对我方出战角色造成1点穿透伤害，抓1张牌。
+ */
+define card {
+  id 301020 as ForbiddenKnowledge;
+  since "v4.7.0";
+  undiscoverable;
+  tags abyss;
+  disableTuning;
+  filter :( !:query($.my.combatStatus.def(ForbiddenKnowledgeCoolDown)) );
+  :damage(DamageType.Piercing, 1, $.my.active);
+  :drawCards(1);
+  :combatStatus(ForbiddenKnowledgeCoolDown);
+};
+
+/**
+ * @id 332032
+ * @name 幻戏倒计时：3
+ * @cost 3*Aligned
+ * @description
+ * 将我方所有元素骰转换为万能元素，抓4张牌。
+ * 此牌在手牌或牌库中被舍弃后：将1张元素骰费用比此牌少1个的「幻戏倒计时」放置到你的牌库顶。
+ */
+define card {
+  id 332032 as CountdownToTheShow3;
+  since "v4.7.0";
+  cost DiceType.Aligned, 3;
+  on selfDiscard {
+    :createPileCards(CountdownToTheShow2, 1, "top");
+  };
+  :convertDice(DiceType.Omni, "all");
+  :drawCards(4);
+};
+
+/**
+ * @id 332033
+ * @name 幻戏倒计时：2
+ * @cost 2*Aligned
+ * @description
+ * 将我方所有元素骰转换为万能元素，抓4张牌。
+ * 此牌在手牌或牌库中被舍弃后：将1张元素骰费用比此牌少1个的「幻戏倒计时」放置到你的牌库顶。
+ */
+define card {
+  id 332033 as CountdownToTheShow2;
+  since "v4.7.0";
+  undiscoverable;
+  cost DiceType.Aligned, 2;
+  on selfDiscard {
+    :createPileCards(CountdownToTheShow1, 1, "top");
+  };
+  :convertDice(DiceType.Omni, "all");
+  :drawCards(4);
+};
+
+/**
+ * @id 332034
+ * @name 幻戏倒计时：1
+ * @cost 1*Aligned
+ * @description
+ * 将我方所有元素骰转换为万能元素，抓4张牌。
+ * 此牌在手牌或牌库中被舍弃后：将1张元素骰费用为0的「幻戏开始！」放置到你的牌库顶。
+ */
+define card {
+  id 332034 as CountdownToTheShow1;
+  since "v4.7.0";
+  undiscoverable;
+  cost DiceType.Aligned, 1;
+  on selfDiscard {
+    :createPileCards(TheShowBegins, 1, "top");
+  };
+  :convertDice(DiceType.Omni, "all");
+  :drawCards(4);
+};
+
+/**
+ * @id 332035
+ * @name 幻戏开始！
+ * @cost
+ * @description
+ * 将我方所有元素骰转换为万能元素，抓4张牌。
+ */
+define card {
+  id 332035 as TheShowBegins;
+  since "v4.7.0";
+  undiscoverable;
+  :convertDice(DiceType.Omni, "all");
+  :drawCards(4);
+};
+
+/**
+ * @id 302206
+ * @name 瑟琳的声援
+ * @cost
+ * @description
+ * 随机将2张美露莘推荐的「料理」加入手牌。
+ */
+define card {
+  id 302206 as SerenesSupport;
+  since "v4.8.0";
+  undiscoverable;
+  const candidates = :allCardDefinitions("food");
+  // 似乎是“有放回抽样”，两张牌可重
+  const card0 = :random(candidates);
+  const card1 = :random(candidates);
+  :createHandCard(card0.id as CardHandle);
+  :createHandCard(card1.id as CardHandle);
+};
+
+/**
+ * @id 302207
+ * @name 洛梅的声援
+ * @cost
+ * @description
+ * 随机将2张美露莘好奇的「圣遗物」加入手牌。
+ */
+define card {
+  id 302207 as LaumesSupport;
+  since "v4.8.0";
+  undiscoverable;
+  const candidates = :allCardDefinitions("artifact");
+  const card0 = :random(candidates);
+  const card1 = :random(candidates);
+  :createHandCard(card0.id as CardHandle);
+  :createHandCard(card1.id as CardHandle);
+};
+
+/**
+ * @id 302208
+ * @name 柯莎的声援
+ * @cost
+ * @description
+ * 随机将2张美露莘称赞的「武器」加入手牌。
+ */
+define card {
+  id 302208 as CosanzeanasSupport;
+  since "v4.8.0";
+  undiscoverable;
+  const candidates = :allCardDefinitions("weapon");
+  // 似乎是“有放回抽样”，两张牌可重
+  const card0 = :random(candidates);
+  const card1 = :random(candidates);
+  :createHandCard(card0.id as CardHandle);
+  :createHandCard(card1.id as CardHandle);
+};
+
+const MELUSINE_EVENT_CARDS = [
+  ElementalResonanceShatteringIce,
+  ElementalResonanceSoothingWater,
+  ElementalResonanceFerventFlames,
+  ElementalResonanceHighVoltage,
+  ElementalResonanceImpetuousWinds,
+  ElementalResonanceEnduringRock,
+  ElementalResonanceSprawlingGreenery,
+  WindAndFreedom,
+  StoneAndContracts,
+  ThunderAndEternity,
+  NatureAndWisdom,
+  WaterAndJustice,
+  FireAndWar,
+  MoonAndHomeland,
+  // 331808
+];
+
+// 筛出当前版本存在的卡
+const getMelusineEventCards = (
+  cards: ReadonlyMap<number, EntityDefinition>,
+): CardHandle[] => {
+  return MELUSINE_EVENT_CARDS.map((id) => cards.get(id))
+    .filter((def) => !!def)
+    .map((def) => def.id as CardHandle);
+};
+
+/**
+ * @id 302209
+ * @name 夏诺蒂拉的声援
+ * @cost 1*Aligned
+ * @description
+ * 随机将2张美露莘看好的超棒事件牌加入手牌。
+ */
+define card {
+  id 302209 as CanotilasSupport;
+  since "v4.8.0";
+  undiscoverable;
+  cost DiceType.Aligned, 1;
+  const cards = getMelusineEventCards(:data.entities);
+  const card0 = :random(cards);
+  const card1 = :random(cards);
+  :createHandCard(card0);
+  :createHandCard(card1);
+};
+
+/**
+ * @id 302219
+ * @name 希洛娜的心意
+ * @description
+ * 回合结束时：随机将1张超棒事件牌加入手牌。
+ * 可用次数：3
+ */
+define combatStatus {
+  id 302219 as private ThironasGoodWill;
+  on endPhase {
+    // 文本有误
+    usage 3;
+    const cards = getMelusineEventCards(:data.entities);
+    const card = :random(cards);
+    :createHandCard(card);
+  };
+};
+
+/**
+ * @id 302210
+ * @name 希洛娜的声援
+ * @cost
+ * @description
+ * 接下来3个回合结束时，各将1张美露莘看好的超棒事件牌加入手牌。
+ */
+define card {
+  id 302210 as ThironasSupport;
+  since "v4.8.0";
+  undiscoverable;
+  :combatStatus(ThironasGoodWill);
+};
+
+/**
+ * @id 302211
+ * @name 希露艾的声援
+ * @cost 1*Aligned
+ * @description
+ * 复制对方牌库顶部的3张牌，加入手牌。
+ */
+define card {
+  id 302211 as SluasisSupport;
+  since "v4.8.0";
+  undiscoverable;
+  cost DiceType.Aligned, 1;
+  for (const card of :oppPlayer.pile.slice(0, 3)) {
+    :createHandCard(card.definition.id as CardHandle);
+  }
+};
+
+/**
+ * @id 302212
+ * @name 薇尔妲的声援
+ * @cost 2*Void
+ * @description
+ * 随机将2张「秘传」卡牌加入你的手牌，并恢复双方牌手的「秘传」卡牌使用机会。
+ */
+define card {
+  id 302212 as VirdasSupport;
+  since "v4.8.0";
+  undiscoverable;
+  cost DiceType.Void, 2;
+  const candidates = :allCardDefinitions("legend");
+  const card0 = :random(candidates);
+  const card1 = :random(candidates);
+  :createHandCard(card0.id as CardHandle);
+  :createHandCard(card1.id as CardHandle);
+  :mutate({
+    type: "setPlayerFlag",
+    who: 0,
+    flagName: "legendUsed",
+    value: false,
+  });
+  :mutate({
+    type: "setPlayerFlag",
+    who: 1,
+    flagName: "legendUsed",
+    value: false,
+  });
+};
+
+/**
+ * @id 302213
+ * @name 芙佳的声援
+ * @cost
+ * @description
+ * 随机生成「伙伴」到场上，直到填满双方支援区。
+ */
+const PucasSupport = void 0; /* moves to support/ally.ts */
+
+/**
+ * @id 302216
+ * @name 托皮娅的心意
+ * @description
+ * 本回合打出手牌后，随机舍弃1张牌或抓1张牌。
+ */
+define combatStatus {
+  id 302216 as private TopyassGoodwill;
+  oneDuration;
+  on playCard {
+    :abortPreview();
+    let doDrawCard: boolean;
+    if (:player.pile.length === 0 && :player.hands.length === 0) {
+      // 啥也做不了
+      return;
+    } else if (:player.pile.length === 0) {
+      // 只能舍弃
+      doDrawCard = false;
+    } else if (:player.hands.length === 0) {
+      // 只能抽牌
+      doDrawCard = true;
+    } else {
+      // 随机
+      doDrawCard = :random([true, false]);
+    }
+    if (doDrawCard) {
+      :drawCards(1);
+    } else {
+      const target = :random(:player.hands);
+      :discard(target);
+    }
+  };
+};
+
+/**
+ * @id 302214
+ * @name 托皮娅的声援
+ * @cost
+ * @description
+ * 抓2张牌，双方获得以下效果：「本回合打出手牌后，随机舍弃1张牌或抓1张牌。」
+ */
+define card {
+  id 302214 as TopyassSupport;
+  since "v4.8.0";
+  undiscoverable;
+  :drawCards(2);
+  :combatStatus(TopyassGoodwill, "my");
+  :combatStatus(TopyassGoodwill, "opp");
+};
+
+/**
+ * @id 302217
+ * @name 卢蒂妮的心意
+ * @description
+ * 我方角色使用技能后：受到2点治疗或2点穿透伤害。
+ * 可用次数：2
+ */
+define combatStatus {
+  id 302217 as private LutinesGoodwill;
+  on useSkill {
+    usage 2;
+    :abortPreview();
+    const caller = :e.skill.caller.cast<"character">();
+    if (:random([true, false])) {
+      :heal(2, caller);
+    } else {
+      :damage(DamageType.Piercing, 2, caller);
+    }
+  };
+};
+
+/**
+ * @id 302215
+ * @name 卢蒂妮的声援
+ * @cost
+ * @description
+ * 抓2张牌，双方获得以下效果：「角色使用技能后，随机受到2点治疗或2点穿透伤害。可用次数：2」
+ */
+define card {
+  id 302215 as LutinesSupport;
+  since "v4.8.0";
+  undiscoverable;
+  :drawCards(2);
+  :combatStatus(LutinesGoodwill, "my");
+  :combatStatus(LutinesGoodwill, "opp");
+};
+
+/**
+ * @id 302218
+ * @name 美露莘的声援
+ * @cost
+ * @description
+ * 效果随机的超棒贴纸，凝聚了美露莘们的心意。
+ */
+define card {
+  id 302218 as MelusineSupport;
+  reserved;
+};
+
+/**
+ * @id 303236
+ * @name 「看到那小子挣钱…」（生效中）
+ * @description
+ * 本回合中，对方每获得1个元素骰时，如果你未宣布回合结束，则你生成1个万能元素；否则，生成1点护盾。
+ * 可用次数：3
+ */
+define combatStatus {
+  id 303236 as IdRatherLoseMoneyMyselfInEffect;
+  oneDuration;
+  on generateDice {
+    when :( :e.who !== :self.who );
+    usage 3;
+    listenTo all;
+    if (!:player.declaredEnd) {
+      :generateDice(DiceType.Omni, 1);
+    } else {
+      :combatStatus(Shield);
+    }
+  };
+};
+
+/**
+ * @id 332036
+ * @name 「看到那小子挣钱…」
+ * @cost
+ * @description
+ * 本回合中，对方每获得1个元素骰时，如果你未宣布回合结束，则你生成1个万能元素；否则，生成1点护盾。
+ * 可用次数：3
+ */
+define card {
+  id 332036 as IdRatherLoseMoneyMyself;
+  since "v4.8.0";
+  :combatStatus(IdRatherLoseMoneyMyselfInEffect);
+};
+
+/**
+ * @id 332037
+ * @name 噔噔！
+ * @cost
+ * @description
+ * 对我方「出战角色」造成1点物理伤害。本回合的结束阶段时，抓1张牌。
+ */
+define card {
+  id 332037 as Tada;
+  since "v4.8.0";
+  :damage(DamageType.Physical, 1, $.my.active);
+  :combatStatus(TadaInEffect);
+};
+
+/**
+ * @id 303237
+ * @name 噔噔！（生效中）
+ * @description
+ * 结束阶段：抓1张牌。
+ * 可用次数：1
+ */
+define combatStatus {
+  id 303237 as private TadaInEffect;
+  since "v4.8.0";
+  on endPhase {
+    usage 1;
+    :drawCards(1);
+  };
+};
+
+/**
+ * @id 332039
+ * @name 龙伙伴的聚餐
+ * @cost
+ * @description
+ * 选择一个装备在我方角色的「特技」装备牌，使其可用次数+1。
+ */
+define card {
+  id 332039 as SaurianDiningBuddies;
+  since "v5.0.0";
+  addTarget $.my.character.has($.equipped.tag("technique"));
+  const technique = :e.targets[0].hasTechnique();
+  if (technique && technique.definition.varConfigs.usage) {
+    technique.variables.usage! += 1;
+  }
+};
+
+/**
+ * @id 133090
+ * @name 海底寻宝
+ * @description
+ * 生成6张海底宝藏，随机地置入我方牌库中。
+ */
+define card {
+  id 133090 as FakeUnderwaterTreasureHunt; // 骗骗花
+  reserved;
+};
+
+/**
+ * @id 133091
+ * @name 可控性危害化式定向爆破
+ * @description
+ * 对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：双方所有召唤物的可用次数-1。
+ */
+define card {
+  id 133091 as FakeControlledDirectionalBlast; // 骗骗花
+  reserved;
+};
+
+/**
+ * @id 133094
+ * @name 温妮莎传说
+ * @description
+ * 生成4个不同类型的基础元素骰。
+ */
+define card {
+  id 133094 as TheTaleOfVennessa; // 骗骗花
+  reserved;
+};
+
+/**
+ * @id 332040
+ * @name 镀金旅团的茶歇
+ * @cost 2*Aligned
+ * @description
+ * 如果我方存在相同元素类型的角色，则从3张「场地」中挑选1张加入手牌；
+ * 如果我方存在相同武器类型的角色，则从3张「道具」中挑选1张加入手牌；
+ * 如果我方存在相同所属势力的角色，则从3张「料理」中挑选1张加入手牌。
+ */
+define card {
+  id 332040 as EremiteTeatime;
+  since "v5.1.0";
+  cost DiceType.Aligned, 2;
+  const characters = :queryAll($.my.character.includesDefeated);
+  const elements = characters.map((ch) => ch.element());
+  const weapons = characters.map((ch) => ch.weaponTag());
+  const nations = characters.flatMap((ch) => ch.nationTags());
+  if (new Set(elements).size < characters.length) {
+    const cards = :allCardDefinitions("place");
+    const candidates = :randomSubset(cards, 3);
+    :selectAndCreateHandCard(candidates);
+  }
+  if (new Set(weapons).size < characters.length) {
+    const cards = :allCardDefinitions("item");
+    const candidates = :randomSubset(cards, 3);
+    :selectAndCreateHandCard(candidates);
+  }
+  if (new Set(nations).size < nations.length) {
+    const cards = :allCardDefinitions("food");
+    const candidates = :randomSubset(cards, 3);
+    :selectAndCreateHandCard(candidates);
+  }
+};
+
+/**
+ * @id 332041
+ * @name 强劲冲浪拍档！
+ * @cost
+ * @description
+ * 战斗行动：双方场上至少存在合计2个「召唤物」时，才能打出，随机触发我方和敌方各1个「召唤物」的「结束阶段」效果。
+ */
+define card {
+  id 332041 as UltimateSurfingBuddy;
+  since "v5.2.0";
+  tags action;
+  filter :( :queryAll($.summon).length >= 2 );
+  :abortPreview();
+  const mySummons = :queryAll($.my.summon);
+  if (mySummons.length > 0) {
+    const mySummon = :random(mySummons);
+    :triggerEndPhaseSkill(mySummon);
+  }
+  const oppSummons = :queryAll($.opp.summon);
+  if (oppSummons.length > 0) {
+    const oppSummon = :random(oppSummons);
+    :triggerEndPhaseSkill(oppSummon);
+  }
+};
+
+/**
+ * @id 332042
+ * @name 燃素充盈
+ * @cost
+ * @description
+ * 本回合我方下次角色消耗「夜魂值」后：该角色获得1点「夜魂值」。
+ */
+define card {
+  id 332042 as AbundantPhlogiston;
+  since "v5.3.0";
+  :combatStatus(AbundantPhlogistonInEffect);
+};
+
+/**
+ * @id 303238
+ * @name 燃素充盈（生效中）
+ * @description
+ * 本回合我方角色下次消耗夜魂值后：该角色获得1点夜魂值。
+ */
+define combatStatus {
+  id 303238 as AbundantPhlogistonInEffect;
+  since "v5.3.0";
+  oneDuration;
+  once consumeNightsoul {
+    :gainNightsoul(:e.entity.cast<"status">().master, 1);
+  };
+};
+
+/**
+ * @id 332043
+ * @name 小嵴锋龙！发现宝藏！
+ * @cost 1*Aligned
+ * @description
+ * 向双方牌组中放入2张燃素充盈，随后双方各抓2张牌。
+ */
+define card {
+  id 332043 as LittleTepetlisaurTreasureHunterAtLarge;
+  since "v5.4.0";
+  cost DiceType.Aligned, 1;
+  :createPileCards(AbundantPhlogiston, 2, "random", "my");
+  :createPileCards(AbundantPhlogiston, 2, "random", "opp");
+  :drawCards(2, { who: "my" });
+  :drawCards(2, { who: "opp" });
+};
+
+/**
+ * @id 332044
+ * @name 以极限之名
+ * @cost 4*Aligned
+ * @description
+ * 交换双方手牌，然后手牌较少的一方抓牌直到手牌数等同于手牌多的一方。
+ */
+define card {
+  id 332044 as InTheNameOfTheExtreme;
+  since "v5.5.0";
+  cost DiceType.Aligned, 4;
+  :swapPlayerHandCards();
+  const oppHandsCount = :oppPlayer.hands.length;
+  const myHandsCount = :player.hands.length;
+  if (oppHandsCount < myHandsCount) {
+    :drawCards(myHandsCount - oppHandsCount, { who: "opp" });
+  } else if (oppHandsCount > myHandsCount) {
+    :drawCards(oppHandsCount - myHandsCount, { who: "my" });
+  }
+};
+
+/**
+ * @id 303239
+ * @name 困困冥想术（生效中）
+ * @description
+ * 我方下次打出不属于初始卡组的牌费用-2。
+ */
+define combatStatus {
+  id 303239 as ArtOfSleepyMeditationInEffect;
+  once deductOmniDiceCard {
+    when :( !:isInInitialPile(:e.action.skill.caller) );
+    :e.deductOmniCost(2);
+  };
+};
+
+/**
+ * @id 332045
+ * @name 困困冥想术
+ * @cost 1*Aligned
+ * @description
+ * 从随机3张特技牌中挑选1张。
+ * 我方下次打出不属于初始卡组的牌少花费2个元素骰。
+ */
+define card {
+  id 332045 as ArtOfSleepyMeditation;
+  since "v5.6.0";
+  cost DiceType.Aligned, 1;
+  const candidates = :randomSubset(:allCardDefinitions("technique"), 3);
+  :selectAndCreateHandCard(candidates);
+  :combatStatus(ArtOfSleepyMeditationInEffect);
+};
+
+/**
+ * @id 332046
+ * @name 飞行队出击！
+ * @cost 3*Void
+ * @description
+ * 随机舍弃至多2张当前元素骰费用最高的手牌，随后抓牌直至手牌中有4张牌。
+ * 此牌在手牌被舍弃后：抓1张牌。
+ */
+define card {
+  id 332046 as FlyingSquadAttack;
+  since "v5.7.0";
+  cost DiceType.Void, 3;
+  on selfDiscard {
+    if (:e.area.type === "hands") {
+      :drawCards(1);
+    }
+  };
+  :discardMaxCostHands(2);
+  const handsLength = :player.hands.length;
+  if (handsLength < 4) {
+    :drawCards(4 - handsLength);
+  }
+};
+
+/**
+ * @id 303242
+ * @name 健身的成果（生效中）
+ * @description
+ * 该角色下次元素战技花费1个元素骰。（不可叠加）
+ */
+define status {
+  id 303242 as FruitsOfTrainingInEffect02;
+  on deductOmniDiceSkill {
+    when :( :e.isSkillType("elemental") );
+    usage 1 {
+      append; // 所谓“不可叠加”是指无法一次减多个骰子，但是可用次数可以叠加
+    };
+    :e.deductOmniCost(1);
+  };
+};
+
+/**
+ * @id 303241
+ * @name 健身的成果（生效中）
+ * @description
+ * 我方其他角色准备技能时：所选角色下次元素战技花费1个元素骰。（至多触发2次，不可叠加）
+ */
+define status {
+  id 303241 as FruitsOfTrainingInEffect01;
+  on entityEnter {
+    when :(
+      :e.entity.definition.type === "status" &&
+        :e.entity.definition.tags.includes("preparingSkill") &&
+        // 准备被切人中止，则所有角色都视为“其他角色”
+        (:e.entity.area.type !== "characters" ||
+          :e.entity.cast<"status">().master.id !== :self.master.id)
+    );
+    listenTo samePlayer;
+    usage 2;
+    :characterStatus(FruitsOfTrainingInEffect02, :self.master);
+  };
+};
+
+/**
+ * @id 332048
+ * @name 健身的成果
+ * @cost
+ * @description
+ * 选一个我方角色，我方其他角色准备技能时：所选角色下次元素战技少花费1个元素骰。（至多触发2次，不可叠加）
+ */
+define card {
+  id 332048 as FruitsOfTraining;
+  since "v5.7.0";
+  addTarget $.my.character;
+  :characterStatus(FruitsOfTrainingInEffect01, :e.targets[0]);
+};
+
+/**
+ * @id 301028
+ * @name 积木小人
+ * @description
+ * 结束阶段：造成1点物理伤害。
+ * 可用次数：2
+ */
+define summon {
+  id 301028 as ToyGuardSummon;
+  variable effect, 1 {
+    forceOverwrite;
+  };
+  hint DamageType.Physical, ((c, e) => e.variables.effect);
+  on endPhase {
+    usage 2;
+    :damage(DamageType.Physical, :variables.effect);
+  };
+};
+
+/**
+ * @id 301029
+ * @name 折纸飞鼠
+ * @description
+ * 结束阶段：获得1层高效切换。
+ * 可用次数：2
+ */
+define summon {
+  id 301029 as OrigamiFlyingSquirrelSummon;
+  variable effect, 1 {
+    forceOverwrite;
+  };
+  hint ResistantForm, ((c, e) => e.variables.effect);
+  on endPhase {
+    usage 2;
+    :combatStatus(EfficientSwitch, "my", {
+      overrideVariables: {
+        usage: :variables.effect,
+      },
+    });
+  };
+};
+
+/**
+ * @id 301030
+ * @name 跳跳纸蛙
+ * @description
+ * 结束阶段：抓1张牌。
+ * 可用次数：2
+ */
+define summon {
+  id 301030 as PopupPaperFrogSummon;
+  variable effect, 1 {
+    forceOverwrite;
+  };
+  hint ResistantForm, ((c, e) => e.variables.effect);
+  on endPhase {
+    usage 2;
+    :drawCards(:variables.effect);
+  };
+};
+
+/**
+ * @id 301031
+ * @name 折纸胖胖鼠
+ * @description
+ * 折纸胖胖鼠：结束阶段：治疗受伤最多的我方角色2点。
+ * 可用次数：1
+ */
+define summon {
+  id 301031 as OrigamiHamsterSummon;
+  variable effect, 2 {
+    forceOverwrite;
+  };
+  hint DamageType.Heal, ((c, e) => e.variables.effect);
+  on endPhase {
+    usage 1;
+    :heal(:variables.effect, $.macros.myMostInjured);
+  };
+};
+
+export const SIMULANKA_SUMMONS = [
+  ToyGuardSummon,
+  OrigamiFlyingSquirrelSummon,
+  PopupPaperFrogSummon,
+  OrigamiHamsterSummon,
+];
+
+export const SIMULANKA_QUERY: IQuery<{
+  type: "summon";
+  areaType: "summons";
+  variables: "usage" | "hintIcon" | "effect";
+}> = $.union(...SIMULANKA_SUMMONS.map((id) => $.my.summon.def(id)));
+
+/**
+ * @id 301033
+ * @name 积木小人
+ * @cost 1*Aligned
+ * @description
+ * 召唤积木小人。
+ * （积木小人：结束阶段：造成1点物理伤害。
+ * 可用次数：2）
+ */
+define card {
+  id 301033 as ToyGuard;
+  since "v5.8.0";
+  undiscoverable;
+  cost DiceType.Aligned, 1;
+  :summon(ToyGuardSummon);
+};
+
+/**
+ * @id 301034
+ * @name 折纸飞鼠
+ * @cost 1*Aligned
+ * @description
+ * 召唤折纸飞鼠。
+ * （折纸飞鼠：结束阶段：获得1层高效切换。
+ * 可用次数：2）
+ */
+define card {
+  id 301034 as OrigamiFlyingSquirrel;
+  since "v5.8.0";
+  undiscoverable;
+  cost DiceType.Aligned, 1;
+  :summon(OrigamiFlyingSquirrelSummon);
+};
+
+/**
+ * @id 301035
+ * @name 跳跳纸蛙
+ * @cost 1*Aligned
+ * @description
+ * 召唤跳跳纸蛙。
+ * （跳跳纸蛙：结束阶段：抓1张牌。
+ * 可用次数：2）
+ */
+define card {
+  id 301035 as PopupPaperFrog;
+  since "v5.8.0";
+  undiscoverable;
+  cost DiceType.Aligned, 1;
+  :summon(PopupPaperFrogSummon);
+};
+
+/**
+ * @id 301036
+ * @name 折纸胖胖鼠
+ * @cost 1*Aligned
+ * @description
+ * 召唤折纸胖胖鼠。
+ * （折纸胖胖鼠：结束阶段：治疗受伤最多的我方角色2点。
+ * 可用次数：1）
+ */
+define card {
+  id 301036 as OrigamiHamster;
+  since "v5.8.0";
+  undiscoverable;
+  cost DiceType.Aligned, 1;
+  :summon(OrigamiHamsterSummon);
+};
+
+/**
+ * @id 303244
+ * @name 收获时间（生效中）
+ * @description
+ * 结束阶段：生成一张收获时间，随机置入我方牌组。（可叠加，最多叠加到2）
+ */
+define combatStatus {
+  id 303244 as HarvestTimeInEffect;
+  variable cardCount, 1 {
+    append;
+    range 2;
+  };
+  once endPhase {
+    :createPileCards(HarvestTime, :variables.cardCount, "random");
+  };
+};
+
+/**
+ * @id 332049
+ * @name 收获时间
+ * @cost 1*Aligned
+ * @description
+ * 从3张随机「料理」牌中挑选1张。
+ * 结束阶段：生成一张收获时间，随机置入我方牌组。
+ */
+define card {
+  id 332049 as HarvestTime;
+  since "v5.8.0";
+  cost DiceType.Aligned, 1;
+  cost DiceType.Aligned, 1;
+  const allFoods = :allCardDefinitions("food");
+  const candidates = :randomSubset(allFoods, 3);
+  :selectAndCreateHandCard(candidates);
+  :combatStatus(HarvestTimeInEffect);
+};
+
+/**
+ * @id 332050
+ * @name 很棒，哥们。
+ * @cost 1*Aligned
+ * @description
+ * 抓1张「特技」牌，下次打出「特技」牌后，生成1个万能元素。
+ */
+define card {
+  id 332050 as AwesomeBro;
+  since "v5.8.0";
+  cost DiceType.Aligned, 1;
+  :drawCards(1, { withTag: "technique" });
+  :combatStatus(AwesomeBroInEffect);
+};
+
+/**
+ * @id 303243
+ * @name 很棒，哥们。（生效中）
+ * @description
+ * 下次使用「特技」牌后，生成1个万能元素。
+ */
+define combatStatus {
+  id 303243 as private AwesomeBroInEffect;
+  since "v5.8.0";
+  once playCard {
+    when :( :e.hasCardTag("technique") );
+    :generateDice(DiceType.Omni, 1);
+  };
+};
+
+define extension {
+  idHint 332051 as DisposedSupportAndSummonsCountExtension;
+  schema ({
+    disposedSupportCount: "pair<number>",
+    disposedSummonsCount: "pair<number>",
+  });
+  initialState ({
+    disposedSupportCount: [0, 0],
+    disposedSummonsCount: [0, 0],
+  });
+  description "记录本场对局中双方支援区和召唤区弃置卡牌的数量";
+  mutateWhen onDispose,
+    ((st, e) => {
+      if (e.isDiscardOrTuning()) {
+        return;
+      }
+      if (e.entity.definition.type === "support") {
+        st.disposedSupportCount[e.who]++;
+      } else if (e.entity.definition.type === "summon") {
+        st.disposedSummonsCount[e.who]++;
+      }
+    });
+};
+
+/**
+ * @id 303245
+ * @name 「邪龙」
+ * @description
+ * 结束阶段：造成1点穿透伤害。
+ * 可用次数：1
+ */
+define summon {
+  id 303245 as FellDragon;
+  variable effect, 1 {
+    range 5;
+    forceOverwrite;
+  };
+  associateExtension DisposedSupportAndSummonsCountExtension;
+  hint DamageType.Physical, ((c, e) => e.variables.effect);
+  on endPhase {
+    usage 1 { range 5; };
+    :damage(DamageType.Piercing, :variables.effect);
+  };
+  on selfEnter {
+    const ext = :getExtensionState();
+    const addUsage = ext.disposedSupportCount[:self.who];
+    const addDmg = ext.disposedSummonsCount[:self.who];
+    :variables.usage += addUsage;
+    :variables.effect += addDmg;
+  };
+};
+
+/**
+ * @id 332051
+ * @name 「邪龙」的苏醒
+ * @cost 2*Aligned
+ * @description
+ * 召唤「邪龙」。
+ * 本场对局中，我方支援区每弃置1张卡牌，则「邪龙」可用次数+1；我方召唤区每弃置1张卡牌，则「邪龙」效果量+1。（可叠加，最多叠加到4）
+ * （「邪龙」：结束阶段：造成1点穿透伤害。
+ * 可用次数：1）
+ * 【此卡含描述变量】
+ */
+define card {
+  id 332051 as FellDragonsAwakening;
+  since "v6.0.0";
+  cost DiceType.Aligned, 2;
+  associateExtension DisposedSupportAndSummonsCountExtension;
+  replaceDescription "[GCG_TOKEN_COUNTER]",
+    ((c, { area }, ext) => ext.disposedSupportCount[area.who]);
+  replaceDescription "[GCG_TOKEN_COUNTER_2]",
+    ((c, { area }, ext) => ext.disposedSummonsCount[area.who]);
+  :summon(FellDragon);
+};
+
+/**
+ * @id 332052
+ * @name 旁白的注脚
+ * @cost
+ * @description
+ * 双方召唤积木小人。
+ * （积木小人：结束阶段：造成1点物理伤害。
+ * 可用次数：2）
+ */
+define card {
+  id 332052 as NarrationFootnotes;
+  since "v6.0.0";
+  :summon(ToyGuardSummon);
+  :summon(ToyGuardSummon, "opp");
+};
+
+/**
+ * @id 332054
+ * @name 「魔女M的祝福」
+ * @cost
+ * @description
+ * 选择并弃置一个我方召唤物，将其可用次数转化为至多2个不同类型的基础元素骰，如果其可用次数不低于3，则额外治疗我方受伤最多的角色2点。
+ */
+define card {
+  id 332054 as ABlessingFromM;
+  since "v6.0.0";
+  addTarget $.my.summon;
+  const usage = :e.targets[0].variables.usage!;
+  :e.targets[0].dispose();
+  :generateDice("randomElement", Math.min(usage, 2));
+  if (usage >= 3) {
+    :heal(2, $.macros.myMostInjured);
+  }
+};
+
+/**
+ * @id 332055
+ * @name 「狂欢节奏」
+ * @cost 2*Void
+ * @description
+ * 抓2张牌，如果我方手牌中的「武器」牌或「圣遗物」牌数量大于1张，则各生成1个万能元素。
+ */
+define card {
+  id 332055 as RevelrousBeats;
+  since "v6.0.0";
+  cost DiceType.Void, 2;
+  :drawCards(2);
+  if (:queryAll($.my.hand.tag("weapon")).length > 1) {
+    :generateDice(DiceType.Omni, 1);
+  }
+  if (:queryAll($.my.hand.tag("artifact")).length > 1) {
+    :generateDice(DiceType.Omni, 1);
+  }
+};
+
+/**
+ * @id 332056
+ * @name 祀珑在昔，灵锦歆诚
+ * @cost 1*Aligned
+ * @description
+ * 冒险1次。如果我方冒险经历不低于4，则改为对我方「出战角色」造成1点物理伤害，冒险2次。
+ */
+define card {
+  id 332056 as AnAncientSacrificeOfSacredBrocade;
+  since "v6.1.0";
+  cost DiceType.Aligned, 1;
+  const exp = :query($.my.support.tag("adventureSpot"))?.variables.exp ?? 0;
+  if (exp >= 4) {
+    :damage(DamageType.Physical, 1, $.my.active);
+    :adventure();
+  }
+  :adventure();
+};
+
+/**
+ * @id 300008
+ * @name 驱逐灾厄
+ * @cost
+ * @description
+ * 将敌方1张费用最高的手牌置于牌组底。
+ */
+define card {
+  id 300008 as DisperseTheCalamity;
+  since "v6.2.0";
+  undiscoverable;
+  const cards = :maxCostHands(1, { who: "opp" });
+  :undrawCards(cards, "bottom", "opp");
+};
+
+/**
+ * @id 300009
+ * @name 肃净污染
+ * @cost
+ * @description
+ * 将我方所有手牌置于牌组底，然后抓相同数量+1张手牌。
+ */
+define card {
+  id 300009 as SanctifyTheDefiled;
+  since "v6.2.0";
+  undiscoverable;
+  const allHands = [...:player.hands];
+  const count = allHands.length;
+  :undrawCards(allHands, "bottom");
+  :drawCards(count + 1);
+};
+
+/**
+ * @id 301038
+ * @name 木质玩具剑
+ * @cost 1*Aligned
+ * @description
+ * 治疗目标角色2点，生成2个随机基础元素骰。
+ */
+define card {
+  id 301038 as WoodenToySword;
+  since "v6.2.0";
+  undiscoverable;
+  cost DiceType.Aligned, 1;
+  addTarget $.my.character;
+  :heal(2, :e.targets[0]);
+  :generateDice("randomElement", 2);
+};
+
+/**
+ * @id 301040
+ * @name 重铸圣剑（生效中）
+ * @description
+ * 所附属角色重击后：造成5点该角色元素类型的伤害。
+ */
+define status {
+  id 301040 as ReforgeTheHolyBladeInEffect;
+  on useSkill {
+    when :( :isUsedChargedSkill(:e.skill) );
+    const element = :self.master.element() as number as DamageType;
+    :damage(element, 5);
+  };
+};
+
+/**
+ * @id 301039
+ * @name 重铸圣剑
+ * @cost 4*Void
+ * @description
+ * 治疗目标角色12点，使其获得效果：重击后：造成5点该角色元素类型的伤害。
+ */
+define card {
+  id 301039 as ReforgeTheHolyBlade;
+  since "v6.2.0";
+  undiscoverable;
+  cost DiceType.Void, 4;
+  addTarget $.my.character;
+  :heal(12, :e.targets[0]);
+  :characterStatus(ReforgeTheHolyBladeInEffect, :e.targets[0]);
+};
+
+/**
+ * @id 332057
+ * @name 水仙十字大冒险
+ * @cost 1*Aligned
+ * @description
+ * 如果我方存在相同元素类型的角色，则治疗我方受伤最多的角色1点；
+ * 如果我方存在相同武器类型的角色，抓1张牌；
+ * 如果我方存在相同所属势力的角色，则冒险1次。
+ */
+define card {
+  id 332057 as TheNarzissenkreuzAdventure;
+  since "v6.2.0";
+  cost DiceType.Aligned, 1;
+  const characters = :queryAll($.my.character.includesDefeated);
+  const elements = characters.map((ch) => ch.element());
+  const weapons = characters.map((ch) => ch.weaponTag());
+  const nations = characters.flatMap((ch) => ch.nationTags());
+  if (new Set(elements).size < characters.length) {
+    :heal(1, $.macros.myMostInjured);
+  }
+  if (new Set(weapons).size < characters.length) {
+    :drawCards(1);
+  }
+  if (new Set(nations).size < nations.length) {
+    :adventure();
+  }
+};
+
+/**
+ * @id 303247
+ * @name 拯救世界的计划（生效中）
+ * @description
+ * 下个回合结束时，双方出战角色生命值变为5。
+ */
+define combatStatus {
+  id 303247 as PlanToSaveTheWorldInEffect;
+  duration 2;
+  on endPhase {
+    when :( :variables.duration === 1 );
+    const actives = :queryAll($.active);
+    for (const ch of actives) {
+      :mutate({
+        type: "modifyEntityVar",
+        state: ch.latest(),
+        varName: "health",
+        value: 5,
+        oldValue: 0,
+        direction: ch.health > 5 ? "decrease" : "increase",
+      });
+    }
+  };
+};
+
+/**
+ * @id 332058
+ * @name 拯救世界的计划
+ * @cost 2*Aligned
+ * @description
+ * 下回合结束阶段时，双方出战角色生命值变为5。
+ */
+define card {
+  id 332058 as PlanToSaveTheWorld;
+  since "v6.2.0";
+  cost DiceType.Aligned, 2;
+  :combatStatus(PlanToSaveTheWorldInEffect);
+};
+
+/**
+ * @id 332053
+ * @name 破碎之海
+ * @cost 1*Aligned
+ * @description
+ * 选择一张我方支援区的牌，将其弃置。然后使我方所有「希穆兰卡」召唤物的可用次数和效果量+1。
+ */
+define card {
+  id 332053 as BrokenSea;
+  since "v6.3.0";
+  cost DiceType.Aligned, 1;
+  addTarget $.my.support;
+  :dispose(:e.targets[0]);
+  for (const summon of :queryAll(SIMULANKA_QUERY)) {
+    summon.variables.effect += 1;
+    summon.variables.usage += 1;
+  }
+};
+
+/**
+ * @id 332059
+ * @name 「穿越晨霭的冒险」
+ * @cost
+ * @description
+ * 将当前元素骰费用最低的至多2张手牌置入牌组底，然后抓等量的牌。
+ * 此牌被舍弃后：冒险1次。
+ */
+define card {
+  id 332059 as AnAdventureThroughTheMorningMist;
+  since "v6.3.0";
+  on selfDiscard {
+    :adventure();
+  };
+  const minCostCards = :player.hands
+    .toSorted((a, b) => a.diceCost() - b.diceCost())
+    .slice(0, 2);
+  :undrawCards(minCostCards, "bottom");
+  :drawCards(minCostCards.length);
+};
+
+/**
+ * @id 332060
+ * @name 天才的改造法
+ * @cost
+ * @description
+ * 生成1张随机「道具」牌，赋予我方当前元素骰费用最高的2张手牌赋能。
+ */
+define card {
+  id 332060 as GeniussUpgradeTechnique;
+  since "v6.4.0";
+  const itemCards = :allCardDefinitions("item");
+  :createHandCard(:random(itemCards).id as CardHandle);
+  const hands = :maxCostHands(2, {
+    filter: (card) => !:get(card).empowered(),
+  });
+  for (const card of hands) {
+    :attach(Empowerment, card);
+  }
+};
+
+/**
+ * @id 332061
+ * @name 叮铃哐啷军团
+ * @cost 1*Aligned
+ * @description
+ * 生成3张随机原本元素骰费用等于3的卡牌加入手牌。
+ * 如果此卡牌被赋予了赋能，则赋予3张当前元素骰费用最高的手牌赋能。
+ */
+define card {
+  id 332061 as ClinkClankLegion;
+  since "v6.4.0";
+  cost DiceType.Aligned, 1;
+  const allCards = :allCardDefinitions().filter(
+    (card) =>
+      !card.tags.includes("talent") && originalDiceCostOfCard(card) === 3,
+  );
+  for (let i = 0; i < 3; i++) {
+    :createHandCard(:random(allCards).id as CardHandle);
+  }
+  if (:self.empowered()) {
+    const hands = :maxCostHands(3, {
+      filter: (card) => !:get(card).empowered(),
+    });
+    for (const card of hands) {
+      :attach(Empowerment, card);
+    }
+  }
+};
+
+/**
+ * @id 302229
+ * @name 乐平波琳的医疗器材投资
+ * @cost
+ * @description
+ * 对我方出战角色造成1点穿透伤害，执行1个「治疗」效果相关的计划。
+ */
+const LepinepaulinesInvestmentInMedicalEquipment = void 0;
+
+/**
+ * @id 302230
+ * @name 乐平波琳的图形对抗投资
+ * @cost
+ * @description
+ * 舍弃1张随机手牌，执行1个「抓牌」效果相关的计划。
+ */
+const LepinepaulinesInvestmentInGraphAdversarialTechnology = void 0;
+
+/**
+ * @id 302231
+ * @name 乐平波琳的能量机关投资
+ * @cost
+ * @description
+ * 移除我方1个元素骰，执行1个「元素骰」效果相关的计划。
+ */
+const LepinepaulinesInvestmentInEnergyMechanism = void 0;
+
+/**
+ * @id 332062
+ * @name 清扫时间
+ * @cost
+ * @description
+ * 我方手牌中每存在1种附着状态，则生成1个随机基础元素骰。（至多生成2个）
+ */
+define card {
+  id 332062 as CleaningTime;
+  since "v6.5.0";
+  const attachmentsCount = new Set(
+    :queryAll($.my.attachment.vHand).map((att) => att.definition.id),
+  ).size;
+  const diceCount = Math.min(attachmentsCount, 2);
+  :generateDice("randomElement", diceCount);
+};
+
+/**
+ * @id 303249
+ * @name 小小灵蕈大幻戏（生效中）
+ * @description
+ * 所附属角色造成的伤害+1。（不可叠加）
+ */
+define status {
+  id 303249 as LilFungisFuntasticFiestaInEffect;
+  on increaseDamage {
+    :e.increaseDamage(1);
+  };
+};
+
+/**
+ * @id 332063
+ * @name 小小灵蕈大幻戏
+ * @cost 5*Aligned
+ * @description
+ * 目标我方「魔物」角色造成的伤害+1。（不可叠加）
+ * 此牌在手中，我方「魔物」角色使用技能后：赋予此卡牌费用降低。
+ * 此牌被舍弃时：我方随机「魔物」角色获得1点额外最大生命值。
+ * （牌组包含至少2个「魔物」角色，才能加入牌组）
+ */
+define card {
+  id 332063 as LilFungisFuntasticFiesta;
+  since "v6.7.0";
+  cost DiceType.Aligned, 5;
+  on useSkill {
+    when :(
+      :e.skillCaller.cast<"character">().definition.tags.includes("monster")
+    );
+    :attachCostReduction(:self);
+  };
+  on selfDiscard {
+    enablePileTriggering;
+    const target = :random(:queryAll($.my.character.tag("monster")));
+    if (target) {
+      :increaseMaxHealth(1, target);
+    }
+  };
+  addTarget $.my.character.tag("monster");
+  :characterStatus(LilFungisFuntasticFiestaInEffect, :e.targets[0]);
+};
+
+/**
+ * @id 303248
+ * @name 科研的动力（生效中）
+ * @description
+ * 我方打出当前元素骰费用大于等于3的卡牌后，生成1个随机基础元素骰。
+ * 可用次数：3
+ */
+define combatStatus {
+  id 303248 as ThePowerOfResearchInEffect;
+  on playCard {
+    when :( :e.originalPlayCost() >= 3 );
+    usage 3;
+    :generateDice("randomElement", 1);
+  };
+};
+
+/**
+ * @id 332064
+ * @name 科研的动力
+ * @cost 1*Aligned
+ * @description
+ * 我方下3次打出当前元素骰费用大于等于3的卡牌后，生成1个随机基础元素骰。
+ */
+define card {
+  id 332064 as ThePowerOfResearch;
+  since "v6.7.0";
+  cost DiceType.Aligned, 1;
+  :combatStatus(ThePowerOfResearchInEffect);
+};
+
+/**
+ * @id 332065
+ * @name 「魔女的课业」
+ * @cost 1*Aligned
+ * @description
+ * 抓1张「天赋」牌。如果我方牌组中初始包含至少3张「天赋」牌，则赋予手牌中当前元素骰费用最高的随机1张「天赋」牌费用降低。
+ */
+define card {
+  id 332065 as WitchsHomework;
+  since "v7.0.0";
+  cost DiceType.Aligned, 1;
+  :drawCards(1, { withTag: "talent" });
+  if (
+    :player.initialPile.filter((c) => c.tags.includes("talent")).length >= 3
+  ) {
+    // 7.0实测为没有随机，直接取第1个
+    const maxCostTargets = :maxCostHands(1, {
+      filter: (card) => card.definition.tags.includes("talent"),
+    });
+    if (maxCostTargets.length > 0) {
+      :attachCostReduction(maxCostTargets);
+    }
+  }
+};
+
+/**
+ * @id 332066
+ * @name 齐聚共饮
+ * @cost
+ * @description
+ * 下个回合开始时：双方各抓2张牌，随机生成2个随机元素骰。
+ */
+define card {
+  id 332066 as FeastingInASharedToast;
+  since "v7.0.0";
+  :combatStatus(GatherForADrinkInEffect, "my");
+  :combatStatus(GatherForADrinkInEffect, "opp");
+};
+
+/**
+ * @id 303250
+ * @name 齐聚共饮（生效中）
+ * @description
+ * 下个回合开始时：抓2张牌，然后生成2个随机元素骰。
+ */
+define combatStatus {
+  id 303250 as GatherForADrinkInEffect;
+  once actionPhase {
+    :drawCards(2);
+    :generateDice("randomElement", 2);
+  };
+};

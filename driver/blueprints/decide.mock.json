@@ -1,0 +1,307 @@
+{
+  "version": "0.1.0",
+  "name": "七圣召唤 · 单回合决策（假模型联调）",
+  "description": "由 decide.json 生成：只把 llm_chat 指向本地假模型（driver/tools/mock-llm.mjs），其余节点与连线完全一致。",
+  "nodes": [
+    {
+      "id": "in",
+      "type": "arena_input",
+      "label": "1. 读入局面",
+      "params": {},
+      "position": {
+        "x": -40,
+        "y": 240
+      },
+      "accent": "blue"
+    },
+    {
+      "id": "tips",
+      "type": "playbook",
+      "label": "2. 打法提示词（在这里写）",
+      "params": {
+        "general_rule": "",
+        "use_skill_rule": "",
+        "play_card_rule": "",
+        "elemental_tuning_rule": "",
+        "switch_active_rule": "",
+        "declare_end_rule": "",
+        "choose_active_rule": "",
+        "select_card_rule": "",
+        "reroll_dice_rule": "",
+        "switch_hands_rule": "",
+        "footer": "只回答一个方括号里的编号数字，不要解释。",
+        "only_present": true,
+        "max_chars": 2000
+      },
+      "position": {
+        "x": 260,
+        "y": 10
+      },
+      "accent": "amber"
+    },
+    {
+      "id": "brief",
+      "type": "state_brief",
+      "label": "3. 局面摘要",
+      "params": {
+        "include_hand": true,
+        "include_opponent": true,
+        "max_chars": 1200,
+        "include_raw": false
+      },
+      "position": {
+        "x": 260,
+        "y": 240
+      },
+      "accent": "teal"
+    },
+    {
+      "id": "rank",
+      "type": "action_rank",
+      "label": "4. 候选筛选排序",
+      "params": {
+        "top_k": 8,
+        "style": "aggressive",
+        "keep_end_turn": true
+      },
+      "position": {
+        "x": 260,
+        "y": 470
+      },
+      "accent": "violet"
+    },
+    {
+      "id": "note",
+      "type": "json_pick",
+      "label": "5. 上次被拒理由",
+      "params": {
+        "key": "reason",
+        "default": "",
+        "max_chars": 300
+      },
+      "position": {
+        "x": 260,
+        "y": 700
+      },
+      "accent": "slate"
+    },
+    {
+      "id": "pack",
+      "type": "prompt_pack",
+      "label": "6. 拼提示词",
+      "params": {
+        "system": "",
+        "task": "从下面的可选动作里选一个最有利于获胜的。只回复一个数字。",
+        "budget_chars": 4000,
+        "role": "user",
+        "include_system": true
+      },
+      "position": {
+        "x": 600,
+        "y": 300
+      },
+      "accent": "green"
+    },
+    {
+      "id": "llm",
+      "type": "llm_chat",
+      "label": "7. 假模型（联调用）",
+      "params": {
+        "model": "mock-model",
+        "api_base": "http://127.0.0.1:8110/v1",
+        "api_key": "mock-key",
+        "temperature": 0.2,
+        "max_tokens": 16,
+        "timeout_seconds": 30
+      },
+      "position": {
+        "x": 900,
+        "y": 300
+      },
+      "accent": "rose"
+    },
+    {
+      "id": "parse",
+      "type": "choice_parse",
+      "label": "8. 解析编号",
+      "params": {
+        "mode": "auto",
+        "max_chars": 500
+      },
+      "position": {
+        "x": 1180,
+        "y": 300
+      },
+      "accent": "cyan"
+    },
+    {
+      "id": "build",
+      "type": "rpc_build",
+      "label": "9. 拼回 RpcResponse",
+      "params": {
+        "allow_fallback": true
+      },
+      "position": {
+        "x": 1450,
+        "y": 300
+      },
+      "accent": "indigo"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "in",
+      "source_handle": "detail",
+      "target": "tips",
+      "target_handle": "detail"
+    },
+    {
+      "id": "e2",
+      "source": "in",
+      "source_handle": "request",
+      "target": "tips",
+      "target_handle": "request"
+    },
+    {
+      "id": "e3",
+      "source": "in",
+      "source_handle": "state",
+      "target": "brief",
+      "target_handle": "state"
+    },
+    {
+      "id": "e4",
+      "source": "in",
+      "source_handle": "detail",
+      "target": "brief",
+      "target_handle": "detail"
+    },
+    {
+      "id": "e5",
+      "source": "in",
+      "source_handle": "seat",
+      "target": "brief",
+      "target_handle": "seat"
+    },
+    {
+      "id": "e6",
+      "source": "in",
+      "source_handle": "catalog",
+      "target": "brief",
+      "target_handle": "catalog"
+    },
+    {
+      "id": "e7",
+      "source": "in",
+      "source_handle": "detail",
+      "target": "rank",
+      "target_handle": "detail"
+    },
+    {
+      "id": "e8",
+      "source": "in",
+      "source_handle": "request",
+      "target": "rank",
+      "target_handle": "request"
+    },
+    {
+      "id": "e9",
+      "source": "in",
+      "source_handle": "state",
+      "target": "rank",
+      "target_handle": "state"
+    },
+    {
+      "id": "e10",
+      "source": "in",
+      "source_handle": "seat",
+      "target": "rank",
+      "target_handle": "seat"
+    },
+    {
+      "id": "e11",
+      "source": "in",
+      "source_handle": "retry",
+      "target": "note",
+      "target_handle": "data"
+    },
+    {
+      "id": "e12",
+      "source": "brief",
+      "source_handle": "text",
+      "target": "pack",
+      "target_handle": "state_text"
+    },
+    {
+      "id": "e13",
+      "source": "rank",
+      "source_handle": "text",
+      "target": "pack",
+      "target_handle": "menu_text"
+    },
+    {
+      "id": "e14",
+      "source": "tips",
+      "source_handle": "text",
+      "target": "pack",
+      "target_handle": "advice"
+    },
+    {
+      "id": "e15",
+      "source": "note",
+      "source_handle": "text",
+      "target": "pack",
+      "target_handle": "extra"
+    },
+    {
+      "id": "e16",
+      "source": "in",
+      "source_handle": "summary",
+      "target": "pack",
+      "target_handle": "memory"
+    },
+    {
+      "id": "e17",
+      "source": "pack",
+      "source_handle": "messages",
+      "target": "llm",
+      "target_handle": "messages"
+    },
+    {
+      "id": "e18",
+      "source": "llm",
+      "source_handle": "reply",
+      "target": "parse",
+      "target_handle": "text"
+    },
+    {
+      "id": "e19",
+      "source": "rank",
+      "source_handle": "indexes",
+      "target": "parse",
+      "target_handle": "valid_indexes"
+    },
+    {
+      "id": "e20",
+      "source": "in",
+      "source_handle": "request",
+      "target": "build",
+      "target_handle": "request"
+    },
+    {
+      "id": "e21",
+      "source": "in",
+      "source_handle": "detail",
+      "target": "build",
+      "target_handle": "detail"
+    },
+    {
+      "id": "e22",
+      "source": "parse",
+      "source_handle": "index",
+      "target": "build",
+      "target_handle": "index"
+    }
+  ]
+}

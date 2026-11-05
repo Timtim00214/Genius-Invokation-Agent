@@ -1,0 +1,70 @@
+{
+  "name": "@gi-tcg/core",
+  "version": "0.21.0",
+  "type": "module",
+  "description": "Genius Invokation TCG Simulator core library",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "url": "https://github.com/piovium/genius-invokation",
+    "directory": "packages/core"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": [
+        "./src/index.ts",
+        "./dist/index.js"
+      ],
+      "import": "./dist/index.js"
+    },
+    "./data": {
+      "types": "./dist/data.d.ts",
+      "development": [
+        "./src/data/index.ts",
+        "./dist/data.js"
+      ],
+      "import": "./dist/data.js"
+    },
+    "./gts/*": {
+      "types": "./dist/gts/*.d.ts",
+      "development": "./src/gts/*.ts",
+      "import": "./dist/gts/*.js"
+    }
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./data": {
+        "types": "./dist/data.d.ts",
+        "import": "./dist/data.js"
+      },
+      "./gts/*": {
+        "types": "./dist/gts/*.d.ts",
+        "import": "./dist/gts/*.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "check": "tsc --noEmit",
+    "test": "vitest",
+    "build": "tsdown",
+    "gen:s_expr_schema": "gnx scripts/gen_s_expr_schema.ts"
+  },
+  "dependencies": {
+    "@gi-tcg/gts-runtime": "catalog:",
+    "@gi-tcg/typings": "workspace:*",
+    "@gi-tcg/utils": "workspace:*",
+    "immer": "^11.1.4",
+    "remeda": "^2.39.0"
+  },
+  "devDependencies": {
+    "@beaker73/async-context": "^0.1.2",
+    "@gi-tcg/config": "workspace:*"
+  }
+}

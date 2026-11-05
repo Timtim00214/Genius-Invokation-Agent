@@ -1,0 +1,373 @@
+// Copyright (C) 2024-2025 Guyutongxue
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import { DamageType, DiceType, $ } from "@gi-tcg/core/data";
+
+/**
+ * @id 113151
+ * @name 夜魂加持
+ * @description
+ * 所附属角色可累积「夜魂值」。（最多累积到2点）
+ * 夜魂值为0时，退出夜魂加持。
+ */
+define status {
+  id 113151 as NightsoulsBlessing;
+  since "v5.7.0";
+  nightsoulsBlessing 2 { autoDispose; };
+  on selfDispose {
+    :query(
+      $.my.combatStatus.def(AllfireArmamentsRingOfSearingRadiance),
+    )?.dispose();
+  };
+};
+
+/**
+ * @id 113152
+ * @name 死生之炉
+ * @description
+ * 我方全体角色的技能不消耗「夜魂值」。
+ * 我方全体角色「普通攻击」造成的伤害+1。
+ * 可用次数：2
+ */
+define status {
+  id 113152 as CrucibleOfDeathAndLife;
+  since "v5.7.0";
+  usage 2;
+  on increaseSkillDamage {
+    when :( :e.viaSkillType("normal") );
+    listenTo samePlayer;
+    :e.increaseDamage(1);
+    :consumeUsage();
+  };
+  on cancelConsumeNightsoul {
+    listenTo samePlayer;
+    :e.cancel();
+    :consumeUsage(-:e.info.diffValue);
+  };
+};
+
+/**
+ * @id 113158
+ * @name 驰轮车·疾驰（生效中）
+ * @description
+ * 行动阶段开始时：生成2个万能元素。
+ */
+define combatStatus {
+  id 113158 as FlamestriderFullThrottleInEffect;
+  since "v5.7.0";
+  once actionPhase {
+    :generateDice(DiceType.Omni, 2);
+  };
+};
+
+/**
+ * @id 13155
+ * @name 驰轮车·疾驰
+ * @cost
+ * @description
+ * 行动阶段开始时：生成2个万能元素骰。
+ */
+define skill {
+  id 13155 as FlamestriderFullThrottlePreparedSkill;
+  skillType elemental;
+  prepared;
+  :combatStatus(FlamestriderFullThrottleInEffect);
+};
+
+/**
+ * @id 113157
+ * @name 驰轮车·疾驰（生效中）
+ * @description
+ * 本角色将在下次行动时，直接使用技能：驰轮车·疾驰。
+ */
+define status {
+  id 113157 as FlamestriderFullThrottleInEffectPrepareStatus;
+  since "v5.7.0";
+  prepare FlamestriderFullThrottlePreparedSkill;
+};
+
+/**
+ * @id 113154
+ * @name 驰轮车·跃升
+ * @cost 3*Void
+ * @description
+ * 此牌被舍弃后：对敌方出战角色造成1点火元素伤害。
+ * 特技：跃升
+ * （仅玛薇卡可用）
+ * 可用次数：2
+ * （角色最多装备1个「特技」）
+ * [1131541: 跃升] (1*Void) 消耗1点「夜魂值」，造成4点火元素伤害。
+ * [1131542: ] ()
+ */
+define card {
+  id 113154 as FlamestriderSoaringAscent;
+  since "v5.7.0";
+  undiscoverable;
+  cost DiceType.Void, 3;
+  on selfDiscard {
+    enablePileTriggering;
+    :damage(DamageType.Pyro, 1);
+  };
+  technique {
+    target $.my.character.def(Mavuika);
+    skill {
+      id 1131541 as SoaringAscent;
+      usage 2;
+      cost DiceType.Void, 1;
+      filter :( :self.master.hasNightsoulsBlessing()?.variables.nightsoul );
+      :consumeNightsoul(:self.master);
+      :damage(DamageType.Pyro, 4);
+    };
+  };
+};
+
+/**
+ * @id 113155
+ * @name 驰轮车·涉渡
+ * @cost 2*Void
+ * @description
+ * 此卡牌被打出时：随机触发我方1个「召唤物」的「结束阶段」效果。
+ * 特技：涉渡
+ * （仅玛薇卡可用）
+ * 可用次数：2
+ * （角色最多装备1个「特技」）
+ * [1131551: 涉渡] () 我方切换到下一个角色，将2个元素骰转换为万能元素。（使用此技能后，我方可继续行动）
+ * [1131552: ] ()
+ */
+define card {
+  id 113155 as FlamestriderBlazingTrail;
+  since "v5.7.0";
+  undiscoverable;
+  cost DiceType.Void, 2;
+  technique {
+    target $.my.character.def(Mavuika);
+    on staged {
+      :abortPreview();
+      const summons = :queryAll($.my.summon);
+      if (summons.length > 0) {
+        const summon = :random(summons);
+        :triggerEndPhaseSkill(summon);
+      }
+    };
+    skill {
+      id 1131551 as BlazingTrail;
+      usage 2;
+      :switchActive($.my.next);
+      :convertDice(DiceType.Omni, 2);
+      if (!:oppPlayer.declaredEnd) {
+        :continueNextTurn();
+      }
+    };
+  };
+};
+
+/**
+ * @id 113156
+ * @name 驰轮车·疾驰
+ * @cost 1*Aligned
+ * @description
+ * 此卡牌可使用次数为0时：抓4张牌。
+ * 特技：疾驰
+ * （仅玛薇卡可用）
+ * 可用次数：2
+ * （角色最多装备1个「特技」）
+ * [1131561: 疾驰] (2*Void) 消耗1点「夜魂值」，然后准备技能：驰轮车·疾驰。
+ */
+define card {
+  id 113156 as FlamestriderFullThrottle;
+  since "v5.7.0";
+  undiscoverable;
+  cost DiceType.Aligned, 1;
+  technique {
+    target $.my.character.def(Mavuika);
+    skill {
+      id 1131561 as FullThrottle;
+      usage 2;
+      cost DiceType.Void, 2;
+      filter :( :self.master.hasNightsoulsBlessing()?.variables.nightsoul );
+      :consumeNightsoul(:self.master);
+      :characterStatus(
+        FlamestriderFullThrottleInEffectPrepareStatus,
+        :self.master,
+      );
+      if (:variables.usage === 1) {
+        :drawCards(4);
+      }
+    };
+  };
+};
+
+/**
+ * @id 113153
+ * @name 诸火武装·焚曜之环
+ * @description
+ * 我方其他角色使用「普通攻击」或特技后：消耗玛薇卡1点「夜魂值」，造成1点火元素伤害。（玛薇卡退出夜魂加持后销毁）
+ */
+define combatStatus {
+  id 113153 as AllfireArmamentsRingOfSearingRadiance;
+  since "v5.7.0";
+  on useSkillOrTechnique {
+    when :{
+      if (:e.isSkillType("normal")) {
+        return :e.skillCaller.definition.id !== Mavuika;
+      } else if (:e.isSkillType("technique")) {
+        return :e.techniqueCaller.definition.id !== Mavuika;
+      } else {
+        return false;
+      }
+    };
+    :consumeNightsoul($.my.character.def(Mavuika));
+    :damage(DamageType.Pyro, 1);
+  };
+};
+
+/**
+ * @id 13151
+ * @name 以火织命
+ * @cost 1*Pyro, 2*Void
+ * @description
+ * 造成2点物理伤害。
+ */
+define skill {
+  id 13151 as FlamesWeaveLife;
+  skillType normal;
+  cost DiceType.Pyro, 1;
+  cost DiceType.Void, 2;
+  :damage(DamageType.Physical, 2);
+};
+
+/**
+ * @id 13152
+ * @name 称名之刻
+ * @cost 3*Pyro
+ * @description
+ * 自身进入夜魂加持，获得2点「夜魂值」，并从3张驰轮车中挑选1张加入手牌。
+ */
+define skill {
+  id 13152 as TheNamedMoment;
+  skillType elemental;
+  cost DiceType.Pyro, 3;
+  :selectAndCreateHandCard([
+    FlamestriderBlazingTrail,
+    FlamestriderFullThrottle,
+    FlamestriderSoaringAscent,
+  ]);
+  :gainNightsoul(:self, 2);
+};
+
+/**
+ * @id 13153
+ * @name 燔天之时
+ * @cost 4*Pyro, 3*Al_energy
+ * @description
+ * 本角色进入夜魂加持，获得1点「夜魂值」，消耗自身全部战意，对敌方前台造成等同于消耗战意数量的火元素伤害。
+ * 若消耗了6点战意，则自身附属死生之炉。
+ */
+define skill {
+  id 13153 as HourOfBurningSkies;
+  skillType burst;
+  cost DiceType.Pyro, 4;
+  filter :( :self.variables.fightingSpirit! >= 3 );
+  :gainNightsoul(:self, 1);
+  const spirit = :self.variables.fightingSpirit!;
+  :damage(DamageType.Pyro, spirit);
+  if (spirit >= 6) {
+    :characterStatus(CrucibleOfDeathAndLife);
+  }
+  :self.variables.fightingSpirit = 0;
+};
+
+/**
+ * @id 13154
+ * @name 战意
+ * @cost
+ * @description
+ * 角色不会获得充能。
+ * 在我方消耗「夜魂值」或使用「普通攻击」后，获得1点战意。
+ * 本角色使用元素战技或元素爆发时，附属诸火武装·焚曜之环。
+ */
+define skill {
+  id 13154 as private FightingSpirit;
+  skillType passive {
+    variable fightingSpirit, 0 { range 6; };
+    on consumeNightsoul {
+      listenTo samePlayer;
+      :variables.fightingSpirit! += 1;
+    };
+    on useSkill {
+      listenTo samePlayer;
+      when :( :e.isSkillType("normal") );
+      :variables.fightingSpirit! += 1;
+    };
+    on useSkill {
+      when :( :e.isSkillType("elemental") || :e.isSkillType("burst") );
+      :combatStatus(AllfireArmamentsRingOfSearingRadiance);
+    };
+  };
+};
+
+/**
+ * @id 1315
+ * @name 玛薇卡
+ * @hp 10
+ * @energy -1
+ * @description
+ * 至明、至炽、至烈的再临之火。
+ */
+define character {
+  id 1315 as Mavuika;
+  since "v5.7.0";
+  tags pyro, claymore, natlan;
+  health 10;
+  energy 0;
+  specialEnergy fightingSpirit, 3;
+  skills FlamesWeaveLife,
+    TheNamedMoment,
+    HourOfBurningSkies,
+    FightingSpirit,
+    FlamestriderFullThrottlePreparedSkill;
+  associateNightsoul NightsoulsBlessing;
+};
+
+/**
+ * @id 213151
+ * @name 「人之名」解放
+ * @cost 1*Pyro
+ * @description
+ * 从3张驰轮车中挑选1张加入手牌。
+ * 我方打出特技牌后：若可能，玛薇卡恢复1点「夜魂值」。（每回合1次）
+ * （牌组中包含玛薇卡，才能加入牌组）
+ */
+define card {
+  id 213151 as HumanitysNameUnfettered;
+  since "v5.7.0";
+  cost DiceType.Pyro, 1;
+  talent Mavuika, none {
+    on staged {
+      :selectAndCreateHandCard([
+        FlamestriderBlazingTrail,
+        FlamestriderFullThrottle,
+        FlamestriderSoaringAscent,
+      ]);
+    };
+    on playCard {
+      when :(
+        :e.hasCardTag("technique") && :self.master.hasStatus(NightsoulsBlessing)
+      );
+      usage perRound, 1;
+      :gainNightsoul(:self.master, 1);
+    };
+  };
+};

@@ -1,0 +1,11 @@
+import { CDP } from "./cdp.mjs";
+const port = Number(process.argv[2] ?? 9344);
+const list = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+const main = list.find((t) => t.type === "page" && t.url.includes("#arena") && !t.url.includes("#arena-board")) ?? list.find(t=>t.type==="page");
+const version = await (await fetch(`http://127.0.0.1:${port}/json/version`)).json();
+const conn = await new CDP(version.webSocketDebuggerUrl).connect();
+await conn.attach(main.id);
+console.log("url:", main.url);
+console.log("log:", await conn.evaluate(`[...document.querySelectorAll('.arena-log-line')].slice(-8).map(e=>e.textContent).join(' | ')`));
+console.log("h1:", await conn.evaluate(`document.querySelector('.arena h1')?.textContent ?? '(无配置页)'`));
+conn.close();

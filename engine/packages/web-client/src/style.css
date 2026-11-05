@@ -1,0 +1,126 @@
+@unocss;
+
+:root {
+  --root-padding-top: env(safe-area-inset-top, 0px);
+  --root-padding-bottom: env(safe-area-inset-bottom, 0px);
+  --root-padding-left: env(safe-area-inset-left, 0px);
+  --root-padding-right: env(safe-area-inset-right, 0px);
+  --root-padding: var(--root-padding-top) var(--root-padding-right)
+    var(--root-padding-bottom) var(--root-padding-left);
+  /* 抵消部分浏览器的字号缩放 */
+  text-size-adjust: none !important;
+  -webkit-text-size-adjust: none !important;
+}
+
+#app {
+  touch-action: pan-x pan-y;
+  padding: var(--root-padding);
+  height: 100dvh;
+  width: 100dvw;
+  overflow: auto;
+  user-select: auto;
+}
+@media (max-width: 768px) {
+  #app {
+    user-select: none;
+  }
+}
+
+#app:has(.mobile-chessboard) {
+  padding: 0;
+}
+
+form {
+  input[data-dirty]:invalid {
+    background-color: #fee2e2;
+  }
+}
+
+.bottom-opacity-gradient {
+  mask-image: linear-gradient(0deg, transparent 16px, red 66px);
+}
+
+dialog {
+  display: unset;
+  inset: 0;
+  transition:
+    opacity 0.2s ease-out,
+    transform 0.2s ease-out;
+}
+
+dialog:not([open]) {
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+dialog[open] {
+  transform: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.deck-info-card {
+  background: linear-gradient(
+    0deg,
+    #9db2ff40 0%,
+    #9db2ff40 25%,
+    #9db2ff80 25%,
+    #9db2ff80 70%,
+    #9db2ff40 70%,
+    #9db2ff40 100%
+  );
+}
+
+.deck-info-card:hover {
+  background: linear-gradient(
+    0deg,
+    #9db2ff60 0%,
+    #9db2ff60 25%,
+    #9db2ffa0 25%,
+    #9db2ffa0 70%,
+    #9db2ff60 70%,
+    #9db2ff60 100%
+  );
+}
+
+.scrollbar-thin-hover {
+  --scrollbar-width: 4px;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: transparent;
+  --scrollbar-thumb-hover: #c0c0c0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.scrollbar-thin-hover:hover {
+  --scrollbar-thumb: #d0d0d0;
+}
+
+.scrollbar-thin-hover::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+.scrollbar-thin-hover::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+.scrollbar-thin-hover::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 2px;
+}
+
+.scrollbar-thin-hover:hover::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+.scrollbar-thin-hover::-webkit-scrollbar-thumb:hover {
+  background-color: #a0a0a0;
+}

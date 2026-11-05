@@ -1,0 +1,253 @@
+body,
+html {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* 抵消部分浏览器的字号缩放 */
+  text-size-adjust: none !important;
+  -webkit-text-size-adjust: none !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  width: 100%;
+}
+
+.gi-tcg-chessboard-new {
+  height: 36rem;
+}
+
+.gi-state-editor {
+  height: 100vh;
+  width: 100%;
+}
+
+.standalone-board-shell {
+  max-width: calc((100vh - 80px) * 160 / 81);
+  margin: 0 auto;
+}
+
+.editor-back-button {
+  border: 1px solid rgb(165 243 252 / 0.3);;
+  border-radius: 9999px;
+  background: rgb(103 232 249 / 0.1);
+  color: #ecfeff;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.editor-back-button:hover {
+  background: rgb(30 41 59 / 0.95);
+}
+
+.editor-back-button:focus-visible {
+  outline: 2px solid #e5e7eb;
+  outline-offset: 3px;
+  background: rgb(30 41 59 / 0.95);
+}
+
+.title {
+  flex-grow: 1;
+  flex-shrink: 1;
+  text-align: center;
+  font-size: 1.3rem;
+  margin: 0.2rem 0;
+  font-family: "汉仪文黑-85W", sans-serif;
+}
+
+.title-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.config-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+
+  .config-panel__title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .config-panel__deck {
+    margin-bottom: 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+
+    input {
+      flex-grow: 1;
+      flex-shrink: 1;
+      font-family: monospace;
+    }
+  }
+  .config-panel__deck + .config-panel__deck {
+    margin-top: -1rem;
+  }
+
+  .config-panel__description {
+    margin-bottom: 1rem;
+  }
+
+  .config-panel__button-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+
+    button {
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 0.2rem;
+    }
+  }
+
+  .config-panel__room-id {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    input {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.grayscale {
+  filter: grayscale(50%);
+}
+
+.hidden {
+  display: none;
+}
+
+.text-danger {
+  color: red;
+}
+.tabs {
+  padding: 0.5rem;
+  position: relative;
+  display: grid;
+  grid-template-columns: [start] repeat(2, auto) 1fr [end];
+  grid-template-rows: auto [content-start] auto;
+}
+
+.tab__input {
+  display: none;
+}
+.tab__content {
+  display: none;
+  border: black 1px solid;
+  border-top: white 1px solid;
+  background-color: white;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  padding: 1rem;
+  grid-row-start: content-start;
+  grid-column-start: start;
+  grid-column-end: end;
+}
+.tab__input:checked + * + .tab__content {
+  display: block;
+}
+.tab__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  height: 2rem;
+  background-color: #f0f0f0;
+  border-radius: 0.5rem 0.5rem 0 0;
+  transition-property: all;
+  transition-duration: 0.2s;
+  border-bottom: black 1px solid;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+.tab__input:not(:checked) + .tab__header:hover {
+  background-color: #e0e0e0;
+}
+.tab__input:checked + .tab__header {
+  background-color: white;
+  border: black 1px solid;
+  border-bottom: 0;
+  z-index: 1;
+}
+
+.tab__spacer {
+  border-bottom: black 1px solid;
+}
+
+.deck-builder-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+
+  .deck-builder {
+    flex-grow: 1;
+    min-height: 0;
+  }
+
+  .deck-builder-actions {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}
+
+/* [LOCAL PATCH] 数值工坊入口 */
+.config-panel .config-panel__preset {
+  align-items: center;
+  border: 1px dashed #94a3b8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #f8fafc;
+}
+
+.preset-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.preset-changes {
+  color: #b45309;
+  font-size: 0.9rem;
+}
+
+.link-button {
+  appearance: none;
+  background: none;
+  border: none;
+  color: #0e7490;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 0.95rem;
+}
+
+.link-button:hover {
+  color: #155e75;
+}

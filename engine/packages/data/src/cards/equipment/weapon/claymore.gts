@@ -1,0 +1,360 @@
+// Copyright (C) 2024-2025 Guyutongxue
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import { $, DiceType } from "@gi-tcg/core/data";
+
+/**
+ * @id 311301
+ * @name 白铁大剑
+ * @cost 2*Aligned
+ * @description
+ * 角色造成的伤害+1。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+define card {
+  id 311301 as WhiteIronGreatsword;
+  since "v3.3.0";
+  cost DiceType.Aligned, 2;
+  weapon claymore {
+    on increaseSkillDamage {
+      :e.increaseDamage(1);
+    };
+  };
+};
+
+/**
+ * @id 311302
+ * @name 祭礼大剑
+ * @cost 3*Aligned
+ * @description
+ * 角色造成的伤害+1。
+ * 角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+define card {
+  id 311302 as SacrificialGreatsword;
+  since "v3.3.0";
+  cost DiceType.Aligned, 3;
+  weapon claymore {
+    on increaseSkillDamage {
+      :e.increaseDamage(1);
+    };
+    on useSkill {
+      when :( :e.isSkillType("elemental") );
+      usage perRound, 1;
+      :generateDice(:self.master.element(), 1);
+    };
+  };
+};
+
+/**
+ * @id 311303
+ * @name 狼的末路
+ * @cost 3*Aligned
+ * @description
+ * 角色造成的伤害+1。
+ * 攻击剩余生命值不多于6的目标时，伤害额外+2。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+define card {
+  id 311303 as WolfsGravestone;
+  since "v3.3.0";
+  cost DiceType.Aligned, 3;
+  weapon claymore {
+    on increaseSkillDamage {
+      if (:e.target.health <= 6) {
+        :e.increaseDamage(3);
+      } else {
+        :e.increaseDamage(1);
+      }
+    };
+  };
+};
+
+/**
+ * @id 311304
+ * @name 天空之傲
+ * @cost 3*Aligned
+ * @description
+ * 角色造成的伤害+1。
+ * 每回合1次：角色使用「普通攻击」造成的伤害额外+1。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+define card {
+  id 311304 as SkywardPride;
+  since "v3.7.0";
+  cost DiceType.Aligned, 3;
+  weapon claymore {
+    on increaseSkillDamage {
+      :e.increaseDamage(1);
+    };
+    on increaseSkillDamage {
+      when :( :e.viaSkillType("normal") );
+      usage perRound, 1;
+      :e.increaseDamage(1);
+    };
+  };
+};
+
+/**
+ * @id 121013
+ * @name 叛逆的守护
+ * @description
+ * 提供1点护盾，保护我方出战角色。（可叠加，最多叠加到2点）
+ */
+define combatStatus {
+  id 121013 as RebelliousShield;
+  shield 1, 2;
+};
+
+/**
+ * @id 311305
+ * @name 钟剑
+ * @cost 3*Aligned
+ * @description
+ * 角色造成的伤害+1。
+ * 角色使用技能后：为我方出战角色提供1点护盾。（每回合1次，可叠加到2点）
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+define card {
+  id 311305 as TheBell;
+  since "v3.7.0";
+  cost DiceType.Aligned, 3;
+  weapon claymore {
+    on increaseSkillDamage {
+      :e.increaseDamage(1);
+    };
+    on useSkill {
+      usage perRound, 1;
+      :combatStatus(RebelliousShield);
+    };
+  };
+};
+
+/**
+ * @id 301105
+ * @name 沙海守望·主动出击
+ * @description
+ * 本回合内，所附属角色下次造成的伤害额外+1。
+ */
+define status {
+  id 301105 as private DesertWatchTakeTheInitiative;
+  oneDuration;
+  once increaseSkillDamage {
+    :e.increaseDamage(1);
+  };
+};
+
+/**
+ * @id 301106
+ * @name 沙海守望·攻势防御
+ * @description
+ * 本回合内，所附属角色下次造成的伤害额外+1。
+ */
+define status {
+  id 301106 as private DesertWatchOffensiveDefense;
+  oneDuration;
+  once increaseSkillDamage {
+    :e.increaseDamage(1);
+  };
+};
+
+/**
+ * @id 311306
+ * @name 苇海信标
+ * @cost 3*Aligned
+ * @description
+ * 角色造成的伤害+1。
+ * 角色使用「元素战技」后：本回合内，角色下次造成的伤害额外+1。（每回合1次）
+ * 角色受到伤害后：本回合内，角色下次造成的伤害额外+1。（每回合1次）
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+define card {
+  id 311306 as BeaconOfTheReedSea;
+  since "v4.3.0";
+  cost DiceType.Aligned, 3;
+  weapon claymore {
+    on increaseSkillDamage {
+      :e.increaseDamage(1);
+    };
+    on useSkill {
+      when :( :e.isSkillType("elemental") );
+      usage perRound, 1;
+      :characterStatus(DesertWatchTakeTheInitiative, :self.master);
+    };
+    on damaged {
+      usage perRound, 1;
+      :characterStatus(DesertWatchOffensiveDefense, :self.master);
+    };
+  };
+};
+
+/**
+ * @id 301109
+ * @name 森林王器（生效中）
+ * @description
+ * 角色在本回合中，下次使用「普通攻击」后：生成2个此角色类型的元素骰。
+ */
+define status {
+  id 301109 as ForestRegaliaInEffect;
+  oneDuration;
+  once useSkill {
+    when :( :e.isSkillType("normal") );
+    :generateDice(:self.master.element(), 2);
+  };
+};
+
+/**
+ * @id 311307
+ * @name 森林王器
+ * @cost 3*Void
+ * @description
+ * 角色造成的伤害+1。
+ * 入场时：所附属角色在本回合中，下次使用「普通攻击」后：生成2个此角色类型的元素骰。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+define card {
+  id 311307 as ForestRegalia;
+  since "v4.7.0";
+  cost DiceType.Void, 3;
+  weapon claymore {
+    on increaseSkillDamage {
+      :e.increaseDamage(1);
+    };
+    on staged {
+      :characterStatus(ForestRegaliaInEffect, :e.targets[0]);
+    };
+  };
+};
+
+define extension {
+  idHint 311308 as NonInitialPlayedCardExtension;
+  schema ({ defIds: "pair<number[]>" });
+  initialState ({ defIds: [[], []] });
+  description "记录双方打出过的名称不存在于本局最初牌组中的不同名的行动牌";
+  mutateWhen onPlayCard,
+    ((c, e) => {
+      if (
+        e.onTimeState.players[e.who].initialPile.every(
+          (card) => card.id !== e.card.definition.id,
+        )
+      ) {
+        if (!c.defIds[e.who].includes(e.card.definition.id)) {
+          c.defIds[e.who].push(e.card.definition.id);
+        }
+      }
+    });
+};
+
+/**
+ * @id 311308
+ * @name 「究极霸王超级魔剑」
+ * @cost 2*Aligned
+ * @description
+ * 此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为「声援」。
+ * 如果此牌的「声援」至少为2/4/9，则角色造成的伤害+1/2/3。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ * 【此卡含描述变量】
+ */
+define card {
+  id 311308 as UltimateOverlordsMegaMagicSword;
+  since "v4.8.0";
+  cost DiceType.Aligned, 2;
+  weapon claymore {
+    variable supp, 0;
+    associateExtension NonInitialPlayedCardExtension;
+    replaceDescription "[GCG_TOKEN_COUNTER]",
+      ((_, { area }, ext) => ext.defIds[area.who].length);
+    on staged {
+      :variables.supp = :getExtensionState().defIds[:self.who].length;
+    };
+    on playCard {
+      :variables.supp = :getExtensionState().defIds[:self.who].length;
+    };
+    on increaseSkillDamage {
+      const supp = :variables.supp;
+      if (supp >= 9) {
+        :e.increaseDamage(3);
+      } else if (supp >= 4) {
+        :e.increaseDamage(2);
+      } else if (supp >= 2) {
+        :e.increaseDamage(1);
+      }
+    };
+  };
+};
+
+/**
+ * @id 311309
+ * @name 便携动力锯
+ * @cost 2*Aligned
+ * @description
+ * 所附属角色受到伤害时：如可能，舍弃1张当前元素骰费用最高的手牌，以抵消1点伤害，然后累积1点「坚忍标记」。（每回合1次）
+ * 角色造成伤害时：如果此牌已有「坚忍标记」，则消耗所有「坚忍标记」，使此伤害+1，并且每消耗1点「坚忍标记」就抓1张牌。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+define card {
+  id 311309 as PortablePowerSaw;
+  since "v5.1.0";
+  cost DiceType.Aligned, 2;
+  weapon claymore {
+    tags barrier;
+    variable barrierUsage, 0; // no io hint for now
+    variable stoic, 0;
+    on decreaseDamaged {
+      when :( :player.hands.length > 0 );
+      usage perRound, 1;
+      :discardMaxCostHands(1);
+      :e.decreaseDamage(1);
+      :variables.stoic += 1;
+    };
+    on increaseSkillDamage {
+      when :( :variables.stoic > 0 );
+      :e.increaseDamage(1);
+      :drawCards(:variables.stoic);
+      :variables.stoic = 0;
+    };
+  };
+};
+
+/**
+ * @id 311310
+ * @name 拾慧铸熔
+ * @cost 2*Void
+ * @description
+ * 角色使用「元素爆发」造成的伤害+2。
+ * 我方引发元素反应时：累计1层盛放的思绪，当盛放的思绪不低于2层时，消耗2层盛放的思绪使所附属角色获得1点充能。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+define card {
+  id 311310 as FlameforgedInsight;
+  since "v6.3.0";
+  cost DiceType.Void, 2;
+  weapon claymore {
+    variable thought, 0;
+    on increaseSkillDamage {
+      when :( :e.viaSkillType("burst") );
+      :e.increaseDamage(2);
+    };
+    on dealReaction {
+      listenTo samePlayer;
+      :variables.thought += 1;
+      if (:variables.thought >= 2) {
+        :variables.thought -= 2;
+        :gainEnergy(1, :self.master);
+      }
+    };
+  };
+};

@@ -1,0 +1,235 @@
+// Copyright (C) 2024-2025 Guyutongxue
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import { BETA_VERSION, IS_BETA } from "@gi-tcg/config";
+import type { VersionResolver } from "../data";
+
+type BetaVersions = typeof IS_BETA extends true ? [typeof BETA_VERSION] : [];
+const BETA_VERSIONS = (IS_BETA ? [BETA_VERSION] : []) as BetaVersions;
+
+export const VERSIONS = [
+  "v3.3.0",
+  "v3.4.0",
+  "v3.5.0",
+  "v3.6.0",
+  "v3.7.0",
+  "v3.8.0",
+  "v4.0.0",
+  "v4.1.0",
+  "v4.2.0",
+  "v4.3.0",
+  "v4.4.0",
+  "v4.5.0",
+  "v4.6.0",
+  "v4.6.1",
+  "v4.7.0",
+  "v4.8.0",
+  "v5.0.0",
+  "v5.1.0",
+  "v5.2.0",
+  "v5.3.0",
+  "v5.4.0",
+  "v5.5.0",
+  "v5.6.0",
+  "v5.7.0",
+  "v5.8.0",
+  "v6.0.0",
+  "v6.1.0",
+  "v6.2.0",
+  "v6.3.0",
+  "v6.4.0",
+  "v6.5.0",
+  "v6.6.0",
+  "v6.7.0",
+  "v7.0.0",
+  "v7.1.0",
+  ...BETA_VERSIONS,
+] as const;
+
+export type Version = (typeof VERSIONS)[number];
+
+export const INIT_VERSION = VERSIONS[0];
+
+type LastVersionIndex = typeof VERSIONS extends readonly [infer _, ...infer L]
+  ? L["length"]
+  : never;
+const lastVersionIndex = (VERSIONS.length - 1) as LastVersionIndex;
+
+export const CURRENT_VERSION = VERSIONS[lastVersionIndex];
+
+export const versionLt = (a: Version, b: Version): boolean => {
+  return VERSIONS.indexOf(a) < VERSIONS.indexOf(b);
+};
+
+export interface OfficialVersionData {
+  readonly predicate: "since" | "until";
+  readonly version: Version;
+}
+
+declare global {
+  export namespace GiTcg {
+    export interface VersionMetadata {
+      official: OfficialVersionData;
+    }
+  }
+}
+
+export type VersionMetadata = GiTcg.VersionMetadata;
+
+export type VersionInfo = {
+  [K in keyof VersionMetadata]: {
+    readonly from: K;
+    readonly value: VersionMetadata[K];
+  };
+}[keyof VersionMetadata];
+
+export interface WithVersionInfo {
+  readonly id: number;
+  readonly version: VersionInfo;
+}
+
+const versionIdxMap = Object.freeze(
+  Object.fromEntries(VERSIONS.map((v, i) => [v, i])),
+);
+
+export function versionCompare(a: Version, b: Version) {
+  return versionIdxMap[a] - versionIdxMap[b];
+}
+
+function resolveOfficialVersion<T extends WithVersionInfo>(
+  candidates: readonly T[],
+  requiredVersion: Version,
+): T | null {
+  const since = candidates.find(
+    ({ version }) =>
+      version.from === "official" && version.value.predicate === "since",
+  );
+  const until = candidates
+    .filter(
+      ({ version }) =>
+        version.from === "official" &&
+        version.value.predicate === "until" &&
+        versionCompare(version.value.version, requiredVersion) >= 0,
+    )
+    .toSorted((a, b) =>
+      versionCompare(a.version.value.version, b.version.value.version),
+    );
+  if (
+    !since ||
+    versionCompare(since.version.value.version, requiredVersion) > 0
+  ) {
+    return null;
+  }
+  if (until.length === 0) {
+    return since;
+  }
+  return until[0] ?? null;
+}
+
+export interface DependencyInfo {
+  readonly id: number;
+  readonly dependencies: readonly number[];
+}
+
+export type OfficialVersionMap = Readonly<
+  Record<number, Version> & {
+    readonly $base: Version;
+  }
+>;
+
+export type OfficialVersionResolver = VersionResolver & {
+  readonly versionMap: OfficialVersionMap;
+};
+
+export function createOfficialVersionResolver(
+  baseVersion: Version = CURRENT_VERSION,
+  versions: Record<number, Version> = {},
+  dependencies: readonly DependencyInfo[] = [],
+): OfficialVersionResolver {
+  const dependencyMap = new Map(
+    dependencies.map(({ id, dependencies }) => [id, dependencies] as const),
+  );
+  const propagatedVersions = new Map<
+    number,
+    { readonly version: Version; readonly path: readonly number[] }
+  >();
+
+  const propagateVersion = (
+    id: number,
+    version: Version,
+    isRoot: boolean,
+    visiting: Set<number>,
+    path: readonly number[],
+  ) => {
+    if (!isRoot && versions[id]) {
+      return;
+    }
+    if (!isRoot) {
+      const propagated = propagatedVersions.get(id);
+      if (propagated) {
+        if (propagated.version !== version) {
+          throw new Error(
+            `Entity ${id} has conflicting propagated versions: ${propagated.version} vs ${version}\n` +
+              `Propagation paths:\n` +
+              `  ${propagated.version}: ${propagated.path.join(" -> ")}\n` +
+              `  ${version}: ${path.join(" -> ")}`,
+          );
+        }
+        return;
+      }
+      propagatedVersions.set(id, { version, path });
+    }
+    if (visiting.has(id)) {
+      return;
+    }
+    visiting.add(id);
+    for (const dependencyId of dependencyMap.get(id) ?? []) {
+      propagateVersion(dependencyId, version, false, visiting, [
+        ...path,
+        dependencyId,
+      ]);
+    }
+    visiting.delete(id);
+  };
+
+  for (const [id, version] of Object.entries(versions)) {
+    const rootId = Number(id);
+    propagateVersion(rootId, version, true, new Set(), [rootId]);
+  }
+
+  const versionMap: OfficialVersionMap = {
+    $base: baseVersion,
+    ...versions,
+    ...Object.fromEntries(
+      [...propagatedVersions].map(([id, { version }]) => [id, version]),
+    ),
+  };
+  const resolver: VersionResolver = <T extends WithVersionInfo>(
+    candidates: readonly T[],
+  ) => {
+    const id = candidates[0].id;
+    const version = versionMap[id] ?? versionMap.$base;
+    return resolveOfficialVersion(candidates, version);
+  };
+  return Object.assign(resolver, { versionMap });
+}
+
+export const DEFAULT_VERSION_INFO: VersionInfo = {
+  from: "official",
+  value: {
+    predicate: "since",
+    version: INIT_VERSION,
+  },
+};

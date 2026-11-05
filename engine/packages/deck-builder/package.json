@@ -1,0 +1,52 @@
+{
+  "name": "@gi-tcg/deck-builder",
+  "version": "0.21.0",
+  "type": "module",
+  "description": "SolidJS Deck Builder component for Genius Invokation TCG",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "url": "https://github.com/piovium/genius-invokation",
+    "directory": "packages/deck-builder"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "check": "tsc --noEmit",
+    "build:vite": "vite build",
+    "build": "pnpm build:vite"
+  },
+  "peerDependencies": {
+    "solid-js": "catalog:"
+  },
+  "dependencies": {
+    "@gi-tcg/assets-manager": "workspace:*",
+    "@gi-tcg/card-data-viewer": "workspace:*",
+    "@gi-tcg/typings": "workspace:*",
+    "@gi-tcg/utils": "workspace:*",
+    "@solid-primitives/i18n": "^2.2.1",
+    "@solid-primitives/keyed": "^1.4.0",
+    "long-press-event": "^2.5.0"
+  },
+  "devDependencies": {
+    "@gi-tcg/config": "workspace:*",
+    "rollup-plugin-node-externals": "catalog:",
+    "solid-devtools": "^0.29.2",
+    "unocss": "catalog:",
+    "vite": "catalog:",
+    "unplugin-dts": "catalog:",
+    "vite-plugin-solid": "catalog:"
+  }
+}

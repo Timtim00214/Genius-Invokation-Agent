@@ -1,0 +1,30 @@
+{
+  "name": "@gi-tcg/config",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "gnx": "./bin/gnx.mjs",
+    "bun": "./bin/bun.mjs"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./preload": {
+      "node": "./src/preload/node.js",
+      "default": "./src/preload/default.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "tsx": "^4.21.0",
+    "unloader": "^0.9.0"
+  }
+}

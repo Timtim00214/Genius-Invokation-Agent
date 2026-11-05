@@ -1,0 +1,14 @@
+import { CDP, launchBrowser, findBrowser } from "./cdp.mjs";
+const exe = findBrowser();
+const b = await launchBrowser({ exe, port: 9366, headless: true });
+const conn = await new CDP((await (await fetch("http://127.0.0.1:9366/json/version")).json()).webSocketDebuggerUrl).connect();
+const errs = [];
+conn.on("Runtime.exceptionThrown", (p) => errs.push(p.exceptionDetails?.exception?.description ?? p.exceptionDetails?.text));
+conn.on("Runtime.consoleAPICalled", (p) => { if (p.type === "error") errs.push((p.args||[]).map(a=>a.value??a.description??"").join(" ")); });
+const { targetId } = await conn.send("Target.createTarget", { url: "http://127.0.0.1:7810/" });
+await conn.attach(targetId);
+await new Promise((r) => setTimeout(r, 3500));
+console.log("errors:", JSON.stringify(errs).slice(0, 1200));
+console.log("detail:", await conn.evaluate("document.getElementById('detail').innerHTML.slice(0,160)"));
+conn.close();
+process.exit(0);

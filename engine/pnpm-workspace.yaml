@@ -1,0 +1,55 @@
+packages:
+  - "packages/*"
+
+overrides:
+  "vite-plugin-solid>babel-preset-solid": 1.9.12
+
+catalog:
+  axios: ^1.16.1
+  vite: ^8.0.8
+  unplugin-dts: ^1.0.0
+  vite-plugin-solid: ^2.11.13
+  rollup-plugin-node-externals: ^8.0.1
+  unocss: ^66.3.3
+  "@unocss/preset-icons": ^66.3.3
+  "@unocss/reset": ^66.3.3
+  solid-js: ^1.9.12
+  execa: ^9.6.1
+  "@gi-tcg/gts-transpiler": &GTS_VERSION "^0.8.0"
+  "@gi-tcg/gts-runtime": *GTS_VERSION
+  "@gi-tcg/gtsc": *GTS_VERSION
+  "@gi-tcg/unplugin-gts": *GTS_VERSION
+  "@gi-tcg/prettier-plugin-gts": *GTS_VERSION
+  "@gi-tcg/gts-language-client-code": *GTS_VERSION
+  "@gi-tcg/gts-language-server": *GTS_VERSION
+  typescript: ~6.0.3
+
+patchedDependencies:
+  puppeteer-screen-recorder@3.0.6: patches/puppeteer-screen-recorder@3.0.6.patch
+
+minimumReleaseAgeExclude:
+  - "@gi-tcg/*"
+  - espolar
+
+allowBuilds:
+  "@bufbuild/buf": true
+  "@ffmpeg-installer/darwin-arm64": true
+  "@ffmpeg-installer/darwin-x64": true
+  "@ffmpeg-installer/linux-arm": true
+  "@ffmpeg-installer/linux-arm64": true
+  "@ffmpeg-installer/linux-ia32": true
+  "@ffmpeg-installer/linux-x64": true
+  "@prisma/engines": true
+  "@swc/core": true
+  "@vscode/vsce-sign": true
+  core-js: true
+  esbuild: true
+  keytar: true
+  prisma: true
+  puppeteer: true
+
+shellEmulator: true
+
+# 傻逼 pnpm 还管这个
+skills:
+  dirs: []

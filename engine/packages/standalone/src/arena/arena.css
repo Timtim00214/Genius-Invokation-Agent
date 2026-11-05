@@ -1,0 +1,597 @@
+.arena {
+  --ar-bg: #0a0f1a;
+  --ar-panel: #0f172a;
+  --ar-panel2: #131f36;
+  --ar-border: #24344f;
+  --ar-text: #e2e8f0;
+  --ar-muted: #94a3b8;
+  --ar-accent: #67e8f9;
+  --ar-accent2: #22d3ee;
+  --ar-warn: #fbbf24;
+  --ar-danger: #f87171;
+  min-height: 100vh;
+  background:
+    radial-gradient(1000px 500px at 0% -10%, #123047 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, #1e1b4b 0%, transparent 50%),
+    var(--ar-bg);
+  color: var(--ar-text);
+  font-family:
+    "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+}
+
+.arena * {
+  box-sizing: border-box;
+}
+
+.arena h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: #f8fafc;
+}
+
+.arena h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: var(--ar-accent);
+  font-weight: 600;
+}
+
+.arena-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 24px 12px;
+  border-bottom: 1px solid var(--ar-border);
+  background: rgb(10 15 26 / 0.85);
+  backdrop-filter: blur(10px);
+}
+
+.arena-match-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.arena-sub {
+  margin-top: 5px;
+  color: var(--ar-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.arena-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.arena-btn {
+  appearance: none;
+  border: 1px solid var(--ar-border);
+  background: #17243a;
+  color: var(--ar-text);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.arena-btn:hover {
+  border-color: var(--ar-accent2);
+  background: #1c2f4a;
+}
+
+.arena-primary {
+  background: linear-gradient(180deg, #0891b2, #0e7490);
+  border-color: #22d3ee;
+  color: #ecfeff;
+  font-weight: 600;
+}
+
+.arena-danger {
+  color: var(--ar-danger);
+  border-color: #7f1d1d;
+}
+
+.arena-seg {
+  display: inline-flex;
+  border: 1px solid var(--ar-border);
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.arena-seg button {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--ar-muted);
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.arena-seg button.active {
+  background: #164e63;
+  color: #ecfeff;
+}
+
+.arena-panel {
+  max-width: 1120px;
+  margin: 18px auto 0;
+  padding: 16px 20px;
+  border: 1px solid var(--ar-border);
+  border-radius: 14px;
+  background: rgb(15 23 42 / 0.72);
+}
+
+.arena-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.arena-mode {
+  appearance: none;
+  text-align: left;
+  border: 1px solid var(--ar-border);
+  border-radius: 12px;
+  background: #0d1728;
+  color: var(--ar-text);
+  padding: 12px 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.arena-mode b {
+  font-size: 14px;
+  color: #f1f5f9;
+}
+
+.arena-mode span {
+  font-size: 12px;
+  color: var(--ar-muted);
+  line-height: 1.5;
+}
+
+.arena-mode:hover {
+  border-color: var(--ar-accent2);
+}
+
+.arena-mode.active {
+  border-color: var(--ar-accent2);
+  background: rgb(8 145 178 / 0.16);
+  box-shadow: inset 0 0 0 1px rgb(34 211 238 / 0.25);
+}
+
+.arena-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--ar-muted);
+}
+
+.arena-role-preview {
+  gap: 18px;
+  font-size: 13px;
+  color: var(--ar-muted);
+}
+
+.arena-role-preview span.ai {
+  color: var(--ar-accent);
+}
+
+.arena-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.arena-field label {
+  font-size: 12px;
+  color: var(--ar-muted);
+}
+
+.arena-input {
+  background: #0b1524;
+  border: 1px solid var(--ar-border);
+  color: var(--ar-text);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  width: 100%;
+  outline: none;
+}
+
+.arena-input:focus {
+  border-color: var(--ar-accent2);
+  box-shadow: 0 0 0 2px rgb(34 211 238 / 0.14);
+}
+
+.arena-grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.arena-hint {
+  color: var(--ar-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.arena-agent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.arena-agent-grid code {
+  display: block;
+  margin-top: 4px;
+  padding: 6px 8px;
+  background: #0b1524;
+  border: 1px solid var(--ar-border);
+  border-radius: 7px;
+  color: #a5f3fc;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.arena-agent-title {
+  font-size: 13px;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.arena-agent-state {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ar-warn);
+}
+
+.arena-error {
+  max-width: 1120px;
+  margin: 14px auto 0;
+  padding: 10px 14px;
+  border: 1px solid #7f1d1d;
+  border-radius: 10px;
+  background: rgb(127 29 29 / 0.25);
+  color: #fecaca;
+  font-size: 13px;
+}
+
+.arena-spacer {
+  flex: 1;
+}
+
+/* ---------- 对局页 ---------- */
+.arena-boards {
+  --arena-scale: 0.62;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 20px 4px;
+}
+
+.arena-boards.single {
+  --arena-scale: 0.92;
+}
+
+.arena-board {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.arena-board.view-hidden {
+  display: none;
+}
+
+.arena-board-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.arena-board-title b.ai {
+  color: var(--ar-accent);
+}
+
+.arena-timer {
+  font-variant-numeric: tabular-nums;
+  color: var(--ar-accent);
+  font-size: 13px;
+  border: 1px solid #155e75;
+  background: #0b2530;
+  border-radius: 999px;
+  padding: 1px 9px;
+}
+
+.arena-timer.urgent {
+  color: #fecaca;
+  border-color: #b91c1c;
+  background: #3f0d0d;
+}
+
+.arena-chip {
+  font-size: 11px;
+  color: #a5f3fc;
+  border: 1px solid #155e75;
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.arena-stall {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--ar-muted);
+  cursor: pointer;
+}
+
+.arena-stall input {
+  accent-color: var(--ar-warn);
+}
+
+.arena-board-frame {
+  width: calc(1137px * var(--arena-scale));
+  height: calc(576px * var(--arena-scale));
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--ar-border);
+  background: #000;
+}
+
+.arena-board-scale {
+  width: 1137px;
+  height: 576px;
+  transform: scale(var(--arena-scale));
+  transform-origin: top left;
+}
+
+.arena-board-note {
+  font-size: 11px;
+  color: var(--ar-muted);
+  padding: 0 4px;
+}
+
+.arena-live {
+  color: #f87171;
+  font-size: 12px;
+  margin-left: 8px;
+  animation: arena-pulse 1.6s infinite;
+}
+
+@keyframes arena-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.arena-agent-live {
+  color: var(--ar-accent);
+}
+
+.arena-log-wrap {
+  margin: 10px 20px 20px;
+  border: 1px solid var(--ar-border);
+  border-radius: 12px;
+  background: rgb(15 23 42 / 0.7);
+  overflow: hidden;
+}
+
+.arena-log-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--ar-border);
+  font-size: 13px;
+}
+
+.arena-log {
+  max-height: 200px;
+  overflow: auto;
+  padding: 8px 14px;
+  font-size: 12px;
+  line-height: 1.85;
+  font-family: "Cascadia Code", "Consolas", monospace;
+}
+
+.arena-log-line {
+  display: flex;
+  gap: 10px;
+  color: #cbd5e1;
+}
+
+.arena-log-time {
+  color: #475569;
+  min-width: 42px;
+}
+
+.arena-log-who {
+  min-width: 92px;
+  color: #94a3b8;
+}
+
+.arena-log-line.log-0 .arena-log-who {
+  color: #7dd3fc;
+}
+
+.arena-log-line.log-1 .arena-log-who {
+  color: #fca5a5;
+}
+
+.arena-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgb(2 6 23 / 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+
+.arena-result {
+  width: min(520px, 90vw);
+  padding: 26px 28px;
+  border-radius: 16px;
+  border: 1px solid #155e75;
+  background: linear-gradient(180deg, #0e2236, #0b1524);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.6);
+}
+
+.arena-result h2 {
+  color: #ecfeff;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 1560px) {
+  .arena-boards {
+    --arena-scale: 0.55;
+  }
+}
+
+@media (max-width: 1320px) {
+  .arena-boards {
+    --arena-scale: 0.46;
+  }
+  .arena-boards.single {
+    --arena-scale: 0.8;
+  }
+}
+
+@media (max-width: 900px) {
+  .arena-modes,
+  .arena-grid3,
+  .arena-agent-grid {
+    grid-template-columns: 1fr;
+  }
+  .arena-boards {
+    flex-wrap: wrap;
+    --arena-scale: 0.42;
+  }
+}
+
+/* ---------- 主窗口单棋盘 + 弹窗（与本地模拟一致） ---------- */
+.arena-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 8px 24px;
+  border-bottom: 1px solid var(--ar-border);
+  background: rgb(13 23 40 / 0.6);
+  font-size: 13px;
+  color: var(--ar-muted);
+}
+
+.arena-main {
+  padding: 10px 24px 0;
+}
+
+.arena-main-board {
+  margin: 6px auto 0;
+  max-width: min(1137px, calc((100vh - 300px) * 160 / 81));
+}
+
+.arena-main-board .gi-tcg-chessboard-new {
+  height: min(36rem, calc((100vw - 50px) * 81 / 160));
+}
+
+.arena-popup-state {
+  color: var(--ar-warn);
+}
+
+.arena-popup {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(1000px 500px at 0% -10%, #123047 0%, transparent 55%),
+    var(--ar-bg, #0a0f1a);
+  color: #e2e8f0;
+  font-family:
+    "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+}
+
+.arena-popup-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--ar-border, #24344f);
+  background: rgb(10 15 26 / 0.85);
+  font-size: 13px;
+}
+
+.arena-popup-title {
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.arena-popup-title b.ai {
+  color: var(--ar-accent, #67e8f9);
+}
+
+.arena-popup-board {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 10px 16px 18px;
+}
+
+.arena-popup-board .standalone-board-shell {
+  width: 100%;
+  max-width: calc((100vh - 110px) * 160 / 81);
+}
+
+/* ---------- agent 选牌组 / AI 日志 ---------- */
+.arena-agent-decks {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px dashed var(--ar-border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ar-muted);
+}
+
+.arena-agent-deck {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.arena-agent-deck.ai b {
+  color: var(--ar-accent);
+}
+
+.arena-deck-note {
+  font-style: normal;
+  color: #64748b;
+  margin-left: 6px;
+}

@@ -1,0 +1,456 @@
+// Copyright (C) 2024-2025 Guyutongxue
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import { For, Match, Show, Switch, createEffect, createSignal } from "solid-js";
+import getData from "@gi-tcg/data";
+import {
+  CURRENT_VERSION,
+  GameStateLogEntry,
+  Version,
+  deserializeGameStateLog,
+  VERSIONS,
+  Deck,
+  Game,
+  GameState,
+} from "@gi-tcg/core";
+import { StandaloneChild } from "./StandaloneChild";
+import { StandaloneParent } from "./StandaloneParent";
+import { IS_BETA, SERVER_HOST, WEB_CLIENT_BASE_PATH } from "@gi-tcg/config";
+import { DeckBuilder } from "@gi-tcg/deck-builder";
+import "@gi-tcg/deck-builder/style.css";
+import "@gi-tcg/state-editor/style.css";
+import { DEFAULT_ASSETS_MANAGER } from "@gi-tcg/assets-manager";
+import { GameStateEditor } from "@gi-tcg/state-editor";
+import { Workshop } from "./workshop/Workshop";
+import { Arena } from "./arena/Arena";
+import { ArenaBoardChild } from "./arena/ArenaBoardChild";
+import { activePreset, selectPreset } from "./workshop/storage";
+import { VANILLA_PRESET, countPresetChanges } from "@gi-tcg/local-rules";
+
+enum GameMode {
+  NotStarted = 0,
+  Standalone = 1,
+  Editor = 2,
+  Workshop = 3,
+  Arena = 4,
+}
+
+const INIT_DECK0 =
+  "FZDByRUNGRCB0WoNFlGgWpEPE0AB9TAPFGCB9kgWGIERCoEQDLFADcQQDPFgacYWDJAA";
+const INIT_DECK1 =
+  "FdHxNj8TAWDQxFkMFkAhyWIYCYDA45wOCUDQ5J0PGEAh9IIPGWDh9p4YC6FgirYRCxAA";
+
+if (import.meta.env.DEV) {
+  // Debug here!
+}
+
+export function App() {
+  if (window.opener !== null) {
+    // [LOCAL PATCH] AI 对战的第二棋盘窗口
+    const arenaBoard = /^#arena-board-(\d)(?:-(human|ai))?$/.exec(
+      window.location.hash,
+    );
+    if (arenaBoard) {
+      return (
+        <ArenaBoardChild
+          who={Number(arenaBoard[1]) as 0 | 1}
+          human={arenaBoard[2] === "human"}
+        />
+      );
+    }
+    // eslint-disable-next-line solid/components-return-once
+    return <StandaloneChild />;
+  }
+  const [mode, setMode] = createSignal<GameMode>(
+    window.location.hash === "#workshop"
+      ? GameMode.Workshop
+      : window.location.hash === "#arena"
+        ? GameMode.Arena
+        : GameMode.NotStarted,
+  );
+  // [LOCAL PATCH] 数值工坊 / AI 对战场支持用 hash 直接打开（便于做快捷方式）
+  createEffect(() => {
+    const hash =
+      mode() === GameMode.Workshop
+        ? "#workshop"
+        : mode() === GameMode.Arena
+          ? "#arena"
+          : "";
+    if (window.location.hash !== hash) {
+      history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}${window.location.search}${hash}`,
+      );
+    }
+  });
+  const [logs, setLogs] = createSignal<GameStateLogEntry[]>();
+  const [deck0, setDeck0] = createSignal(INIT_DECK0);
+  const [deck1, setDeck1] = createSignal(INIT_DECK1);
+  const [version, setVersion] = createSignal<Version>(CURRENT_VERSION);
+
+  const importLog = async () => {
+    return new Promise<GameStateLogEntry[]>((resolve, reject) => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "application/json";
+      input.onchange = (e) => {
+        const file = (e.target as HTMLInputElement)?.files?.[0];
+        if (!file) {
+          reject(`Failed to read uploaded file`);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const contents = event.target?.result as string;
+          try {
+            const logs = JSON.parse(contents);
+            const version = logs.gv;
+            resolve(deserializeGameStateLog(getData(version), logs));
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.oncancel = () => {
+        reject(`File upload canceled`);
+      };
+      input.click();
+    });
+  };
+
+  let deckBuilderDialog!: HTMLDialogElement;
+  const [loadDeckBuilder, setLoadDeckBuilder] = createSignal(false);
+  const [deckBuilderValue, setDeckBuilderValue] = createSignal<Deck>({
+    characters: [],
+    cards: [],
+  });
+  const openDeckBuilder = () => {
+    setLoadDeckBuilder(true);
+    deckBuilderDialog.showModal();
+  };
+  const closeDeckBuilder = () => {
+    deckBuilderDialog.close();
+  };
+  const loadDeckBuilderValue = async () => {
+    const code = prompt(`Input share code:`);
+    if (code === null) {
+      return;
+    }
+    try {
+      const deck = DEFAULT_ASSETS_MANAGER.decode(code);
+      setDeckBuilderValue(deck);
+    } catch (e) {
+      if (e instanceof Error) {
+        alert(e.message);
+      }
+      console.error(e);
+    }
+  };
+  const saveDeckBuilderValue = async () => {
+    const deck = deckBuilderValue();
+    try {
+      const code = DEFAULT_ASSETS_MANAGER.encode(deck);
+      await navigator.clipboard.writeText(code);
+      alert(`Deck code copied to clipboard: ${code}`);
+    } catch (e) {
+      if (e instanceof Error) {
+        alert(e.message);
+      }
+      console.error(e);
+    }
+  };
+
+  const editorInitialState = () => {
+    const d0 = deck0();
+    const d1 = deck1();
+    try {
+      const deck0 = DEFAULT_ASSETS_MANAGER.decode(d0);
+      const deck1 = DEFAULT_ASSETS_MANAGER.decode(d1);
+      return Game.createInitialState({
+        decks: [deck0, deck1],
+        data: getData(version()),
+      });
+    } catch (e) {
+      if (e instanceof Error) {
+        alert(e.message);
+      }
+      console.error(e);
+    }
+  };
+  const onEditorSubmit = (state: GameState) => {
+    console.log(state);
+    setLogs([{ state, canResume: true }]);
+    setMode(GameMode.Standalone);
+  };
+
+  return (
+    <div>
+      <Switch>
+        <Match when={mode() === GameMode.NotStarted}>
+          <div class="tabs">
+            <input
+              class="tab__input"
+              type="radio"
+              name="gameModeTab"
+              id="standaloneInput"
+              checked
+            />
+            <label class="tab__header" for="standaloneInput">
+              本地模拟
+            </label>
+            <div class="tab__content config-panel">
+              <div class="config-panel__title">牌组配置</div>
+              <div class="config-panel__deck">
+                <label>先手牌组</label>
+                <input
+                  type="text"
+                  value={deck0()}
+                  onInput={(e) => setDeck0(e.currentTarget.value)}
+                />
+              </div>
+              <div class="config-panel__deck">
+                <label>后手牌组</label>
+                <input
+                  type="text"
+                  value={deck1()}
+                  onInput={(e) => setDeck1(e.currentTarget.value)}
+                />
+              </div>
+              <div class="config-panel__deck">
+                <label>游戏版本</label>
+                <select
+                  value={version()}
+                  onChange={(e) => setVersion(e.target.value as Version)}
+                >
+                  <For each={VERSIONS}>
+                    {(ver) => <option value={ver}>{ver}</option>}
+                  </For>
+                </select>
+              </div>
+              <div class="config-panel__deck config-panel__preset">
+                <label>数值预设</label>
+                <span class="preset-name">{activePreset().name}</span>
+                <Show when={!activePreset().builtin}>
+                  <span class="preset-changes">
+                    {countPresetChanges(activePreset())} 项改动
+                  </span>
+                </Show>
+                <button
+                  type="button"
+                  class="link-button"
+                  onClick={() => setMode(GameMode.Workshop)}
+                >
+                  打开数值工坊
+                </button>
+                <Show when={!activePreset().builtin}>
+                  <button
+                    type="button"
+                    class="link-button"
+                    onClick={() => selectPreset(VANILLA_PRESET.id)}
+                  >
+                    切回原版
+                  </button>
+                </Show>
+              </div>
+              <div class="config-panel__description">
+                点击下方按钮开始对局；先手方棋盘会在弹出窗口显示，后手方棋盘在本页面显示。
+                <br />
+                （若弹窗不显示为浏览器阻止，请允许本页面使用弹出式窗口。）
+                <Show when={!activePreset().builtin}>
+                  <br />
+                  <strong>
+                    本局将使用数值预设“{activePreset().name}”。想要原版数值请先切回原版。
+                  </strong>
+                </Show>
+                <Show when={IS_BETA}>
+                  <br />
+                  <strong>
+                    请注意：本页面包含未发布的测试版卡牌；包含这些卡牌的分享码仅限在本页面内使用，它们可能是无效的正式版分享码。
+                  </strong>
+                </Show>
+              </div>
+              <div class="config-panel__button-group">
+                <button onClick={() => setMode(1)}>开始对局</button>
+                <button
+                  onClick={async () => {
+                    const logs = await importLog().catch(alert);
+                    if (logs) {
+                      setLogs(logs);
+                      setMode(1);
+                    }
+                  }}
+                >
+                  导入日志
+                </button>
+                <button onClick={() => setMode(GameMode.Editor)}>摆盘器</button>
+                <button onClick={() => setMode(GameMode.Workshop)}>数值工坊</button>
+                <button onClick={() => setMode(GameMode.Arena)}>AI 对战</button>
+              </div>
+            </div>
+            <input
+              class="tab__input"
+              type="radio"
+              name="gameModeTab"
+              id="multiplayerInput"
+            />
+            <label class="tab__header" for="multiplayerInput">
+              <a href={`${SERVER_HOST}${WEB_CLIENT_BASE_PATH}`} target="_blank">
+                多人对战
+              </a>
+            </label>
+            <div class="tab__content config-panel" />
+            <div class="tab__spacer" />
+          </div>
+          <h3>友情链接</h3>
+          <ul>
+            <li>
+              获取牌组码：
+              <a
+                href="https://webstatic.mihoyo.com/ys/event/bbs-lineup-qskp/index.html"
+                target="_blank"
+              >
+                米游社「七圣召唤」卡牌广场
+              </a>
+            </li>
+            <li>
+              获取牌组码：
+              <a href="https://www.summoners.top/teams" target="_blank">
+                召唤之巅：原神赛事数据统计平台
+              </a>
+            </li>
+            <li>
+              获取牌组码：<button onClick={openDeckBuilder}>启动组牌器</button>
+            </li>
+            <li>
+              此项目{" "}
+              <a
+                href="https://github.com/Guyutongxue/genius-invokation"
+                target="_blank"
+              >
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://gi-tcg.taim.site"
+                target="_blank"
+              >
+                Taimevraiment 七圣召唤模拟器
+              </a>
+              （
+              <a
+                href="https://github.com/Taimevraiment/genius-invokation"
+                target="_blank"
+              >
+                GitHub
+              </a>
+              ）
+            </li>
+            <li>
+              <a
+                href="https://jarvis-yu.github.io/Dottore-Genius-Invokation-TCG-PWA/"
+                target="_blank"
+              >
+                Dottore 七圣召唤模拟器
+              </a>
+              （
+              <a
+                href="https://github.com/Jarvis-Yu/Dottore-Genius-Invokation-TCG-Simulator"
+                target="_blank"
+              >
+                GitHub
+              </a>
+              ）
+            </li>
+            <li>
+              <a href="https://lpsim.zyr17.cn/" target="_blank">
+                七圣召唤水皇模拟器 "LPSim"
+              </a>
+              （
+              <a href="https://github.com/LPSim/backend" target="_blank">
+                GitHub
+              </a>
+              ）
+            </li>
+            <li>
+              <a
+                href="https://flick-ai.github.io/Genius-Invokation"
+                target="_blank"
+              >
+                flick-ai 七圣召唤模拟器
+              </a>
+              （
+              <a
+                href="https://github.com/flick-ai/Genius-Invokation"
+                target="_blank"
+              >
+                GitHub
+              </a>
+              ）
+            </li>
+          </ul>
+        </Match>
+        <Match when={mode() === GameMode.Standalone}>
+          <StandaloneParent
+            logs={logs()}
+            deck0={deck0()}
+            deck1={deck1()}
+            version={version()}
+            preset={activePreset()}
+          />
+        </Match>
+        <Match when={mode() === GameMode.Workshop}>
+          <Workshop
+            onBack={() => setMode(GameMode.NotStarted)}
+            onStart={() => setMode(GameMode.Standalone)}
+          />
+        </Match>
+        <Match when={mode() === GameMode.Arena}>
+          <Arena onBack={() => setMode(GameMode.NotStarted)} />
+        </Match>
+        <Match when={mode() === GameMode.Editor}>
+          <GameStateEditor
+            initialValue={editorInitialState()}
+            onSubmit={onEditorSubmit}
+          >
+            <button
+              class="editor-back-button"
+              type="button"
+              onClick={() => setMode(GameMode.NotStarted)}
+            >
+              返回首页
+            </button>
+          </GameStateEditor>
+        </Match>
+      </Switch>
+      <dialog ref={deckBuilderDialog!} class="deck-builder-dialog">
+        <Show when={loadDeckBuilder()}>
+          <DeckBuilder
+            class="deck-builder"
+            deck={deckBuilderValue()}
+            onChangeDeck={setDeckBuilderValue}
+          />
+        </Show>
+        <div class="deck-builder-actions">
+          <button onClick={closeDeckBuilder}>Close</button>
+          <button onClick={saveDeckBuilderValue}>Save</button>
+          <button onClick={loadDeckBuilderValue}>Load from code</button>
+        </div>
+      </dialog>
+    </div>
+  );
+}

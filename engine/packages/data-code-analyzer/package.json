@@ -1,0 +1,19 @@
+{
+  "name": "@gi-tcg/data-code-analyzer",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "gnx scripts/index.ts && tsdown",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@gi-tcg/data": "workspace:*",
+    "@gi-tcg/gts-transpiler": "catalog:",
+    "zimmerframe": "^1.1.5"
+  },
+  "dependencies": {
+    "@gi-tcg/core": "workspace:*"
+  }
+}

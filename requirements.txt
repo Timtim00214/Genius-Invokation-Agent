@@ -1,0 +1,9 @@
+# 运行 AI 后端（ai-backend/vmaf_system/backend）所需
+fastapi>=0.110,<1.0
+uvicorn[standard]>=0.29,<1.0
+pydantic>=2.5,<3.0
+
+# 跑测试时才需要（python -m pytest -q）
+pytest>=8.0
+pytest-asyncio>=0.23
+httpx>=0.27

@@ -1,0 +1,796 @@
+// Copyright (C) 2026 Piovium Labs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import { defineViewModel, type AR } from "@gi-tcg/gts-runtime";
+import type {
+  CharacterInitiativeSkillEntry,
+  CharacterPassiveSkillEntry,
+} from "../../data/registry";
+import { type AnyState, type GameState } from "../../base/state";
+import { $, toExpression, type InferResult, type IQuery } from "../../query";
+import type { EntityArea, UsagePerRoundVariableNames } from "../../base/entity";
+import { type CustomEvent } from "../../data";
+import {
+  ListenTo,
+  buildTargetGetter,
+  detailedEventDictionary,
+  type DetailedEventNames,
+  type InitiativeSkillTargetKind,
+  type ReadonlyMetaOf,
+  type RwContextMeta,
+  type StrictInitiativeSkillEventArg,
+  type WritableMetaOf,
+  type DetailedEventArgOf,
+} from "../../runtime/skill";
+import {
+  SkillContext,
+  type CallingAreaType,
+  type TypedSkillContext,
+} from "../../runtime/skill_context";
+import {
+  DEFAULT_ENTITY_VM_META,
+  EntityViewModel,
+  type DefaultEntityVMMeta,
+  type EntityVMMeta,
+  type GtsUsageOrUsagePerRoundOptions,
+  type ICaller,
+  type PushMetaVar,
+  type WithIdVMMeta,
+} from "./entity";
+import type {
+  ExEntityType,
+  ExtensionHandle,
+  PassiveSkillHandle,
+  SkillHandle,
+} from "../../data/type";
+import {
+  DEFAULT_VERSION_INFO,
+  type Version,
+  type VersionInfo,
+} from "../../base/version";
+import { costSize, diceCostSize, normalizeCost } from "../../utils";
+import {
+  SkillContextOptions,
+  type CommonSkillType,
+  type InitiativeSkillConfig,
+  type InitiativeSkillDefinition,
+  type LooseSkillOperation,
+  type SkillActionFilter,
+  type SkillDefinition,
+  type SkillDescription,
+  type SkillType,
+} from "../../base/skill";
+import type { DiceRequirement, DiceType } from "@gi-tcg/typings";
+import { UsageVM, type UsageVMMeta } from "./variables";
+import { isCustomEvent } from "../../base/custom_event";
+import { GiTcgDataError } from "../../error";
+import type { Computed } from "../../utils";
+import { RESERVED, type Reserved, type ReservedMeta } from "./reserved";
+
+type GtsSkillOperation<Meta extends RwContextMeta> = (
+  c: TypedSkillContext<WritableMetaOf<Meta>>,
+) => void;
+
+type GtsSkillOperationFilter<Meta extends RwContextMeta> = (
+  c: TypedSkillContext<ReadonlyMetaOf<Meta>>,
+) => unknown;
+type LooseSkillOperationFilter = LooseSkillOperation<boolean>;
+
+abstract class SkillModel {
+  // FIXME: use accessor when decorators are in stage 4
+  #id!: number;
+  /** skill id */
+  get id() {
+    return this.#id;
+  }
+  set id(value: number) {
+    this.#id = value;
+  }
+
+  versionInfo: VersionInfo | null = null;
+
+  preOperations: GtsSkillOperation<any>[] = [];
+  action: GtsSkillOperation<any> = () => {};
+  postOperations: GtsSkillOperation<any>[] = [];
+  protected filters: GtsSkillOperationFilter<any>[] = [];
+  userFilters: GtsSkillOperationFilter<any>[] = [];
+
+  abstract get contextOptions(): SkillContextOptions;
+
+  protected buildAction(): SkillDescription<any> {
+    const operations = [
+      ...this.preOperations,
+      this.action,
+      ...this.postOperations,
+    ] as LooseSkillOperation[];
+    return SkillContext.encapsulate(this.contextOptions, (context) => {
+      for (const action of operations) {
+        action(context);
+      }
+    });
+  }
+  protected buildFilter(): SkillActionFilter<any> {
+    const filters = [
+      ...this.filters,
+      ...this.userFilters,
+    ] as LooseSkillOperationFilter[];
+    return SkillContext.encapsulateForRet(this.contextOptions, (context) => {
+      for (const filter of filters) {
+        if (!filter(context)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+}
+
+export class TriggeredSkillModel extends SkillModel {
+  bypassDefeatedFilter = false;
+  asSkillType: CommonSkillType | null = null;
+  caller: ICaller;
+  detailedEventName: DetailedEventNames | CustomEvent;
+  enableHandTriggering = false;
+  enablePileTriggering = false;
+  enableOnStageTriggering = true;
+  usageOpt: { name: string; autoDecrease: boolean } | null = null;
+  usagePerRoundOpt: {
+    name: UsagePerRoundVariableNames;
+    autoDecrease: boolean;
+  } | null = null;
+  listenTo: ListenTo = ListenTo.SameArea;
+
+  get contextOptions(): SkillContextOptions {
+    return this.caller.contextOptions;
+  }
+
+  constructor(
+    caller: ICaller,
+    detailedEventName: DetailedEventNames | CustomEvent,
+  ) {
+    super();
+    this.caller = caller;
+    this.detailedEventName = detailedEventName;
+    // attachment 默认允许在手牌/牌库区响应事件
+    this.enableHandTriggering = caller.type === "attachment";
+    this.enablePileTriggering = caller.type === "attachment";
+  }
+
+  setUsage(count: number, option: GtsUsageOrUsagePerRoundOptions): void {
+    const perRound = option.perRound ?? false;
+    const autoDecrease = option.autoDecrease ?? true;
+    const name = this.caller.setUsage(count, option);
+    if (perRound) {
+      if (this.usagePerRoundOpt) {
+        throw new GiTcgDataError(
+          "Cannot set usage per round multiple times for the same skill.",
+        );
+      }
+      this.usagePerRoundOpt = {
+        name: name as UsagePerRoundVariableNames,
+        autoDecrease,
+      };
+    } else {
+      if (this.usageOpt) {
+        throw new GiTcgDataError(
+          "Cannot set usage multiple times for the same skill.",
+        );
+      }
+      this.usageOpt = { name, autoDecrease };
+    }
+    this.userFilters.unshift((c) => c.self.getVariable(name)! > 0);
+  }
+
+  buildSkillDefinition(): SkillDefinition {
+    // 【可用次数自动扣除】
+    if (this.usagePerRoundOpt?.autoDecrease) {
+      this.postOperations.push((c) => {
+        c.consumeUsagePerRound();
+      });
+    }
+    if (this.usageOpt?.autoDecrease) {
+      if (this.usageOpt.name === "usage") {
+        // 若变量名为 usage，则消耗可用次数时可能调用 c.dispose
+        // 使用 consumeUsage 方法实现相关操作
+        this.postOperations.push((c) => {
+          c.consumeUsage();
+        });
+      } else {
+        // 否则手动扣除使用次数
+        const name = this.usageOpt.name;
+        this.postOperations.push((c) => {
+          c.self.addVariable(name, -1);
+        });
+      }
+    }
+
+    // 【添加各种 filter】
+    this.filters = [];
+
+    // 0. 对于并非响应自身弃置的技能，当实体已经被弃置时，不再响应
+    if (
+      !(
+        [
+          "selfDiscard",
+          "selfDispose",
+          "selfHandCardInserted",
+        ] as (typeof this.detailedEventName)[]
+      ).includes(this.detailedEventName)
+    ) {
+      this.filters.push((c) => {
+        return c.self.area.type !== "removedEntities";
+      });
+    }
+    // 1. 默认禁止手牌 & 牌库区实体响应事件，除非显式启用
+    if (!this.enableHandTriggering) {
+      this.filters.push((c) => {
+        return c.self.area.type !== "hands";
+      });
+    }
+    if (!this.enablePileTriggering) {
+      this.filters.push((c) => {
+        return c.self.area.type !== "pile";
+      });
+    }
+    // 1'. off-stage 触发技能禁止场上触发
+    if (!this.enableOnStageTriggering) {
+      this.filters.push((c) => {
+        return (
+          ["hands", "pile", "removedEntities"] as EntityArea["type"][]
+        ).includes(c.self.area.type);
+      });
+    }
+    // 2. 被动技能要求角色存活
+    if (
+      this.caller.type === "character" &&
+      this.detailedEventName !== "defeated" &&
+      !this.bypassDefeatedFilter
+    ) {
+      this.filters.push((c) => c.self.variables.alive);
+    }
+    // 3. 状态和装备的技能默认要求角色存活
+    if (
+      (this.caller.type === "status" || this.caller.type === "equipment") &&
+      !this.bypassDefeatedFilter
+    ) {
+      this.filters.push((c) => {
+        if (c.self.area.type === "characters") {
+          return c.self.cast<"status" | "equipment">().master.variables.alive;
+        }
+        return true;
+      });
+    }
+    // 4. 基于 listenTo 的 filter
+    const [triggerOn, filterDescriptor] =
+      detailedEventDictionary[
+        isCustomEvent(this.detailedEventName)
+          ? "customEvent"
+          : (this.detailedEventName as DetailedEventNames)
+      ];
+    const listenTo = this.listenTo;
+    this.filters.push(function (c) {
+      const { area, id } = c.self;
+      return filterDescriptor(
+        c.eventArg as any,
+        {
+          callerArea: area,
+          callerId: id,
+          listenTo,
+        },
+        c.rawState,
+      );
+    });
+    // 5. 自定义事件：确保事件名一致
+    if (isCustomEvent(this.detailedEventName)) {
+      const customEvent = this.detailedEventName;
+      this.filters.push(function (c) {
+        return c.eventArg.customEvent === customEvent;
+      });
+    }
+
+    // 【构造技能定义并向父级实体添加】
+    const filter = this.buildFilter();
+    const action = this.buildAction();
+    return {
+      type: "skill",
+      id: this.id,
+      ownerType: this.caller.type,
+      skillType: this.asSkillType,
+      triggerOn,
+      initiativeSkillConfig: null,
+      filter,
+      action,
+      usagePerRoundVariableName: this.usagePerRoundOpt?.name ?? null,
+    };
+  }
+}
+
+export interface TriggeredSkillVMMeta extends EntityVMMeta {
+  readonly callingArea: CallingAreaType;
+  readonly eventArgType: unknown;
+}
+const DEFAULT_TRIGGERED_SKILL_VM_META = {
+  ...DEFAULT_ENTITY_VM_META,
+  callingArea: "" as CallingAreaType,
+  eventArgType: null as never,
+} as const satisfies TriggeredSkillVMMeta;
+
+type TriggeredSkillVMToRwContextMeta<Meta extends TriggeredSkillVMMeta> = {
+  callerType: Meta["type"];
+  callerVars: Meta["variables"];
+  callingArea: Meta["callingArea"];
+  eventArgType: Meta["eventArgType"];
+  associatedExtension: Meta["associatedExtension"];
+  gtsSnippets: Meta["snippets"];
+};
+type TriggeredSkillOperationOfVM<Meta extends TriggeredSkillVMMeta> =
+  GtsSkillOperation<TriggeredSkillVMToRwContextMeta<Meta>>;
+type TriggeredSkillFilterOfVM<Meta extends TriggeredSkillVMMeta> =
+  GtsSkillOperationFilter<TriggeredSkillVMToRwContextMeta<Meta>>;
+
+export const TriggeredSkillViewModel = defineViewModel(
+  TriggeredSkillModel,
+  (h) => ({
+    listenTo: h.simpleAttribute({
+      uniqueKey: "listenTo",
+    })(function (listenTo: ListenTo) {
+      this.listenTo = listenTo;
+    }),
+    when: h.attribute<{
+      <Meta extends TriggeredSkillVMMeta>(
+        this: AR.This<Meta>,
+        filter: TriggeredSkillFilterOfVM<Meta>,
+      ): AR.Done;
+    }>((model, [filter]) => {
+      model.userFilters.push(filter);
+    }),
+
+    usage: h.attribute<{
+      <Meta extends TriggeredSkillVMMeta>(
+        this: AR.This<Meta>,
+        count: number,
+      ): AR.With<typeof UsageVM>;
+      <Meta extends TriggeredSkillVMMeta>(
+        this: AR.This<Meta>,
+        perRound: "perRound",
+        count: number,
+      ): AR.With<typeof UsageVM, { name: "usagePerRound" }>;
+      mergeMeta<
+        Meta extends TriggeredSkillVMMeta,
+        InnerMeta extends UsageVMMeta,
+      >(
+        meta: Meta,
+        innerMeta: InnerMeta,
+      ): PushMetaVar<Meta, InnerMeta["name"]>;
+    }>((model, positionals, subView) => {
+      const options = UsageVM.parse(subView);
+      if (positionals[0] === "perRound") {
+        model.setUsage(positionals[1], {
+          visible: false,
+          ...options,
+          perRound: true,
+        });
+      } else {
+        model.setUsage(positionals[0], { ...options, perRound: false });
+      }
+    }),
+
+    asSkillType: h.attribute<{
+      <Meta extends TriggeredSkillVMMeta>(
+        this: Meta["type"] extends "character" ? AR.This<Meta> : never,
+        skillType: CommonSkillType,
+      ): AR.Done;
+    }>((model, [skillType]) => {
+      model.asSkillType = skillType;
+    }),
+
+    bypassDefeatedFilter: h.simpleAttribute({
+      uniqueKey: "bypassDefeatedFilter",
+    })(function () {
+      this.bypassDefeatedFilter = true;
+    }),
+
+    "~action": h.attribute<{
+      <Meta extends TriggeredSkillVMMeta>(
+        this: AR.This<Meta>,
+        operation: TriggeredSkillOperationOfVM<Meta>,
+      ): AR.Done;
+      uniqueKey(): "~action";
+    }>((model, [operation]) => {
+      model.action = operation;
+    }),
+  }),
+  DEFAULT_TRIGGERED_SKILL_VM_META,
+);
+
+class DisposeSameModel extends TriggeredSkillModel {
+  constructor(caller: ICaller) {
+    super(caller, "selfDiscard");
+  }
+}
+
+const DEFAULT_DISPOSE_SAME_VM_META = {
+  ...DEFAULT_TRIGGERED_SKILL_VM_META,
+  eventArgType: null! as DetailedEventArgOf<"selfDiscard">,
+  disposeSameSkill: true,
+} as const satisfies TriggeredSkillVMMeta & { disposeSameSkill: true };
+export type DefaultDisposeSameVMMeta = typeof DEFAULT_DISPOSE_SAME_VM_META;
+
+export const DisposeSameVM = defineViewModel(
+  DisposeSameModel,
+  (h) => ({
+    when: h.attribute<{
+      <Meta extends TriggeredSkillVMMeta>(
+        this: AR.This<Meta>,
+        filter: TriggeredSkillFilterOfVM<Meta>,
+      ): AR.Done;
+    }>((model, [filter]) => {
+      model.userFilters.push(filter);
+    }),
+    abortPreview: h.simpleAttribute({
+      uniqueKey: "abortPreview",
+    })(function () {
+      this.preOperations.push(function (c) {
+        c.abortPreview();
+      });
+    }),
+  }),
+  DEFAULT_DISPOSE_SAME_VM_META,
+);
+
+export type TargetGetter = (ctx: SkillContext<any>) => AnyState[];
+
+export class InitiativeSkillModel extends SkillModel {
+  skillType: SkillType | null = null;
+  omitEvents = false;
+  hidden = false;
+  gainEnergy = true;
+  alwaysCharged = false;
+  alwaysPlunging = false;
+  targetGetters: TargetGetter[] = [];
+  cost: DiceRequirement = new Map();
+  get ownerType(): ExEntityType {
+    throw new Error("ownerType must be implemented in subclasses");
+  }
+  shouldFast() {
+    return false;
+  }
+
+  #contextOptions = new SkillContextOptions();
+  get contextOptions() {
+    return this.#contextOptions;
+  }
+
+  private buildInitiativeSkillConfig(): InitiativeSkillConfig {
+    return {
+      requiredCost: normalizeCost(this.cost),
+      computed$costSize: costSize(this.cost),
+      computed$diceCostSize: diceCostSize(this.cost),
+      gainEnergy: this.gainEnergy,
+      shouldFast: this.shouldFast(),
+      alwaysCharged: this.alwaysCharged,
+      alwaysPlunging: this.alwaysPlunging,
+      hidden: this.hidden,
+      omitEvents: this.omitEvents,
+      getTarget: buildTargetGetter(
+        this.targetGetters,
+        this.contextOptions.associatedExtensionId,
+      ),
+    };
+  }
+  buildSkillDefinition(
+    override: Partial<InitiativeSkillDefinition> = {},
+  ): InitiativeSkillDefinition {
+    return {
+      type: "skill",
+      id: this.id,
+      ownerType: this.ownerType,
+      skillType: this.skillType,
+      initiativeSkillConfig: this.buildInitiativeSkillConfig(),
+      triggerOn: "initiative",
+      action: this.buildAction(),
+      filter: this.buildFilter(),
+      usagePerRoundVariableName: null,
+      ...override,
+    };
+  }
+}
+
+export class CharacterSkillModel extends InitiativeSkillModel {
+  reserved = false;
+  passiveSkillEntry: CharacterPassiveSkillEntry | Reserved | null = null;
+  override get ownerType() {
+    return "character" as const;
+  }
+
+  getEntry():
+    Reserved | CharacterInitiativeSkillEntry | CharacterPassiveSkillEntry {
+    if (this.reserved || this.passiveSkillEntry === RESERVED) {
+      return RESERVED;
+    } else if (this.passiveSkillEntry) {
+      return {
+        ...this.passiveSkillEntry,
+        version: this.versionInfo ?? this.passiveSkillEntry.version,
+      };
+    } else {
+      return {
+        type: "initiativeSkill",
+        __definition: "initiativeSkills",
+        id: this.id,
+        version: this.versionInfo ?? DEFAULT_VERSION_INFO,
+        skill: this.buildSkillDefinition(),
+      };
+    }
+  }
+}
+
+export interface InitiativeSkillVMMeta extends EntityVMMeta {
+  readonly callingArea: CallingAreaType;
+  readonly targetTypes: InitiativeSkillTargetKind;
+}
+// This variable is type-only but may fell into TDZ after bundling.
+// Declare it as var.
+export var DEFAULT_INITIATIVE_SKILL_VM_META = {
+  ...DEFAULT_ENTITY_VM_META,
+  callingArea: "" as CallingAreaType,
+  targetTypes: [],
+} as const satisfies InitiativeSkillVMMeta;
+
+export type TargetQueryTypeInfo =
+  | {
+      type: "character";
+      areaType: "characters";
+    }
+  | {
+      type: "summon";
+      areaType: "summons";
+    }
+  | {
+      type: "support";
+      areaType: "supports";
+    };
+
+type InitiativeSkillVMToRwContextMeta<Meta extends InitiativeSkillVMMeta> = {
+  callerType: Meta["type"];
+  callerVars: Meta["variables"];
+  callingArea: Meta["callingArea"];
+  eventArgType: StrictInitiativeSkillEventArg<Meta["targetTypes"]>;
+  associatedExtension: Meta["associatedExtension"];
+  gtsSnippets: Meta["snippets"];
+};
+
+type InitiativeSkillOperationOfVM<Meta extends InitiativeSkillVMMeta> =
+  GtsSkillOperation<InitiativeSkillVMToRwContextMeta<Meta>>;
+type InitiativeSkillFilterOfVM<Meta extends InitiativeSkillVMMeta> =
+  GtsSkillOperationFilter<InitiativeSkillVMToRwContextMeta<Meta>>;
+
+type NotCharacterPassiveThis<Meta extends InitiativeSkillVMMeta> =
+  Meta extends { isInitiativeSkill: false } ? never : AR.This<Meta>;
+
+export const InitiativeSkillViewModel = defineViewModel(
+  InitiativeSkillModel,
+  (h) => ({
+    since: h.simpleAttribute({
+      uniqueKey: "version",
+    })(function (version: Version) {
+      this.versionInfo = {
+        from: "official",
+        value: { predicate: "since", version },
+      };
+    }),
+    until: h.simpleAttribute({
+      uniqueKey: "version",
+    })(function (version: Version) {
+      this.versionInfo = {
+        from: "official",
+        value: { predicate: "until", version },
+      };
+    }),
+    associateExtension: h.attribute<{
+      <Meta extends InitiativeSkillVMMeta, NewExtT>(
+        this: AR.This<Meta>,
+        ext: ExtensionHandle<NewExtT>,
+      ): AR.DoneRewriteMeta<
+        Computed<
+          Omit<Meta, "associatedExtension"> & {
+            readonly associatedExtension: ExtensionHandle<NewExtT>;
+          }
+        >
+      >;
+      uniqueKey(): "associatedExtension";
+    }>((model, [extId]) => {
+      model.contextOptions.associatedExtensionId = extId;
+    }),
+
+    prepared: h.attribute<{
+      <Meta extends InitiativeSkillVMMeta>(
+        this: NotCharacterPassiveThis<Meta>,
+      ): AR.Done;
+      uniqueKey(): "prepared";
+    }>((model) => {
+      model.omitEvents = true;
+      model.gainEnergy = false;
+      model.hidden = true;
+    }),
+    hidden: h.attribute<{
+      <Meta extends InitiativeSkillVMMeta>(
+        this: NotCharacterPassiveThis<Meta>,
+      ): AR.Done;
+      uniqueKey(): "hidden";
+    }>((model) => {
+      model.hidden = true;
+    }),
+    noEnergy: h.attribute<{
+      <Meta extends InitiativeSkillVMMeta>(
+        this: NotCharacterPassiveThis<Meta>,
+      ): AR.Done;
+      uniqueKey(): "noEnergy";
+    }>((model) => {
+      model.gainEnergy = false;
+    }),
+    cost: h.attribute<{
+      <Meta extends InitiativeSkillVMMeta>(
+        this: NotCharacterPassiveThis<Meta>,
+        type: DiceType,
+        amount: number,
+      ): AR.Done;
+    }>((model, [type, amount]) => {
+      model.cost.set(type, amount);
+    }),
+
+    forcePlunging: h.simpleAttribute({
+      uniqueKey: "alwaysPlunging",
+    })(function () {
+      this.alwaysPlunging = true;
+    }),
+
+    addTarget: h.attribute<{
+      <Meta extends InitiativeSkillVMMeta, Q extends IQuery>(
+        this: NotCharacterPassiveThis<Meta>,
+        query: InferResult<Q> extends TargetQueryTypeInfo ? Q : never,
+      ): AR.DoneRewriteMeta<
+        Omit<Meta, "targetTypes"> & {
+          readonly targetTypes: readonly [
+            ...Meta["targetTypes"],
+            InferResult<Q> extends { type: infer T } ? T : never,
+          ];
+        }
+      >;
+
+      <Meta extends InitiativeSkillVMMeta, Ret extends AnyState[]>(
+        this: NotCharacterPassiveThis<Meta>,
+        queryFn: (
+          context: TypedSkillContext<
+            ReadonlyMetaOf<InitiativeSkillVMToRwContextMeta<Meta>>
+          >,
+        ) => Ret,
+      ): AR.DoneRewriteMeta<
+        Omit<Meta, "targetTypes"> & {
+          readonly targetTypes: readonly [
+            ...Meta["targetTypes"],
+            Ret[number]["definition"] extends {
+              type: infer T extends TargetQueryTypeInfo["type"];
+            }
+              ? T
+              : never,
+          ];
+        }
+      >;
+    }>((model, [query]: any) => {
+      if (toExpression in query) {
+        const queryObj = query;
+        query = (c: SkillContext<any>) =>
+          c.queryAll(queryObj as typeof $.any).map((s) => s.latest());
+      }
+      model.targetGetters.push((ctx) => {
+        return query(ctx);
+      });
+    }),
+
+    filter: h.attribute<{
+      <Meta extends InitiativeSkillVMMeta>(
+        this: NotCharacterPassiveThis<Meta>,
+        filter: InitiativeSkillFilterOfVM<Meta>,
+      ): AR.Done;
+    }>((model, [filter]) => {
+      model.userFilters.push(filter);
+    }),
+
+    "~action": h.attribute<{
+      <Meta extends InitiativeSkillVMMeta>(
+        this: NotCharacterPassiveThis<Meta>,
+        operation: InitiativeSkillOperationOfVM<Meta>,
+      ): AR.Done;
+      uniqueKey(): "~action";
+    }>((model, [operation]) => {
+      model.action = operation;
+    }),
+  }),
+  DEFAULT_INITIATIVE_SKILL_VM_META,
+);
+
+export interface CharacterSkillVMMeta extends InitiativeSkillVMMeta {
+  readonly isInitiativeSkill: boolean;
+}
+export const DEFAULT_CHARACTER_SKILL_VM_META = {
+  ...DEFAULT_ENTITY_VM_META,
+  type: "character",
+  callingArea: "onStage",
+  targetTypes: [],
+  isInitiativeSkill: true as boolean,
+} as const satisfies CharacterSkillVMMeta;
+
+export class CharacterSkillViewModel extends InitiativeSkillViewModel
+  //
+  .extend(CharacterSkillModel, (h) => ({
+    id: h.attribute<{
+      <Meta extends CharacterSkillVMMeta, const Id extends number>(
+        this: AR.This<Meta>,
+        id: Id,
+      ): AR.DoneRewriteMeta<WithIdVMMeta<Meta, Id>>;
+      required(): true;
+      uniqueKey(): "id";
+      as<Meta extends CharacterSkillVMMeta>(
+        this: AR.This<Meta>,
+      ): Meta extends { isInitiativeSkill: true }
+        ? SkillHandle<Meta>
+        : PassiveSkillHandle<Meta>;
+      as(this: AR.This<ReservedMeta>): undefined;
+    }>(
+      (model, [id]) => {
+        model.id = id;
+      },
+      (_, [id]) => id as any,
+    ),
+    reserved: h.attribute<{
+      (): AR.DoneRewriteMeta<ReservedMeta>;
+    }>((model, []) => {
+      model.reserved = true;
+    }),
+    skillType: h.attribute<{
+      <Meta extends CharacterSkillVMMeta>(
+        this: AR.This<Meta>,
+        type: "normal" | "elemental" | "burst",
+      ): AR.DoneRewriteMeta<
+        Omit<Meta, "isInitiativeSkill"> & { readonly isInitiativeSkill: true }
+      >;
+      <Meta extends CharacterSkillVMMeta>(
+        this: AR.This<Meta>,
+        type: "passive",
+      ): AR.WithRewriteMeta<
+        Omit<Meta, "isInitiativeSkill"> & { readonly isInitiativeSkill: false },
+        typeof EntityViewModel,
+        DefaultEntityVMMeta<"character">
+      >;
+      required(): true;
+      uniqueKey(): "type";
+    }>((model, [type], subView) => {
+      if (type === "passive") {
+        const passiveSkillModel = EntityViewModel.parse(
+          subView,
+          "character",
+          model,
+        );
+        model.passiveSkillEntry =
+          passiveSkillModel.getEntry() as CharacterPassiveSkillEntry;
+      } else {
+        model.skillType = type;
+        if (type === "burst") {
+          model.gainEnergy = false;
+        }
+      }
+    }),
+  }))
+  .narrow(DEFAULT_CHARACTER_SKILL_VM_META) {}

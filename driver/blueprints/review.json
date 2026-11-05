@@ -1,0 +1,175 @@
+{
+  "version": "0.1.0",
+  "name": "七圣召唤 · 回合复盘（意图 + 胜率）",
+  "description": "每回合结束时跑一次：把刚结束的这一回合写成 ≤200 字的意图，并给出 0~1 的胜率估计；结果会注入后面每一手的提示词。",
+  "nodes": [
+    {
+      "id": "in",
+      "type": "arena_input",
+      "label": "对局上下文",
+      "position": {
+        "x": 0,
+        "y": 180
+      },
+      "accent": "teal",
+      "params": {}
+    },
+    {
+      "id": "brief",
+      "type": "state_brief",
+      "label": "局面速览",
+      "position": {
+        "x": 260,
+        "y": 60
+      },
+      "accent": "blue",
+      "params": {
+        "max_chars": 1200,
+        "include_hand": true,
+        "include_opponent": true
+      }
+    },
+    {
+      "id": "hist",
+      "type": "winrate_table",
+      "label": "往期胜率",
+      "position": {
+        "x": 260,
+        "y": 320
+      },
+      "accent": "violet",
+      "params": {
+        "keep": 8,
+        "with_intent": true,
+        "intent_chars": 60
+      }
+    },
+    {
+      "id": "pack",
+      "type": "prompt_pack",
+      "label": "拼复盘提示词",
+      "position": {
+        "x": 520,
+        "y": 180
+      },
+      "accent": "amber",
+      "params": {
+        "system": "你是七圣召唤（Genius Invokation TCG）对局助手。你正在回顾刚结束的这一回合，并判断自己现在的胜算。",
+        "task": "请在复盘里写两行：\n意图：≤200 字。说明这一回合你想达成什么、用了哪些牌/技能、接下来准备怎么衔接、要重点观察对手的哪些动作。\n胜率：一个 0 到 1 之间的小数，表示你认为本方现在获胜的概率（要结合上面的往期判断，形势变好就调高，变差就调低）。\n只写这两行，不要客套，不要项目符号。",
+        "budget_chars": 4000,
+        "role": "user",
+        "include_system": true
+      }
+    },
+    {
+      "id": "llm",
+      "type": "llm_chat",
+      "label": "大模型（复盘）",
+      "position": {
+        "x": 780,
+        "y": 180
+      },
+      "accent": "violet",
+      "params": {
+        "model": "deepseek-chat",
+        "api_base": "https://api.deepseek.com/v1",
+        "api_key": "",
+        "temperature": 0.3,
+        "max_tokens": 4096,
+        "timeout_seconds": 180
+      }
+    },
+    {
+      "id": "parse",
+      "type": "review_parse",
+      "label": "解析意图与胜率",
+      "position": {
+        "x": 1040,
+        "y": 180
+      },
+      "accent": "rose",
+      "params": {
+        "max_intent_chars": 200
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "r1",
+      "source": "in",
+      "source_handle": "state",
+      "target": "brief",
+      "target_handle": "state"
+    },
+    {
+      "id": "r2",
+      "source": "in",
+      "source_handle": "detail",
+      "target": "brief",
+      "target_handle": "detail"
+    },
+    {
+      "id": "r3",
+      "source": "in",
+      "source_handle": "seat",
+      "target": "brief",
+      "target_handle": "seat"
+    },
+    {
+      "id": "r4",
+      "source": "in",
+      "source_handle": "catalog",
+      "target": "brief",
+      "target_handle": "catalog"
+    },
+    {
+      "id": "r5",
+      "source": "in",
+      "source_handle": "winrates",
+      "target": "hist",
+      "target_handle": "history"
+    },
+    {
+      "id": "r6",
+      "source": "in",
+      "source_handle": "plan",
+      "target": "pack",
+      "target_handle": "plan"
+    },
+    {
+      "id": "r7",
+      "source": "brief",
+      "source_handle": "text",
+      "target": "pack",
+      "target_handle": "state_text"
+    },
+    {
+      "id": "r8",
+      "source": "hist",
+      "source_handle": "text",
+      "target": "pack",
+      "target_handle": "history"
+    },
+    {
+      "id": "r9",
+      "source": "in",
+      "source_handle": "intent",
+      "target": "pack",
+      "target_handle": "memory"
+    },
+    {
+      "id": "r10",
+      "source": "pack",
+      "source_handle": "messages",
+      "target": "llm",
+      "target_handle": "messages"
+    },
+    {
+      "id": "r11",
+      "source": "llm",
+      "source_handle": "reply",
+      "target": "parse",
+      "target_handle": "text"
+    }
+  ]
+}

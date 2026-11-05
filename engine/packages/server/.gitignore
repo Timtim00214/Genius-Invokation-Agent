@@ -1,0 +1,5 @@
+# Keep environment variables out of version control
+.env
+
+# Persistent Drizzle development database
+.pglite/

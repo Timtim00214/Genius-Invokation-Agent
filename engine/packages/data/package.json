@@ -1,0 +1,55 @@
+{
+  "name": "@gi-tcg/data",
+  "version": "0.21.0+gi-7-1-0",
+  "description": "Standard card data for Genius Invokation TCG",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "url": "https://github.com/piovium/genius-invokation",
+    "directory": "packages/data"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": [
+        "./src/index.ts",
+        "./dist/index.js"
+      ],
+      "import": "./dist/index.js"
+    },
+    "./internal/*": "./src/*"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./internal/*": "./src/*"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "regenerate_data": "gnx ./scripts/generators/index.ts",
+    "check": "NODE_OPTIONS=--max-old-space-size=8192 gtsc --noEmit",
+    "build": "tsdown"
+  },
+  "gamingTs": {
+    "runtimeImportSource": "@gi-tcg/core/gts/runtime",
+    "providerImportSource": "@gi-tcg/core/gts"
+  },
+  "peerDependencies": {
+    "@gi-tcg/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@gi-tcg/assets-manager": "workspace:*",
+    "@gi-tcg/config": "workspace:*",
+    "@gi-tcg/gts-transpiler": "catalog:",
+    "@gi-tcg/gtsc": "catalog:",
+    "@microsoft/tsdoc": "^0.14.2",
+    "case-anything": "^2.1.13",
+    "glob": "^11.0.3"
+  }
+}

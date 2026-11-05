@@ -1,0 +1,53 @@
+{
+  "name": "@gi-tcg/assets-manager",
+  "version": "0.21.0",
+  "type": "module",
+  "description": "Manage assets of GI-TCG for Web app",
+  "repository": {
+    "url": "https://github.com/piovium/genius-invokation",
+    "directory": "packages/assets-manager"
+  },
+  "dependencies": {
+    "@gi-tcg/typings": "workspace:*",
+    "p-limit": "^7.1.1"
+  },
+  "devDependencies": {
+    "@gi-tcg/config": "workspace:*",
+    "@gi-tcg/core": "workspace:*"
+  },
+  "main": "./dist/index.js",
+  "imports": {
+    "#src/*": "./src/*.ts"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": ["./src/index.ts", "./dist/index.js"],
+      "import": "./dist/index.js"
+    },
+    "./data/*": {
+      "development": ["./src/data/*.json", "./dist/data/*.json"],
+      "import": "./dist/data/*.json"
+    }
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./data/*": {
+        "import": "./dist/data/*.json"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "vitest",
+    "build:data": "gnx --import=./scripts/fetch_preload.ts ./scripts/fetch.ts",
+    "build:ts": "tsdown",
+    "build": "pnpm build:data && pnpm build:ts"
+  }
+}

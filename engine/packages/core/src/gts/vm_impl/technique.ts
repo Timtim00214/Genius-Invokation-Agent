@@ -1,0 +1,327 @@
+// Copyright (C) 2026 Piovium Labs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import type { AR } from "@gi-tcg/gts-runtime";
+import { ListenTo, type ReadonlyMetaOf } from "../../runtime/skill";
+import {
+  EntityModel,
+  EntityViewModel,
+  type DefaultEntityVMMeta,
+  type EntityVMMeta,
+  type GtsUsageOrUsagePerRoundOptions,
+  type IParentModel,
+  type PushMetaVar,
+  type WithIdVMMeta,
+} from "./entity";
+import {
+  DEFAULT_INITIATIVE_SKILL_VM_META,
+  InitiativeSkillModel,
+  InitiativeSkillViewModel,
+  TriggeredSkillModel,
+  type InitiativeSkillVMMeta,
+  type TargetGetter,
+} from "./skill";
+import { $, toExpression, type InferResult, type IQuery } from "../../query";
+import type { AnyState, InitiativeSkillDefinition } from "../../base/state";
+import type {
+  SkillContext,
+  TypedSkillContext,
+} from "../../runtime/skill_context";
+import type { SkillHandle } from "../../data";
+import { UsageVM, type UsageVMMeta } from "./variables";
+import type { UsagePerRoundVariableNames } from "../../base/entity";
+import { GiTcgDataError } from "../..";
+import { TechniqueNightsoulVM } from "./entity_auxilary";
+import type { DisposeEventArg } from "../../base/skill";
+import type { Computed } from "../../utils";
+
+class TechniqueSkillModel extends InitiativeSkillModel {
+  private caller: TechniqueModel;
+  override get ownerType() {
+    return "equipment" as const;
+  }
+
+  usageOpt: { name: string; autoDecrease: boolean } | null = null;
+  usagePerRoundOpt: {
+    name: UsagePerRoundVariableNames;
+    autoDecrease: boolean;
+  } | null = null;
+
+  constructor(caller: TechniqueModel) {
+    super();
+    this.caller = caller;
+    this.skillType = "technique";
+  }
+
+  setUsage(count: number, option: GtsUsageOrUsagePerRoundOptions) {
+    const perRound = option.perRound ?? false;
+    const autoDecrease = option.autoDecrease ?? true;
+    const name = this.caller.setUsage(count, option);
+    if (perRound) {
+      if (this.usagePerRoundOpt) {
+        throw new GiTcgDataError(
+          "Cannot set usage per round multiple times for the same skill.",
+        );
+      }
+      this.usagePerRoundOpt = {
+        name: name as UsagePerRoundVariableNames,
+        autoDecrease,
+      };
+    } else {
+      if (this.usageOpt) {
+        throw new GiTcgDataError(
+          "Cannot set usage multiple times for the same skill.",
+        );
+      }
+      this.usageOpt = { name, autoDecrease };
+    }
+    this.userFilters.unshift((c) => c.self.getVariable(name)! > 0);
+  }
+
+  override buildSkillDefinition() {
+    // 【可用次数自动扣除】
+    if (this.usagePerRoundOpt?.autoDecrease) {
+      this.postOperations.push((c) => {
+        c.consumeUsagePerRound();
+      });
+    }
+    if (this.usageOpt?.autoDecrease) {
+      if (this.usageOpt.name === "usage") {
+        // 若变量名为 usage，则消耗可用次数时可能调用 c.dispose
+        // 使用 consumeUsage 方法实现相关操作
+        this.postOperations.push((c) => {
+          c.consumeUsage();
+        });
+      } else {
+        // 否则手动扣除使用次数
+        const name = this.usageOpt.name;
+        this.postOperations.push((c) => {
+          c.self.addVariable(name, -1);
+        });
+      }
+    }
+    return super.buildSkillDefinition({
+      usagePerRoundVariableName: this.usagePerRoundOpt?.name ?? null,
+    });
+  }
+}
+
+interface TechniqueSkillVMMeta extends InitiativeSkillVMMeta {
+  variables: string;
+}
+const DEFAULT_TECHNIQUE_SKILL_VM_META = {
+  ...DEFAULT_INITIATIVE_SKILL_VM_META,
+  type: "equipment",
+  callingArea: "onStage",
+  variables: null as never,
+} as const satisfies TechniqueSkillVMMeta;
+export type DefaultTechniqueSkillVMMeta<
+  Variables extends string = never,
+  AssociatedExtension = never,
+> = Computed<
+  Omit<
+    typeof DEFAULT_TECHNIQUE_SKILL_VM_META,
+    "variables" | "associatedExtension"
+  > & {
+    variables: Variables;
+    associatedExtension: AssociatedExtension;
+  },
+  TechniqueSkillVMMeta
+>;
+
+export const TechniqueSkillViewModel = InitiativeSkillViewModel
+  //
+  .extend(TechniqueSkillModel, (h) => ({
+    id: h.attribute<{
+      <Meta extends TechniqueSkillVMMeta, const Id extends number>(
+        this: AR.This<Meta>,
+        id: Id,
+      ): AR.DoneRewriteMeta<WithIdVMMeta<Meta, Id>>;
+      // TODO custom technique cannot provide required id
+      // we can make `required()` only for official data
+      // required(): true;
+      uniqueKey(): "id";
+      as<Meta extends TechniqueSkillVMMeta>(
+        this: AR.This<Meta>,
+      ): SkillHandle<Meta>;
+    }>(
+      (model, [id]) => {
+        model.id = id;
+      },
+      (_, [id]) => id as any,
+    ),
+    usage: h.attribute<{
+      <Meta extends TechniqueSkillVMMeta>(
+        this: AR.This<Meta>,
+        count: number,
+      ): AR.With<typeof UsageVM>;
+      <Meta extends TechniqueSkillVMMeta>(
+        this: AR.This<Meta>,
+        perRound: "perRound",
+        count: number,
+      ): AR.With<typeof UsageVM, { name: "usagePerRound" }>;
+      mergeMeta<
+        Meta extends TechniqueSkillVMMeta,
+        InnerMeta extends UsageVMMeta,
+      >(
+        meta: Meta,
+        innerMeta: InnerMeta,
+      ): PushMetaVar<Meta, InnerMeta["name"]>;
+    }>((model, positionals, subView) => {
+      const options = UsageVM.parse(subView);
+      if (positionals[0] === "perRound") {
+        model.setUsage(positionals[1], {
+          visible: false,
+          ...options,
+          perRound: true,
+        });
+      } else {
+        model.setUsage(positionals[0], { ...options, perRound: false });
+      }
+    }),
+  }))
+  .narrow(DEFAULT_TECHNIQUE_SKILL_VM_META);
+
+export class TechniqueModel extends EntityModel {
+  constructor(parent?: IParentModel) {
+    super("equipment", parent);
+  }
+  targetGetter: TargetGetter = function (ctx) {
+    return ctx.queryAll($.my.character).map((s) => s.latest());
+  };
+}
+
+export type DefaultTechniqueVMMeta<
+  AssociatedExtension = never,
+  Id extends number = number,
+> = DefaultEntityVMMeta<"equipment", AssociatedExtension> & {
+  readonly id: Id;
+};
+
+export type TechniqueVMMeta = EntityVMMeta & {
+  type: "equipment";
+};
+
+type TechniqueVMToRwContextMeta<Meta extends TechniqueVMMeta> = {
+  callerType: Meta["type"];
+  callerVars: Meta["variables"];
+  callingArea: "onStage";
+  associatedExtension: Meta["associatedExtension"];
+  eventArgType: never;
+  gtsSnippets: {};
+};
+
+type CharacterQueryResult = {
+  type: "character";
+};
+
+export const TechniqueViewModel = EntityViewModel
+  //
+  .extend(TechniqueModel, (h) => ({
+    target: h.attribute<{
+      <Q extends IQuery>(
+        query: InferResult<Q> extends CharacterQueryResult ? Q : never,
+      ): AR.Done;
+      <Meta extends TechniqueVMMeta, Ret extends AnyState[]>(
+        this: AR.This<Meta>,
+        queryFn: (
+          context: TypedSkillContext<
+            ReadonlyMetaOf<TechniqueVMToRwContextMeta<Meta>>
+          >,
+        ) => Ret[number] extends { type: "character" } ? Ret : never,
+      ): AR.Done;
+      uniqueKey(): "target";
+    }>((model, [query]: any) => {
+      if (toExpression in query) {
+        const queryObj = query;
+        query = (c: SkillContext<any>) =>
+          c.queryAll(queryObj as typeof $.any).map((s) => s.latest());
+      }
+      model.targetGetter = function (ctx) {
+        return query(ctx);
+      };
+    }),
+    nightsoul: h.attribute<{
+      (): AR.With<typeof TechniqueNightsoulVM>;
+    }>((model, [], subView) => {
+      const { alsoDisposeNightsoulsBlessing = true } =
+        TechniqueNightsoulVM.parse(subView);
+      model.obtainable = false;
+      const disposeByNightsoulSkill = new TriggeredSkillModel(
+        model,
+        "beforeAction",
+      );
+      disposeByNightsoulSkill.id = model.getSubId();
+      disposeByNightsoulSkill.listenTo = ListenTo.All;
+      disposeByNightsoulSkill.action = function (c) {
+        const master = c.self.cast<"equipment">().master;
+        const nightsoulBlessing = c.query(
+          $.typeStatus.tag("nightsoulsBlessing").at($.id(master.id)),
+        );
+        if (
+          nightsoulBlessing &&
+          nightsoulBlessing.getVariable("nightsoul")! <= 0
+        ) {
+          c.dispose();
+        }
+      };
+      model.skillList.push(disposeByNightsoulSkill.buildSkillDefinition());
+      if (alsoDisposeNightsoulsBlessing) {
+        const disposeNightsoulSkill = new TriggeredSkillModel(
+          model,
+          "selfDispose",
+        );
+        disposeNightsoulSkill.id = model.getSubId();
+        disposeNightsoulSkill.action = function (c) {
+          const disposingArea = (c.eventArg as DisposeEventArg).area;
+          if (disposingArea.type !== "characters") {
+            return;
+          }
+          c.query(
+            $.typeStatus
+              .tag("nightsoulsBlessing")
+              .at($.id(disposingArea.characterId)),
+          )?.dispose();
+        };
+        model.skillList.push(disposeNightsoulSkill.buildSkillDefinition());
+      }
+    }),
+
+    skill: h.attribute<{
+      <Meta extends TechniqueVMMeta>(
+        this: AR.This<Meta>,
+      ): AR.With<
+        typeof TechniqueSkillViewModel,
+        DefaultTechniqueSkillVMMeta<
+          Meta["variables"],
+          Meta["associatedExtension"]
+        >
+      >;
+      required(): true;
+      mergeMeta<
+        Meta extends TechniqueVMMeta,
+        InnerMeta extends TechniqueSkillVMMeta,
+      >(
+        meta: Meta,
+        innerMeta: InnerMeta,
+      ): PushMetaVar<Meta, InnerMeta["variables"]>;
+    }>((model, [], subView) => {
+      const skillModel = TechniqueSkillViewModel.parse(subView, model);
+      skillModel.id ??= model.getSubId();
+      const skillDef = skillModel.buildSkillDefinition();
+      model.skillList.push(skillDef);
+    }, TechniqueSkillViewModel.bind(null!)),
+  }))
+  .narrow(null! as DefaultTechniqueVMMeta);

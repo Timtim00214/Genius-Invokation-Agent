@@ -1,0 +1,142 @@
+// Copyright (C) 2026 Piovium Labs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import { getEntityById } from "../../utils";
+import type {
+  AttachmentModification,
+  AttachmentTag,
+  ModificationGetter,
+} from "../../base/attachment";
+import type { AttachmentState, GameState } from "../../base/state";
+import {
+  EntityModel,
+  EntityViewModel,
+  type DefaultEntityVMMeta,
+  type EntityVMMeta,
+} from "./entity";
+import type { DiceType } from "@gi-tcg/typings";
+import type { AR } from "@gi-tcg/gts-runtime";
+
+export interface AttachmentStateCb<
+  Vars extends string,
+> extends AttachmentState {
+  readonly variables: Readonly<Record<Vars, number>>;
+}
+
+export type CostCountFn<Vars extends string = never> = (
+  state: GameState,
+  self: AttachmentStateCb<Vars>,
+) => number;
+
+export class AttachmentModel extends EntityModel {
+  modifications: (
+    | AttachmentModification
+    | ((state: GameState, id: number) => AttachmentModification)
+  )[] = [];
+
+  protected override getAttachmentModifications(): ModificationGetter {
+    const modifications = this.modifications;
+    return function (state, id) {
+      return modifications.map((mod) =>
+        typeof mod === "function" ? mod(state, id) : mod,
+      );
+    };
+  }
+}
+
+export class AttachmentViewModel extends EntityViewModel
+  //
+  .extend(AttachmentModel, (h) => ({
+    tags: h.simpleAttribute()(function (...tags: AttachmentTag[]) {
+      this.tags.push(...tags);
+    }),
+
+    addCost: h.attribute<{
+      <Meta extends EntityVMMeta>(
+        this: AR.This<Meta>,
+        value: number | CostCountFn<Meta["variables"]>,
+      ): AR.Done;
+      uniqueKey(): "cost";
+    }>((model, [value]) => {
+      model.modifications.push(
+        typeof value === "number"
+          ? {
+              type: "increaseCardCost",
+              value,
+            }
+          : (st, id) => {
+              const self = getEntityById(st, id) as AttachmentStateCb<any>;
+              return {
+                type: "increaseCardCost",
+                value: value(st, self),
+              };
+            },
+      );
+    }),
+    deductCost: h.attribute<{
+      <Meta extends EntityVMMeta>(
+        this: AR.This<Meta>,
+        value: number | CostCountFn<Meta["variables"]>,
+      ): AR.Done;
+      uniqueKey(): "cost";
+    }>((model, [value]) => {
+      model.modifications.push(
+        typeof value === "number"
+          ? {
+              type: "decreaseCardCost",
+              value,
+            }
+          : (st, id) => {
+              const self = getEntityById(st, id) as AttachmentStateCb<any>;
+              return {
+                type: "decreaseCardCost",
+                value: value(st, self),
+              };
+            },
+      );
+    }),
+    changeCostType: h.simpleAttribute({
+      uniqueKey: "costType",
+    })(function (toType: DiceType) {
+      this.modifications.push({
+        type: "changeCardCostType",
+        toType,
+      });
+    }),
+    changeTuningTarget: h.simpleAttribute({
+      uniqueKey: "tuningTarget",
+    })(function (tuningTarget: DiceType) {
+      this.modifications.push({
+        type: "changeCardTuningTarget",
+        tuningTarget,
+      });
+    }),
+    makeEffectless: h.simpleAttribute({
+      uniqueKey: "effectless",
+    })(function () {
+      this.modifications.push({
+        type: "makeEffectless",
+      });
+    }),
+    disableTuning: h.simpleAttribute({
+      uniqueKey: "disableTuning",
+    })(function () {
+      this.modifications.push({
+        type: "disableCardTuning",
+      });
+    }),
+  }))
+  .bind("attachment")
+  .narrow(null! as DefaultEntityVMMeta<"attachment">) {}

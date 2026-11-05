@@ -1,0 +1,36 @@
+{
+  "name": "@gi-tcg/state-editor",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@gi-tcg/assets-manager": "workspace:*",
+    "@gi-tcg/core": "workspace:*",
+    "@gi-tcg/data": "workspace:*",
+    "@gi-tcg/typings": "workspace:*",
+    "@gi-tcg/utils": "workspace:*",
+    "remeda": "^2.39.0",
+    "solid-js": "catalog:"
+  },
+  "devDependencies": {
+    "@solid-primitives/storage": "^4.2.1",
+    "immer": "^11.1.4",
+    "rollup-plugin-node-externals": "catalog:",
+    "unocss": "catalog:",
+    "vite": "catalog:",
+    "unplugin-dts": "catalog:",
+    "vite-plugin-solid": "catalog:",
+    "ya-json-schema-types": "^2.0.0"
+  }
+}

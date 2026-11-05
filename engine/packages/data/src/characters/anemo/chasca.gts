@@ -1,0 +1,293 @@
+// Copyright (C) 2024-2025 Guyutongxue
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import { DamageType, DiceType, $ } from "@gi-tcg/core/data";
+
+/**
+ * @id 115111
+ * @name 夜魂加持
+ * @description
+ * 所附属角色可累积「夜魂值」。（最多累积到2点）
+ */
+define status {
+  id 115111 as NightsoulsBlessing;
+  since "v5.7.0";
+  nightsoulsBlessing 2;
+};
+
+/**
+ * @id 115112
+ * @name 灵枪·仪式杖
+ * @cost
+ * @description
+ * 特技：多重瞄准。
+ * 此牌被弃置时，所附属角色结束夜魂加持。
+ * （角色最多装备1个「特技」）
+ * [1151121: 多重瞄准] (2*Anemo) 消耗1点「夜魂值」，造成1点风元素伤害，然后随机舍弃3张当前元素骰费用最高的手牌。
+ * [1151122: ] ()
+ */
+define card {
+  id 115112 as SoulsniperRitualStaff;
+  since "v5.7.0";
+  technique {
+    nightsoul;
+    skill {
+      id 1151121 as MultitargetFire;
+      cost DiceType.Anemo, 2;
+      filter :(
+        :self.master.hasNightsoulsBlessing()?.variables.nightsoul &&
+          :player.hands.length >= 3
+      );
+      :consumeNightsoul(:self.master, 1);
+      :damage(DamageType.Anemo, 1);
+      :discardMaxCostHands(3, { allowPreview: true });
+    };
+  };
+};
+
+/**
+ * @id 115113
+ * @name 追影弹
+ * @cost 3*Anemo
+ * @description
+ * 加入手牌时：若我方出战角色为火/水/雷/冰，则将此牌转化为对应元素。
+ * 打出或从手牌中舍弃此牌时：优先对敌方出战角色造成1点风元素伤害，然后将一张追影弹随机放进牌库。
+ */
+define card {
+  id 115113 as ShadowhuntShell;
+  since "v5.7.0";
+  undiscoverable;
+  cost DiceType.Anemo, 3;
+  on selfHandCardInserted {
+    const element = :query($.my.active)?.element();
+    if (element === DiceType.Pyro) {
+      :transformDefinition(:self, ShiningShadowhuntShellPyro);
+    } else if (element === DiceType.Hydro) {
+      :transformDefinition(:self, ShiningShadowhuntShellHydro);
+    } else if (element === DiceType.Electro) {
+      :transformDefinition(:self, ShiningShadowhuntShellElectro);
+    } else if (element === DiceType.Cryo) {
+      :transformDefinition(:self, ShiningShadowhuntShellCryo);
+    }
+  };
+  on selfDiscard, "=play" {
+    when :( :e.from.type === "hands" );
+    abortPreview;
+  };
+  :damage(DamageType.Anemo, 1, $.macros.oppActivePrioritized);
+  :createPileCards(ShadowhuntShell, 1, "random");
+};
+
+/**
+ * @id 115114
+ * @name 焕光追影弹·火
+ * @cost 3*Pyro
+ * @description
+ * 打出或从手牌中舍弃此牌时：优先对敌方出战角色造成1点火元素伤害，然后将一张追影弹随机放进牌库。
+ */
+define card {
+  id 115114 as ShiningShadowhuntShellPyro;
+  since "v5.7.0";
+  undiscoverable;
+  cost DiceType.Pyro, 3;
+  on selfDiscard, "=play" {
+    when :( :e.from.type === "hands" );
+    abortPreview;
+  };
+  :damage(DamageType.Pyro, 1, $.macros.oppActivePrioritized);
+  :createPileCards(ShadowhuntShell, 1, "random");
+};
+
+/**
+ * @id 115115
+ * @name 焕光追影弹·水
+ * @cost 3*Hydro
+ * @description
+ * 打出或从手牌中舍弃此牌时：优先对敌方出战角色造成1点水元素伤害，然后将一张追影弹随机放进牌库。
+ */
+define card {
+  id 115115 as ShiningShadowhuntShellHydro;
+  since "v5.7.0";
+  undiscoverable;
+  cost DiceType.Hydro, 3;
+  on selfDiscard, "=play" {
+    when :( :e.from.type === "hands" );
+    abortPreview;
+  };
+  :damage(DamageType.Hydro, 1, $.macros.oppActivePrioritized);
+  :createPileCards(ShadowhuntShell, 1, "random");
+};
+
+/**
+ * @id 115116
+ * @name 焕光追影弹·雷
+ * @cost 3*Electro
+ * @description
+ * 打出或从手牌中舍弃此牌时：：优先对敌方出战角色造成1点雷元素伤害，然后将一张追影弹随机放进牌库。
+ */
+define card {
+  id 115116 as ShiningShadowhuntShellElectro;
+  since "v5.7.0";
+  undiscoverable;
+  cost DiceType.Electro, 3;
+  on selfDiscard, "=play" {
+    when :( :e.from.type === "hands" );
+    abortPreview;
+  };
+  :damage(DamageType.Electro, 1, $.macros.oppActivePrioritized);
+  :createPileCards(ShadowhuntShell, 1, "random");
+};
+
+/**
+ * @id 115117
+ * @name 焕光追影弹·冰
+ * @cost 3*Cryo
+ * @description
+ * 打出或从手牌中舍弃此牌时：优先对敌方出战角色造成1点冰元素伤害，然后将一张追影弹随机放进牌库。
+ */
+define card {
+  id 115117 as ShiningShadowhuntShellCryo;
+  since "v5.7.0";
+  undiscoverable;
+  cost DiceType.Cryo, 3;
+  on selfDiscard, "=play" {
+    when :( :e.from.type === "hands" );
+    abortPreview;
+  };
+  :damage(DamageType.Cryo, 1, $.macros.oppActivePrioritized);
+  :createPileCards(ShadowhuntShell, 1, "random");
+};
+
+/**
+ * @id 115118
+ * @name 掩护的心意
+ * @description
+ * 我方「切换角色」时：抓1张牌。
+ * 可用次数：2
+ */
+define combatStatus {
+  id 115118 as IntentToCover;
+  since "v5.7.0";
+  on switchActive {
+    usage 2;
+    :drawCards(1);
+  };
+};
+
+/**
+ * @id 15111
+ * @name 迷羽流击
+ * @cost 1*Anemo, 2*Void
+ * @description
+ * 造成2点物理伤害。
+ */
+define skill {
+  id 15111 as PhantomFeatherFlurry;
+  skillType normal;
+  cost DiceType.Anemo, 1;
+  cost DiceType.Void, 2;
+  :damage(DamageType.Physical, 2);
+};
+
+/**
+ * @id 15112
+ * @name 灵缰追影
+ * @cost 3*Anemo
+ * @description
+ * 造成1点风元素伤害，抓1张牌。
+ * 本角色附属灵枪·仪式杖，进入夜魂加持，并获得2点「夜魂值」。（角色进入夜魂加持后不可使用此技能）（附属灵枪·仪式杖的角色可以使用特技：多重瞄准）
+ * 我方接下来2次「切换角色」时：抓1张牌。
+ */
+define skill {
+  id 15112 as SpiritReinsShadowHunt;
+  skillType elemental;
+  cost DiceType.Anemo, 3;
+  filter :( !:self.hasStatus(NightsoulsBlessing) );
+  :damage(DamageType.Anemo, 1);
+  :drawCards(1);
+  :gainNightsoul(:self, 2);
+  :equip(SoulsniperRitualStaff, :self);
+  :combatStatus(IntentToCover);
+};
+
+/**
+ * @id 15113
+ * @name 索魂命袭
+ * @cost 3*Anemo, 2*Energy
+ * @description
+ * 造成1点风元素伤害，对敌方所有后台角色造成1点穿透伤害，并抓3张牌。
+ */
+define skill {
+  id 15113 as SoulReapersFatalRound;
+  skillType burst;
+  cost DiceType.Anemo, 3;
+  cost DiceType.Energy, 2;
+  :damage(DamageType.Piercing, 1, $.opp.standby);
+  :damage(DamageType.Anemo, 1);
+  :drawCards(3);
+};
+
+/**
+ * @id 15114
+ * @name 追影弹
+ * @cost
+ * @description
+ * 对局开始时，将6枚追影弹随机放置进牌库。
+ */
+define skill {
+  id 15114 as ShadowhuntShellPassive;
+  skillType passive {
+    on battleBegin {
+      :createPileCards(ShadowhuntShell, 6, "random");
+    };
+  };
+};
+
+/**
+ * @id 1511
+ * @name 恰斯卡
+ * @hp 10
+ * @energy 2
+ * @description
+ * 风花铿锵，飞羽凌空。
+ */
+define character {
+  id 1511 as Chasca;
+  since "v5.7.0";
+  tags anemo, bow, natlan;
+  health 10;
+  energy 2;
+  skills PhantomFeatherFlurry,
+    SpiritReinsShadowHunt,
+    SoulReapersFatalRound,
+    ShadowhuntShellPassive;
+  associateNightsoul NightsoulsBlessing;
+};
+
+/**
+ * @id 215111
+ * @name 子弹的戏法
+ * @cost 1*Anemo
+ * @description
+ * 快速行动：我方恰斯卡在场时，对该角色打出。将一张追影弹加入手牌。
+ * （牌组中包含恰斯卡，才能加入牌组）
+ */
+define card {
+  id 215111 as BulletTrick;
+  since "v5.7.0";
+  cost DiceType.Anemo, 1;
+  eventTalent Chasca, none;
+  :createHandCard(ShadowhuntShell);
+};

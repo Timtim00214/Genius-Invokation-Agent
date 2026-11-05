@@ -1,0 +1,230 @@
+.gi-tcg-card-data-viewer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  -webkit-user-select: none;
+  user-select: none;
+  gap: 0.5em;
+  min-height: 0;
+
+  height: 100%;
+  width: 100%;
+
+  --panel-width: 18em;
+  --card-width: 10em;
+
+  --panel-background-color: #fef9c3;
+  --panel-border-color: #854d0e;
+  --text-color-h1: #713f12;
+  --text-color-h2: #713f12;
+  --text-color-h3: #ca8a04;
+  --text-color-h4: #fef9c3;
+  --text-color-content: #854d0e;
+  --text-color-strong: #000000;
+  --item-background-color: #fef08a;
+  --item-border-color: #eab308;
+  --tag-background-color: #854d0e;
+  --category-background-color: #eab308;
+  --reference-border-color: #854d0e;
+  --skill-icon-color: #713f12;
+  --id-color: #ca8a04;
+
+  &:where([data-light], [data-light] *) {
+    --panel-background-color: #f7f7eb;
+    --panel-border-color: #b4967e;
+    --text-color-h1: #716864;
+    --text-color-h2: #716864;
+    --text-color-h3: #b4967e;
+    --text-color-h4: #fefef4;
+    --text-color-content: #716864;
+    --text-color-strong: #4b2300;
+    --item-background-color: #f0eadd;
+    --item-border-color: #b4967e;
+    --tag-background-color: #cab5a1;
+    --category-background-color: #cab5a1;
+    --reference-border-color: #b4967e;
+    --skill-icon-color: #716864;
+    --id-color: #ca8a04;
+  }
+
+  &:where([data-dark], [data-dark] *) {
+    --panel-background-color: #2e3740;
+    --panel-border-color: #404d5c;
+    --text-color-h1: #cad8ea;
+    --text-color-h2: #ede5da;
+    --text-color-h3: #d3bc8e;
+    --text-color-h4: #758498;
+    --text-color-content: #b2afa8;
+    --text-color-strong: #ffffff;
+    --item-background-color: #22292f;
+    --item-border-color: #434e5a;
+    --tag-background-color: #cad8ea;
+    --category-background-color: #252d37;
+    --reference-border-color: #62686f;
+    --skill-icon-color: #ffffff;
+    --id-color: #ca8a04;
+  }
+
+  .card-face {
+    width: var(--card-width);
+    aspect-ratio: 7 / 12;
+  }
+
+  .card-panel {
+    position: relative;
+    width: var(--panel-width, 18em);
+    padding: 0.5em 0.25em 0.5em 0.5em;
+    border-radius: 0.375em;
+    border: 0.125em solid var(--panel-border-color);
+    color: var(--text-color-content);
+    background-color: var(--panel-background-color);
+    overflow-y: auto;
+    max-height: 100%;
+    min-height: 0;
+    pointer-events: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--panel-border-color) transparent;
+  }
+
+  .card-name {
+    font-size: 1.25em;
+    font-weight: bold;
+    color: var(--text-color-h1);
+  }
+
+  .card-info {
+    font-size: 0.875em;
+    color: var(--text-color-content);
+  }
+
+  .card-tag {
+    background-color: var(--tag-background-color);
+    color: var(--panel-background-color);
+    font-size: 0.875em;
+    font-weight: bold;
+    padding: 0 0.5em;
+    border-radius: 0.125em;
+  }
+
+  .skill-wrap {
+    border: 0.125em solid var(--item-border-color);
+    border-radius: 0.375em;
+    overflow: clip;
+  }
+
+  .skill-header {
+    background-color: var(--item-background-color);
+  }
+
+  .skill-icon {
+    width: 3em;
+    height: 3em;
+    mask-size: 3em 3em;
+    mask-image: var(--mask-image);
+    background-color: var(--skill-icon-color);
+  }
+
+  .skill-name {
+    font-size: 1em;
+    color: var(--text-color-h2);
+  }
+
+  .skill-type {
+    font-size: 0.875em;
+    color: var(--text-color-h3);
+  }
+
+  .play-cost {
+    color: white;
+    font-size: 0.875em;
+    font-weight: bold;
+    paint-order: stroke fill;
+    -webkit-text-stroke-color: black;
+    -webkit-text-stroke-width: 0.125em;
+  }
+
+  .description {
+    color: var(--text-color-content);
+    font-size: 1em;
+  }
+
+  .description-dynamic {
+    color: var(--text-color-h3);
+  }
+
+  .description-strong {
+    color: var(--text-color-strong);
+  }
+
+  .description-keyword {
+    color: var(--text-color-strong);
+    margin-inline: 0.125em;
+  }
+
+  .description-underline {
+    color: var(--text-color-strong);
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.0625em;
+    text-underline-offset: 0.1875em;
+    margin-inline: 0.125em;
+  }
+
+  .reference {
+    border-left: 0.1875em solid var(--reference-border-color);
+    padding-left: 0.5em;
+  }
+
+  .reference:not(:last-child) {
+    margin-bottom: 0.5em;
+  }
+
+  .reference-name {
+    font-size: 0.875em;
+    color: var(--text-color-strong);
+  }
+
+  .reference-type {
+    font-size: 0.875em;
+    color: var(--text-color-h3);
+  }
+
+  .reference-description {
+    color: var(--text-color-content);
+    font-size: 0.875em;
+  }
+
+  .id-box {
+    color: var(--id-color);
+    font-size: 0.75em;
+  }
+
+  .entity-category {
+    background-color: var(--category-background-color);
+    color: var(--text-color-h4);
+    padding: 0.125em;
+    font-weight: bold;
+  }
+
+  .entity-category[data-show-combine-button]::after {
+    content: "⇌";
+    position: absolute;
+    font-weight: bold;
+    right: 1em;
+  }
+
+  .entity-variable {
+    width: 1.25em;
+    height: 1.25em;
+    font-size: 1em;
+    text-align: center;
+    line-height: 1.25em;
+    background-color: #333e;
+    color: white;
+  }
+
+  .keyword-name {
+    color: var(--text-color-strong);
+    font-weight: bold;
+    font-size: 1.125em;
+  }
+}

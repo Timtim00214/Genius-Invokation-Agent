@@ -1,0 +1,43 @@
+{
+  "name": "@gi-tcg/card-data-viewer",
+  "version": "0.21.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "url": "https://github.com/piovium/genius-invokation",
+    "directory": "packages/card-data-viewer"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "check": "tsc --noEmit",
+    "build": "vite build"
+  },
+  "peerDependencies": {
+    "solid-js": "catalog:"
+  },
+  "dependencies": {
+    "@gi-tcg/assets-manager": "workspace:*",
+    "@gi-tcg/utils": "workspace:*",
+    "@solid-primitives/i18n": "^2.2.1"
+  },
+  "devDependencies": {
+    "@gi-tcg/core": "workspace:*",
+    "@gi-tcg/typings": "workspace:*",
+    "unocss": "catalog:",
+    "vite": "catalog:",
+    "unplugin-dts": "catalog:",
+    "vite-plugin-solid": "catalog:",
+    "rollup-plugin-node-externals": "catalog:"
+  }
+}

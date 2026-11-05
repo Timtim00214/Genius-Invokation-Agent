@@ -1,0 +1,3538 @@
+{
+  "run_id": "replay-932",
+  "ok": true,
+  "aborted": false,
+  "abort_reason": null,
+  "total_ms": 44233.981,
+  "results": [
+    {
+      "node_id": "in",
+      "node_type": "arena_input",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.046,
+      "output": {
+        "request": {
+          "request": {
+            "$case": "action",
+            "value": {
+              "action": [
+                {
+                  "action": {
+                    "$case": "useSkill",
+                    "value": {
+                      "skillDefinitionId": 23041,
+                      "targetIds": [],
+                      "mainDamageTargetId": -500000
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 3,
+                      "count": 1
+                    },
+                    {
+                      "type": 0,
+                      "count": 2
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    3,
+                    1,
+                    7
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "damage",
+                        "value": {
+                          "damageType": 0,
+                          "sourceId": -500033,
+                          "sourceDefinitionId": 2304,
+                          "value": 2,
+                          "targetId": -500000,
+                          "targetDefinitionId": 1411,
+                          "isSkillMainDamage": true,
+                          "reactionType": 0,
+                          "causeDefeated": false,
+                          "oldAura": 0,
+                          "newAura": 0,
+                          "oldHealth": 10,
+                          "newHealth": 8,
+                          "healKind": 0
+                        }
+                      }
+                    },
+                    {
+                      "mutation": {
+                        "$case": "modifyEntityVar",
+                        "value": {
+                          "entityId": -500000,
+                          "entityDefinitionId": 1411,
+                          "variableName": "health",
+                          "variableValue": 8,
+                          "oldValue": 10,
+                          "direction": 2
+                        }
+                      }
+                    },
+                    {
+                      "mutation": {
+                        "$case": "modifyEntityVar",
+                        "value": {
+                          "entityId": -500033,
+                          "entityDefinitionId": 2304,
+                          "variableName": "energy",
+                          "variableValue": 1,
+                          "oldValue": 0,
+                          "direction": 1
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": false
+                },
+                {
+                  "action": {
+                    "$case": "useSkill",
+                    "value": {
+                      "skillDefinitionId": 23042,
+                      "targetIds": [],
+                      "mainDamageTargetId": -500000
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 3,
+                      "count": 3
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    3,
+                    8,
+                    8
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "damage",
+                        "value": {
+                          "damageType": 3,
+                          "sourceId": -500033,
+                          "sourceDefinitionId": 2304,
+                          "value": 1,
+                          "targetId": -500000,
+                          "targetDefinitionId": 1411,
+                          "isSkillMainDamage": true,
+                          "reactionType": 0,
+                          "causeDefeated": false,
+                          "oldAura": 0,
+                          "newAura": 3,
+                          "oldHealth": 10,
+                          "newHealth": 9,
+                          "healKind": 0
+                        }
+                      }
+                    },
+                    {
+                      "mutation": {
+                        "$case": "modifyEntityVar",
+                        "value": {
+                          "entityId": -500000,
+                          "entityDefinitionId": 1411,
+                          "variableName": "health",
+                          "variableValue": 9,
+                          "oldValue": 10,
+                          "direction": 2
+                        }
+                      }
+                    },
+                    {
+                      "mutation": {
+                        "$case": "modifyEntityVar",
+                        "value": {
+                          "entityId": -500033,
+                          "entityDefinitionId": 2304,
+                          "variableName": "energy",
+                          "variableValue": 1,
+                          "oldValue": 0,
+                          "direction": 1
+                        }
+                      }
+                    },
+                    {
+                      "mutation": {
+                        "$case": "modifyEntityVar",
+                        "value": {
+                          "entityId": -500000,
+                          "entityDefinitionId": 1411,
+                          "variableName": "aura",
+                          "variableValue": 3,
+                          "oldValue": 0,
+                          "direction": 0
+                        }
+                      }
+                    },
+                    {
+                      "mutation": {
+                        "$case": "modifyEntityVar",
+                        "value": {
+                          "entityId": -500067,
+                          "entityDefinitionId": 123041,
+                          "variableName": "shield",
+                          "variableValue": 7,
+                          "oldValue": 5,
+                          "direction": 1
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": false
+                },
+                {
+                  "action": {
+                    "$case": "useSkill",
+                    "value": {
+                      "skillDefinitionId": 23043,
+                      "targetIds": []
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 3,
+                      "count": 3
+                    },
+                    {
+                      "type": 9,
+                      "count": 2
+                    }
+                  ],
+                  "autoSelectedDice": [],
+                  "validity": 4,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "createEntity",
+                        "value": {
+                          "who": 1,
+                          "where": 1,
+                          "entity": {
+                            "id": -500069,
+                            "type": 2,
+                            "definitionId": 123043,
+                            "hasUsagePerRound": false,
+                            "descriptionDictionary": {},
+                            "definitionCost": [
+                              {
+                                "type": 8,
+                                "count": 0
+                              }
+                            ],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "masterCharacterId": -500033
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": false
+                },
+                {
+                  "action": {
+                    "$case": "playCard",
+                    "value": {
+                      "cardId": -500036,
+                      "cardDefinitionId": 330008,
+                      "targetIds": [],
+                      "willBeEffectless": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 10,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "removeEntity",
+                        "value": {
+                          "who": 1,
+                          "where": 5,
+                          "entity": {
+                            "id": -500036,
+                            "type": 1,
+                            "definitionId": 330008,
+                            "hasUsagePerRound": false,
+                            "descriptionDictionary": {},
+                            "definitionCost": [
+                              {
+                                "type": 8,
+                                "count": 0
+                              },
+                              {
+                                "type": 10,
+                                "count": 1
+                              }
+                            ],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 1
+                        }
+                      }
+                    },
+                    {
+                      "mutation": {
+                        "$case": "modifyEntityVar",
+                        "value": {
+                          "entityId": -500000,
+                          "entityDefinitionId": 1411,
+                          "variableName": "energy",
+                          "variableValue": 0,
+                          "oldValue": 0,
+                          "direction": 1
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "elementalTuning",
+                    "value": {
+                      "removedCardId": -500036,
+                      "targetDice": 3,
+                      "allowTuningAnyDice": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 0,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "removeEntity",
+                        "value": {
+                          "who": 1,
+                          "where": 5,
+                          "entity": {
+                            "id": -500036,
+                            "type": 0,
+                            "definitionId": 0,
+                            "hasUsagePerRound": false,
+                            "descriptionDictionary": {},
+                            "definitionCost": [],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 2
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "playCard",
+                    "value": {
+                      "cardId": -500037,
+                      "cardDefinitionId": 313002,
+                      "targetIds": [
+                        -500033
+                      ],
+                      "willBeEffectless": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 8,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "moveEntity",
+                        "value": {
+                          "fromWho": 1,
+                          "fromWhere": 5,
+                          "toWho": 1,
+                          "toWhere": 1,
+                          "toMasterCharacterId": -500033,
+                          "entity": {
+                            "id": -500037,
+                            "type": 6,
+                            "definitionId": 313002,
+                            "variableValue": 2,
+                            "variableName": "usage",
+                            "hasUsagePerRound": false,
+                            "equipment": 3,
+                            "descriptionDictionary": {},
+                            "definitionCost": [
+                              {
+                                "type": 8,
+                                "count": 1
+                              }
+                            ],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 6
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "playCard",
+                    "value": {
+                      "cardId": -500037,
+                      "cardDefinitionId": 313002,
+                      "targetIds": [
+                        -500034
+                      ],
+                      "willBeEffectless": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 8,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "moveEntity",
+                        "value": {
+                          "fromWho": 1,
+                          "fromWhere": 5,
+                          "toWho": 1,
+                          "toWhere": 1,
+                          "toMasterCharacterId": -500034,
+                          "entity": {
+                            "id": -500037,
+                            "type": 6,
+                            "definitionId": 313002,
+                            "variableValue": 2,
+                            "variableName": "usage",
+                            "hasUsagePerRound": false,
+                            "equipment": 3,
+                            "descriptionDictionary": {},
+                            "definitionCost": [
+                              {
+                                "type": 8,
+                                "count": 1
+                              }
+                            ],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 6
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "playCard",
+                    "value": {
+                      "cardId": -500037,
+                      "cardDefinitionId": 313002,
+                      "targetIds": [
+                        -500035
+                      ],
+                      "willBeEffectless": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 8,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "moveEntity",
+                        "value": {
+                          "fromWho": 1,
+                          "fromWhere": 5,
+                          "toWho": 1,
+                          "toWhere": 1,
+                          "toMasterCharacterId": -500035,
+                          "entity": {
+                            "id": -500037,
+                            "type": 6,
+                            "definitionId": 313002,
+                            "variableValue": 2,
+                            "variableName": "usage",
+                            "hasUsagePerRound": false,
+                            "equipment": 3,
+                            "descriptionDictionary": {},
+                            "definitionCost": [
+                              {
+                                "type": 8,
+                                "count": 1
+                              }
+                            ],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 6
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "elementalTuning",
+                    "value": {
+                      "removedCardId": -500037,
+                      "targetDice": 3,
+                      "allowTuningAnyDice": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 0,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "removeEntity",
+                        "value": {
+                          "who": 1,
+                          "where": 5,
+                          "entity": {
+                            "id": -500037,
+                            "type": 0,
+                            "definitionId": 0,
+                            "variableValue": 2,
+                            "variableName": "usage",
+                            "hasUsagePerRound": false,
+                            "equipment": 3,
+                            "descriptionDictionary": {},
+                            "definitionCost": [],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 2
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "playCard",
+                    "value": {
+                      "cardId": -500038,
+                      "cardDefinitionId": 321004,
+                      "targetIds": [],
+                      "willBeEffectless": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 0,
+                      "count": 3
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1,
+                    7,
+                    5
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "moveEntity",
+                        "value": {
+                          "fromWho": 1,
+                          "fromWhere": 5,
+                          "toWho": 1,
+                          "toWhere": 4,
+                          "entity": {
+                            "id": -500038,
+                            "type": 5,
+                            "definitionId": 321004,
+                            "hasUsagePerRound": true,
+                            "descriptionDictionary": {},
+                            "definitionCost": [
+                              {
+                                "type": 0,
+                                "count": 3
+                              }
+                            ],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 7
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "elementalTuning",
+                    "value": {
+                      "removedCardId": -500038,
+                      "targetDice": 3,
+                      "allowTuningAnyDice": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 0,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "removeEntity",
+                        "value": {
+                          "who": 1,
+                          "where": 5,
+                          "entity": {
+                            "id": -500038,
+                            "type": 0,
+                            "definitionId": 0,
+                            "hasUsagePerRound": true,
+                            "descriptionDictionary": {},
+                            "definitionCost": [],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 2
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "playCard",
+                    "value": {
+                      "cardId": -500039,
+                      "cardDefinitionId": 214041,
+                      "targetIds": [],
+                      "willBeEffectless": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 4,
+                      "count": 3
+                    }
+                  ],
+                  "autoSelectedDice": [],
+                  "validity": 1,
+                  "preview": [],
+                  "isFast": false
+                },
+                {
+                  "action": {
+                    "$case": "elementalTuning",
+                    "value": {
+                      "removedCardId": -500039,
+                      "targetDice": 3,
+                      "allowTuningAnyDice": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 0,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "removeEntity",
+                        "value": {
+                          "who": 1,
+                          "where": 5,
+                          "entity": {
+                            "id": -500039,
+                            "type": 0,
+                            "definitionId": 0,
+                            "hasUsagePerRound": true,
+                            "equipment": 0,
+                            "descriptionDictionary": {},
+                            "definitionCost": [],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 2
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "playCard",
+                    "value": {
+                      "cardId": -500040,
+                      "cardDefinitionId": 223041,
+                      "targetIds": [
+                        -500033
+                      ],
+                      "willBeEffectless": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 3,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    3
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "applyAura",
+                        "value": {
+                          "elementType": 3,
+                          "targetId": -500033,
+                          "targetDefinitionId": 2304,
+                          "reactionType": 0,
+                          "oldAura": 0,
+                          "newAura": 3
+                        }
+                      }
+                    },
+                    {
+                      "mutation": {
+                        "$case": "moveEntity",
+                        "value": {
+                          "fromWho": 1,
+                          "fromWhere": 5,
+                          "toWho": 1,
+                          "toWhere": 1,
+                          "toMasterCharacterId": -500033,
+                          "entity": {
+                            "id": -500040,
+                            "type": 6,
+                            "definitionId": 223041,
+                            "hasUsagePerRound": true,
+                            "equipment": 0,
+                            "descriptionDictionary": {},
+                            "definitionCost": [
+                              {
+                                "type": 3,
+                                "count": 1
+                              }
+                            ],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 6
+                        }
+                      }
+                    },
+                    {
+                      "mutation": {
+                        "$case": "modifyEntityVar",
+                        "value": {
+                          "entityId": -500033,
+                          "entityDefinitionId": 2304,
+                          "variableName": "aura",
+                          "variableValue": 3,
+                          "oldValue": 0,
+                          "direction": 0
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "elementalTuning",
+                    "value": {
+                      "removedCardId": -500040,
+                      "targetDice": 3,
+                      "allowTuningAnyDice": false
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 0,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "removeEntity",
+                        "value": {
+                          "who": 1,
+                          "where": 5,
+                          "entity": {
+                            "id": -500040,
+                            "type": 0,
+                            "definitionId": 0,
+                            "hasUsagePerRound": true,
+                            "equipment": 0,
+                            "descriptionDictionary": {},
+                            "definitionCost": [],
+                            "tags": 0,
+                            "attachment": []
+                          },
+                          "reason": 2
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": true
+                },
+                {
+                  "action": {
+                    "$case": "switchActive",
+                    "value": {
+                      "characterId": -500034,
+                      "characterDefinitionId": 1311
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 0,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "switchActive",
+                        "value": {
+                          "who": 1,
+                          "characterId": -500034,
+                          "characterDefinitionId": 1311,
+                          "fromAction": 0
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": false
+                },
+                {
+                  "action": {
+                    "$case": "switchActive",
+                    "value": {
+                      "characterId": -500035,
+                      "characterDefinitionId": 1404
+                    }
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 0,
+                      "count": 1
+                    }
+                  ],
+                  "autoSelectedDice": [
+                    1
+                  ],
+                  "validity": 0,
+                  "preview": [
+                    {
+                      "mutation": {
+                        "$case": "switchActive",
+                        "value": {
+                          "who": 1,
+                          "characterId": -500035,
+                          "characterDefinitionId": 1404,
+                          "fromAction": 0
+                        }
+                      }
+                    }
+                  ],
+                  "isFast": false
+                },
+                {
+                  "action": {
+                    "$case": "declareEnd",
+                    "value": {}
+                  },
+                  "requiredCost": [
+                    {
+                      "type": 8,
+                      "count": 0
+                    }
+                  ],
+                  "autoSelectedDice": [],
+                  "validity": 0,
+                  "preview": [],
+                  "isFast": false
+                }
+              ]
+            }
+          }
+        },
+        "detail": {
+          "type": "request",
+          "at": 1792925854931,
+          "seat": 1,
+          "rpc": "action",
+          "round": 1,
+          "phase": "行动",
+          "currentTurn": 1,
+          "deadline": 1792925859931,
+          "attempt": 0,
+          "actions": [
+            {
+              "index": 0,
+              "kind": "useSkill",
+              "name": "重钳碎击",
+              "skillId": 23041,
+              "skillName": "重钳碎击",
+              "targets": [],
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 2,
+                  "3": 1
+                },
+                "total": 3,
+                "text": "2任意元素+1火"
+              },
+              "autoSelectedDice": [
+                3,
+                1,
+                7
+              ],
+              "autoSelectedDiceLabels": [
+                "火",
+                "冰",
+                "草"
+              ],
+              "preview": [
+                {
+                  "type": "damage",
+                  "targetId": -500000,
+                  "target": "久岐忍",
+                  "amount": 2,
+                  "element": "物理",
+                  "reaction": null,
+                  "defeated": false
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500000,
+                  "entity": "久岐忍",
+                  "variable": "health"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500033,
+                  "entity": "铁甲熔火帝皇",
+                  "variable": "energy"
+                }
+              ]
+            },
+            {
+              "index": 1,
+              "kind": "useSkill",
+              "name": "烈焰燃绽",
+              "skillId": 23042,
+              "skillName": "烈焰燃绽",
+              "targets": [],
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "3": 3
+                },
+                "total": 3,
+                "text": "3火"
+              },
+              "autoSelectedDice": [
+                3,
+                8,
+                8
+              ],
+              "autoSelectedDiceLabels": [
+                "火",
+                "万能",
+                "万能"
+              ],
+              "preview": [
+                {
+                  "type": "damage",
+                  "targetId": -500000,
+                  "target": "久岐忍",
+                  "amount": 1,
+                  "element": "火",
+                  "reaction": null,
+                  "defeated": false
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500000,
+                  "entity": "久岐忍",
+                  "variable": "health"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500033,
+                  "entity": "铁甲熔火帝皇",
+                  "variable": "energy"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500000,
+                  "entity": "久岐忍",
+                  "variable": "aura"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500067,
+                  "entity": "重甲蟹壳",
+                  "variable": "shield"
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "kind": "useSkill",
+              "name": "战阵爆轰",
+              "skillId": 23043,
+              "skillName": "战阵爆轰",
+              "targets": [],
+              "validity": 4,
+              "validityLabel": "充能不足",
+              "cost": {
+                "dice": {
+                  "3": 3,
+                  "9": 2
+                },
+                "total": 5,
+                "text": "3火+2充能"
+              },
+              "autoSelectedDice": [],
+              "autoSelectedDiceLabels": [],
+              "preview": [
+                {
+                  "type": "createEntity",
+                  "entity": "积蓄烈威"
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "kind": "playCard",
+              "name": "旧日鏖战",
+              "cardId": -500036,
+              "cardDefinitionId": 330008,
+              "cardName": "旧日鏖战",
+              "targets": [],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "10": 1
+                },
+                "total": 1,
+                "text": "1秘传"
+              },
+              "autoSelectedDice": [],
+              "autoSelectedDiceLabels": [],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500000,
+                  "entity": "久岐忍",
+                  "variable": "energy"
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "kind": "elementalTuning",
+              "name": "元素调和（弃置 未知）",
+              "removedCardId": -500036,
+              "targetDice": 3,
+              "targetDiceLabel": "火",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "kind": "playCard",
+              "name": "匿叶龙",
+              "cardId": -500037,
+              "cardDefinitionId": 313002,
+              "cardName": "匿叶龙",
+              "targets": [
+                {
+                  "name": "未知"
+                }
+              ],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "8": 1
+                },
+                "total": 1,
+                "text": "1相同元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "moveEntity"
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "kind": "playCard",
+              "name": "匿叶龙",
+              "cardId": -500037,
+              "cardDefinitionId": 313002,
+              "cardName": "匿叶龙",
+              "targets": [
+                {
+                  "name": "未知"
+                }
+              ],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "8": 1
+                },
+                "total": 1,
+                "text": "1相同元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "moveEntity"
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "kind": "playCard",
+              "name": "匿叶龙",
+              "cardId": -500037,
+              "cardDefinitionId": 313002,
+              "cardName": "匿叶龙",
+              "targets": [
+                {
+                  "name": "未知"
+                }
+              ],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "8": 1
+                },
+                "total": 1,
+                "text": "1相同元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "moveEntity"
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "kind": "elementalTuning",
+              "name": "元素调和（弃置 未知）",
+              "removedCardId": -500037,
+              "targetDice": 3,
+              "targetDiceLabel": "火",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "kind": "playCard",
+              "name": "晨曦酒庄",
+              "cardId": -500038,
+              "cardDefinitionId": 321004,
+              "cardName": "晨曦酒庄",
+              "targets": [],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 3
+                },
+                "total": 3,
+                "text": "3任意元素"
+              },
+              "autoSelectedDice": [
+                1,
+                7,
+                5
+              ],
+              "autoSelectedDiceLabels": [
+                "冰",
+                "草",
+                "风"
+              ],
+              "preview": [
+                {
+                  "type": "moveEntity"
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "kind": "elementalTuning",
+              "name": "元素调和（弃置 未知）",
+              "removedCardId": -500038,
+              "targetDice": 3,
+              "targetDiceLabel": "火",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "kind": "playCard",
+              "name": "落羽的裁择",
+              "cardId": -500039,
+              "cardDefinitionId": 214041,
+              "cardName": "落羽的裁择",
+              "targets": [],
+              "willBeEffectless": false,
+              "validity": 1,
+              "validityLabel": "条件不满足",
+              "cost": {
+                "dice": {
+                  "4": 3
+                },
+                "total": 3,
+                "text": "3雷"
+              },
+              "autoSelectedDice": [],
+              "autoSelectedDiceLabels": [],
+              "preview": []
+            },
+            {
+              "index": 12,
+              "kind": "elementalTuning",
+              "name": "元素调和（弃置 未知）",
+              "removedCardId": -500039,
+              "targetDice": 3,
+              "targetDiceLabel": "火",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "kind": "playCard",
+              "name": "熔火铁甲",
+              "cardId": -500040,
+              "cardDefinitionId": 223041,
+              "cardName": "熔火铁甲",
+              "targets": [
+                {
+                  "name": "未知"
+                }
+              ],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "3": 1
+                },
+                "total": 1,
+                "text": "1火"
+              },
+              "autoSelectedDice": [
+                3
+              ],
+              "autoSelectedDiceLabels": [
+                "火"
+              ],
+              "preview": [
+                {
+                  "type": "applyAura"
+                },
+                {
+                  "type": "moveEntity"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500033,
+                  "entity": "铁甲熔火帝皇",
+                  "variable": "aura"
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "kind": "elementalTuning",
+              "name": "元素调和（弃置 未知）",
+              "removedCardId": -500040,
+              "targetDice": 3,
+              "targetDiceLabel": "火",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "kind": "switchActive",
+              "name": "切换到 托马",
+              "characterId": -500034,
+              "characterName": "托马",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "switchActive"
+                }
+              ]
+            },
+            {
+              "index": 16,
+              "kind": "switchActive",
+              "name": "切换到 赛诺",
+              "characterId": -500035,
+              "characterName": "赛诺",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "switchActive"
+                }
+              ]
+            },
+            {
+              "index": 17,
+              "kind": "declareEnd",
+              "name": "结束回合",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {},
+                "total": 0,
+                "text": "0"
+              },
+              "autoSelectedDice": [],
+              "autoSelectedDiceLabels": [],
+              "preview": []
+            }
+          ],
+          "validActions": [
+            {
+              "index": 0,
+              "kind": "useSkill",
+              "name": "重钳碎击",
+              "skillId": 23041,
+              "skillName": "重钳碎击",
+              "targets": [],
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 2,
+                  "3": 1
+                },
+                "total": 3,
+                "text": "2任意元素+1火"
+              },
+              "autoSelectedDice": [
+                3,
+                1,
+                7
+              ],
+              "autoSelectedDiceLabels": [
+                "火",
+                "冰",
+                "草"
+              ],
+              "preview": [
+                {
+                  "type": "damage",
+                  "targetId": -500000,
+                  "target": "久岐忍",
+                  "amount": 2,
+                  "element": "物理",
+                  "reaction": null,
+                  "defeated": false
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500000,
+                  "entity": "久岐忍",
+                  "variable": "health"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500033,
+                  "entity": "铁甲熔火帝皇",
+                  "variable": "energy"
+                }
+              ]
+            },
+            {
+              "index": 1,
+              "kind": "useSkill",
+              "name": "烈焰燃绽",
+              "skillId": 23042,
+              "skillName": "烈焰燃绽",
+              "targets": [],
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "3": 3
+                },
+                "total": 3,
+                "text": "3火"
+              },
+              "autoSelectedDice": [
+                3,
+                8,
+                8
+              ],
+              "autoSelectedDiceLabels": [
+                "火",
+                "万能",
+                "万能"
+              ],
+              "preview": [
+                {
+                  "type": "damage",
+                  "targetId": -500000,
+                  "target": "久岐忍",
+                  "amount": 1,
+                  "element": "火",
+                  "reaction": null,
+                  "defeated": false
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500000,
+                  "entity": "久岐忍",
+                  "variable": "health"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500033,
+                  "entity": "铁甲熔火帝皇",
+                  "variable": "energy"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500000,
+                  "entity": "久岐忍",
+                  "variable": "aura"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500067,
+                  "entity": "重甲蟹壳",
+                  "variable": "shield"
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "kind": "playCard",
+              "name": "旧日鏖战",
+              "cardId": -500036,
+              "cardDefinitionId": 330008,
+              "cardName": "旧日鏖战",
+              "targets": [],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "10": 1
+                },
+                "total": 1,
+                "text": "1秘传"
+              },
+              "autoSelectedDice": [],
+              "autoSelectedDiceLabels": [],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500000,
+                  "entity": "久岐忍",
+                  "variable": "energy"
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "kind": "elementalTuning",
+              "name": "元素调和（弃置 未知）",
+              "removedCardId": -500036,
+              "targetDice": 3,
+              "targetDiceLabel": "火",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "kind": "playCard",
+              "name": "匿叶龙",
+              "cardId": -500037,
+              "cardDefinitionId": 313002,
+              "cardName": "匿叶龙",
+              "targets": [
+                {
+                  "name": "未知"
+                }
+              ],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "8": 1
+                },
+                "total": 1,
+                "text": "1相同元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "moveEntity"
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "kind": "playCard",
+              "name": "匿叶龙",
+              "cardId": -500037,
+              "cardDefinitionId": 313002,
+              "cardName": "匿叶龙",
+              "targets": [
+                {
+                  "name": "未知"
+                }
+              ],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "8": 1
+                },
+                "total": 1,
+                "text": "1相同元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "moveEntity"
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "kind": "playCard",
+              "name": "匿叶龙",
+              "cardId": -500037,
+              "cardDefinitionId": 313002,
+              "cardName": "匿叶龙",
+              "targets": [
+                {
+                  "name": "未知"
+                }
+              ],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "8": 1
+                },
+                "total": 1,
+                "text": "1相同元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "moveEntity"
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "kind": "elementalTuning",
+              "name": "元素调和（弃置 未知）",
+              "removedCardId": -500037,
+              "targetDice": 3,
+              "targetDiceLabel": "火",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "kind": "playCard",
+              "name": "晨曦酒庄",
+              "cardId": -500038,
+              "cardDefinitionId": 321004,
+              "cardName": "晨曦酒庄",
+              "targets": [],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 3
+                },
+                "total": 3,
+                "text": "3任意元素"
+              },
+              "autoSelectedDice": [
+                1,
+                7,
+                5
+              ],
+              "autoSelectedDiceLabels": [
+                "冰",
+                "草",
+                "风"
+              ],
+              "preview": [
+                {
+                  "type": "moveEntity"
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "kind": "elementalTuning",
+              "name": "元素调和（弃置 未知）",
+              "removedCardId": -500038,
+              "targetDice": 3,
+              "targetDiceLabel": "火",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "kind": "elementalTuning",
+              "name": "元素调和（弃置 未知）",
+              "removedCardId": -500039,
+              "targetDice": 3,
+              "targetDiceLabel": "火",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "kind": "playCard",
+              "name": "熔火铁甲",
+              "cardId": -500040,
+              "cardDefinitionId": 223041,
+              "cardName": "熔火铁甲",
+              "targets": [
+                {
+                  "name": "未知"
+                }
+              ],
+              "willBeEffectless": false,
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "3": 1
+                },
+                "total": 1,
+                "text": "1火"
+              },
+              "autoSelectedDice": [
+                3
+              ],
+              "autoSelectedDiceLabels": [
+                "火"
+              ],
+              "preview": [
+                {
+                  "type": "applyAura"
+                },
+                {
+                  "type": "moveEntity"
+                },
+                {
+                  "type": "modifyEntityVar",
+                  "entityId": -500033,
+                  "entity": "铁甲熔火帝皇",
+                  "variable": "aura"
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "kind": "elementalTuning",
+              "name": "元素调和（弃置 未知）",
+              "removedCardId": -500040,
+              "targetDice": 3,
+              "targetDiceLabel": "火",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "removeEntity"
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "kind": "switchActive",
+              "name": "切换到 托马",
+              "characterId": -500034,
+              "characterName": "托马",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "switchActive"
+                }
+              ]
+            },
+            {
+              "index": 16,
+              "kind": "switchActive",
+              "name": "切换到 赛诺",
+              "characterId": -500035,
+              "characterName": "赛诺",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {
+                  "0": 1
+                },
+                "total": 1,
+                "text": "1任意元素"
+              },
+              "autoSelectedDice": [
+                1
+              ],
+              "autoSelectedDiceLabels": [
+                "冰"
+              ],
+              "preview": [
+                {
+                  "type": "switchActive"
+                }
+              ]
+            },
+            {
+              "index": 17,
+              "kind": "declareEnd",
+              "name": "结束回合",
+              "validity": 0,
+              "validityLabel": "合法",
+              "cost": {
+                "dice": {},
+                "total": 0,
+                "text": "0"
+              },
+              "autoSelectedDice": [],
+              "autoSelectedDiceLabels": [],
+              "preview": []
+            }
+          ],
+          "dice": [
+            8,
+            8,
+            8,
+            3,
+            4,
+            1,
+            7,
+            5
+          ],
+          "diceLabels": [
+            "万能",
+            "万能",
+            "万能",
+            "火",
+            "雷",
+            "冰",
+            "草",
+            "风"
+          ],
+          "declaredEnd": false,
+          "activeCharacter": {
+            "id": -500033,
+            "definitionId": 2304,
+            "name": "铁甲熔火帝皇",
+            "tags": {
+              "raw": 1,
+              "shield": true,
+              "barrier": false,
+              "disableSkill": false,
+              "nightsoulsBlessing": false,
+              "bondOfLife": false
+            }
+          },
+          "disabledBy": [],
+          "note": "选择 actions 里的 index；usedDice 可以省略，服务端会自动用该行动的 autoSelectedDice。"
+        },
+        "state": {
+          "phase": 3,
+          "currentTurn": 1,
+          "roundNumber": 1,
+          "player": [
+            {
+              "activeCharacterId": -500000,
+              "pileCard": [
+                {
+                  "id": -500008,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 0,
+                  "variableName": "count",
+                  "hasUsagePerRound": false,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500009,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500010,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500011,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500012,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500013,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500014,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500015,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500016,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 0,
+                  "variableName": "count",
+                  "hasUsagePerRound": false,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500017,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500018,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "equipment": 0,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500019,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500020,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "equipment": 1,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500021,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 0,
+                  "variableName": "collected",
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500022,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 0,
+                  "variableName": "count",
+                  "hasUsagePerRound": false,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500023,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500024,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 2,
+                  "variableName": "material",
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500025,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 2,
+                  "variableName": "material",
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500026,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500027,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500028,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500029,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 0,
+                  "variableName": "collected",
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500030,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "equipment": 0,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500031,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500032,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                }
+              ],
+              "handCard": [
+                {
+                  "id": -500003,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500004,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500005,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500006,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500007,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 0,
+                  "variableName": "count",
+                  "hasUsagePerRound": false,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                }
+              ],
+              "character": [
+                {
+                  "id": -500000,
+                  "definitionId": 1411,
+                  "defeated": false,
+                  "entity": [],
+                  "health": 10,
+                  "energy": 0,
+                  "maxHealth": 10,
+                  "maxEnergy": 2,
+                  "aura": 0,
+                  "tags": 0
+                },
+                {
+                  "id": -500001,
+                  "definitionId": 2102,
+                  "defeated": false,
+                  "entity": [
+                    {
+                      "id": -500066,
+                      "type": 2,
+                      "definitionId": 121021,
+                      "hasUsagePerRound": false,
+                      "descriptionDictionary": {},
+                      "definitionCost": [
+                        {
+                          "type": 8,
+                          "count": 0
+                        }
+                      ],
+                      "tags": 0,
+                      "attachment": []
+                    }
+                  ],
+                  "health": 10,
+                  "energy": 0,
+                  "maxHealth": 10,
+                  "maxEnergy": 2,
+                  "aura": 0,
+                  "tags": 0
+                },
+                {
+                  "id": -500002,
+                  "definitionId": 1510,
+                  "defeated": false,
+                  "entity": [],
+                  "health": 11,
+                  "energy": 0,
+                  "maxHealth": 11,
+                  "maxEnergy": 2,
+                  "aura": 0,
+                  "tags": 0
+                }
+              ],
+              "dice": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "combatStatus": [],
+              "support": [],
+              "summon": [],
+              "initiativeSkill": [],
+              "declaredEnd": true,
+              "legendUsed": false,
+              "status": 0
+            },
+            {
+              "activeCharacterId": -500033,
+              "pileCard": [
+                {
+                  "id": -500041,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500042,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "equipment": 0,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500043,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500044,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500045,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500046,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500047,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500048,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500049,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500050,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": true,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500051,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500052,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 3,
+                  "variableName": "usage",
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500053,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 2,
+                  "variableName": "usage",
+                  "hasUsagePerRound": false,
+                  "equipment": 3,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500054,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 0,
+                  "variableName": "reward",
+                  "hasUsagePerRound": false,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500055,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500056,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 0,
+                  "variableName": "reward",
+                  "hasUsagePerRound": false,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500057,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 3,
+                  "variableName": "usage",
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500058,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 0,
+                  "variableName": "count",
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500059,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "equipment": 2,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500060,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500061,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 2,
+                  "variableName": "material",
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500062,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500063,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 0,
+                  "variableName": "collected",
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500064,
+                  "type": 0,
+                  "definitionId": 0,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500065,
+                  "type": 0,
+                  "definitionId": 0,
+                  "variableValue": 2,
+                  "variableName": "material",
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [],
+                  "tags": 0,
+                  "attachment": []
+                }
+              ],
+              "handCard": [
+                {
+                  "id": -500036,
+                  "type": 1,
+                  "definitionId": 330008,
+                  "hasUsagePerRound": false,
+                  "descriptionDictionary": {},
+                  "definitionCost": [
+                    {
+                      "type": 8,
+                      "count": 0
+                    },
+                    {
+                      "type": 10,
+                      "count": 1
+                    }
+                  ],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500037,
+                  "type": 6,
+                  "definitionId": 313002,
+                  "variableValue": 2,
+                  "variableName": "usage",
+                  "hasUsagePerRound": false,
+                  "equipment": 3,
+                  "descriptionDictionary": {},
+                  "definitionCost": [
+                    {
+                      "type": 8,
+                      "count": 1
+                    }
+                  ],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500038,
+                  "type": 5,
+                  "definitionId": 321004,
+                  "hasUsagePerRound": true,
+                  "descriptionDictionary": {},
+                  "definitionCost": [
+                    {
+                      "type": 0,
+                      "count": 3
+                    }
+                  ],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500039,
+                  "type": 6,
+                  "definitionId": 214041,
+                  "hasUsagePerRound": true,
+                  "equipment": 0,
+                  "descriptionDictionary": {},
+                  "definitionCost": [
+                    {
+                      "type": 4,
+                      "count": 3
+                    }
+                  ],
+                  "tags": 0,
+                  "attachment": []
+                },
+                {
+                  "id": -500040,
+                  "type": 6,
+                  "definitionId": 223041,
+                  "hasUsagePerRound": true,
+                  "equipment": 0,
+                  "descriptionDictionary": {},
+                  "definitionCost": [
+                    {
+                      "type": 3,
+                      "count": 1
+                    }
+                  ],
+                  "tags": 0,
+                  "attachment": []
+                }
+              ],
+              "character": [
+                {
+                  "id": -500033,
+                  "definitionId": 2304,
+                  "defeated": false,
+                  "entity": [
+                    {
+                      "id": -500067,
+                      "type": 2,
+                      "definitionId": 123041,
+                      "variableValue": 5,
+                      "variableName": "shield",
+                      "hasUsagePerRound": false,
+                      "descriptionDictionary": {},
+                      "definitionCost": [
+                        {
+                          "type": 8,
+                          "count": 0
+                        }
+                      ],
+                      "tags": 0,
+                      "attachment": []
+                    }
+                  ],
+                  "health": 5,
+                  "energy": 0,
+                  "maxHealth": 5,
+                  "maxEnergy": 2,
+                  "aura": 0,
+                  "tags": 1
+                },
+                {
+                  "id": -500034,
+                  "definitionId": 1311,
+                  "defeated": false,
+                  "entity": [],
+                  "health": 12,
+                  "energy": 0,
+                  "maxHealth": 12,
+                  "maxEnergy": 2,
+                  "aura": 0,
+                  "tags": 0
+                },
+                {
+                  "id": -500035,
+                  "definitionId": 1404,
+                  "defeated": false,
+                  "entity": [
+                    {
+                      "id": -500068,
+                      "type": 2,
+                      "definitionId": 114041,
+                      "variableValue": 0,
+                      "variableName": "reliance",
+                      "hasUsagePerRound": false,
+                      "descriptionDictionary": {},
+                      "definitionCost": [
+                        {
+                          "type": 8,
+                          "count": 0
+                        }
+                      ],
+                      "tags": 0,
+                      "attachment": []
+                    }
+                  ],
+                  "health": 10,
+                  "energy": 0,
+                  "maxHealth": 10,
+                  "maxEnergy": 2,
+                  "aura": 0,
+                  "tags": 0
+                }
+              ],
+              "dice": [
+                8,
+                8,
+                8,
+                3,
+                4,
+                1,
+                7,
+                5
+              ],
+              "combatStatus": [],
+              "support": [],
+              "summon": [],
+              "initiativeSkill": [
+                {
+                  "definitionId": 23041,
+                  "definitionCost": [
+                    {
+                      "type": 3,
+                      "count": 1
+                    },
+                    {
+                      "type": 0,
+                      "count": 2
+                    }
+                  ]
+                },
+                {
+                  "definitionId": 23042,
+                  "definitionCost": [
+                    {
+                      "type": 3,
+                      "count": 3
+                    }
+                  ]
+                },
+                {
+                  "definitionId": 23043,
+                  "definitionCost": [
+                    {
+                      "type": 3,
+                      "count": 3
+                    },
+                    {
+                      "type": 9,
+                      "count": 2
+                    }
+                  ]
+                }
+              ],
+              "declaredEnd": false,
+              "legendUsed": false,
+              "status": 4
+            }
+          ]
+        },
+        "meta": {
+          "matchId": "local",
+          "seat": 1,
+          "requestId": 932,
+          "rpcKind": "action",
+          "round": 1,
+          "deadline": null,
+          "remainingMs": 117000,
+          "attempt": 0,
+          "replay": true
+        },
+        "retry": {},
+        "ctx": {
+          "summary": "",
+          "stats": {
+            "turns": 0,
+            "usedTurns": 0,
+            "notes": 0,
+            "chars": 0,
+            "estTokens": 0,
+            "noteText": ""
+          },
+          "lastDecision": null
+        },
+        "rpc_kind": "action",
+        "round": 1,
+        "deadline_ms": null,
+        "remaining_ms": 117000,
+        "attempt": 0,
+        "summary": "请求=action，回合=1，剩余=117000ms",
+        "seat": 1,
+        "catalog": {
+          "version": "v7.1.0",
+          "characters": {
+            "1311": "托马",
+            "1404": "赛诺",
+            "1411": "久岐忍",
+            "1510": "闲云",
+            "2102": "「女士」",
+            "2304": "铁甲熔火帝皇"
+          },
+          "cards": {
+            "214041": "落羽的裁择",
+            "223041": "熔火铁甲",
+            "313002": "匿叶龙",
+            "321004": "晨曦酒庄",
+            "330008": "旧日鏖战"
+          },
+          "tokens": {
+            "114041": "启途誓使",
+            "121021": "冰封的炽炎魔女",
+            "123041": "重甲蟹壳"
+          },
+          "skills": {
+            "23041": "重钳碎击",
+            "23042": "烈焰燃绽",
+            "23043": "战阵爆轰"
+          },
+          "count": 17
+        },
+        "plan": "",
+        "deck": {},
+        "winrates": [],
+        "intent": "",
+        "config": {},
+        "card_text": {
+          "version": "v7.1.0",
+          "descriptions": {
+            "1311": "渡来介者，赤袖丹心。",
+            "1404": "卡牌中蕴藏的，是大风纪官如沙漠烈日般炙热的喜爱之情。",
+            "1411": "百业通才，鬼之副手。",
+            "1510": "侠中影，云里客。",
+            "2102": "瞳仁中倒映着破晓的赤红，她最后展开烈焰之翼向黎明飞去。\n「但那并不是曙光，亲爱的罗莎琳。那是焚尽一切的火海。」\n但这也没什么所谓。因为她心中明白，自己早已被烈火吞没。",
+            "2304": "矗立在原海异种顶端的两位霸主之一，不遇天敌，不倦狩猎并成长之蟹。有着半是敬畏，半是戏谑的「帝皇」之称。",
+            "23041": "造成2点物理伤害。",
+            "23042": "造成1点火元素伤害；如果本角色附属有至少7层重甲蟹壳，则此伤害+1。\n然后，本角色附属2层重甲蟹壳。",
+            "23043": "本角色准备技能：炽烈轰破。",
+            "114041": "结束阶段：累积1级「凭依」。如果「凭依」级数至少为8，则「凭依」级数-6。\n根据「凭依」级数，提供效果：\n大于等于2级：物理伤害转化为雷元素伤害；\n大于等于4级：造成的伤害+2。",
+            "121021": "行动阶段开始时：如果所附属角色生命值不多于4，则移除此效果。\n所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。\n此效果被移除时：所附属角色转换为「焚尽的炽炎魔女」形态。",
+            "123041": "每层提供1点护盾，保护所附属角色。",
+            "214041": "战斗行动：我方出战角色为赛诺时，装备此牌。\n赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂。\n装备有此牌的赛诺在启途誓使的「凭依」级数至少为2时，使用秘仪·律渊渡魂造成的伤害+1。（每回合至多2次）\n（牌组中包含赛诺，才能加入牌组）",
+            "223041": "入场时：对装备有此牌的铁甲熔火帝皇附着火元素。\n我方除重甲蟹壳以外的护盾状态或护盾出战状态被移除后：装备有此牌的铁甲熔火帝皇附属2层重甲蟹壳。（每回合1次）\n（牌组中包含铁甲熔火帝皇，才能加入牌组）",
+            "313002": "特技：钩物巧技\n可用次数：2\n（角色最多装备1个「特技」）\n[3130021: 钩物巧技] (2*Aligned) 造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌，然后对手抓1张牌。\n如果我方手牌数不多于2，此特技少花费1个元素骰。\n[3130022: ] ()",
+            "321004": "我方执行「切换角色」行动时：少花费1个元素骰。（每回合2次）",
+            "330008": "敌方出战角色失去1点充能。\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）"
+          },
+          "count": 17
+        },
+        "game_log": [
+          {
+            "time": 1761450000000,
+            "seat": 0,
+            "kind": "decision",
+            "text": "",
+            "detail": {
+              "req": {
+                "request": {
+                  "$case": "action",
+                  "value": {
+                    "action": [
+                      {
+                        "action": {
+                          "$case": "playCard",
+                          "value": {
+                            "cardDefinitionId": 330008
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "res": {
+                "response": {
+                  "$case": "action",
+                  "value": {
+                    "chosenActionIndex": 0
+                  }
+                }
+              }
+            }
+          },
+          {
+            "time": 1761450000000,
+            "seat": 0,
+            "kind": "decision",
+            "text": "",
+            "detail": {
+              "req": {
+                "request": {
+                  "$case": "action",
+                  "value": {
+                    "action": [
+                      {
+                        "action": {
+                          "$case": "useSkill",
+                          "value": {
+                            "skillDefinitionId": 23041
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "res": {
+                "response": {
+                  "$case": "action",
+                  "value": {
+                    "chosenActionIndex": 0
+                  }
+                }
+              }
+            }
+          },
+          {
+            "time": 1761450000000,
+            "seat": 0,
+            "kind": "decision",
+            "text": "",
+            "detail": {
+              "req": {
+                "request": {
+                  "$case": "action",
+                  "value": {
+                    "action": [
+                      {
+                        "action": {
+                          "$case": "elementalTuning",
+                          "value": {
+                            "removedCardId": -500036
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "res": {
+                "response": {
+                  "$case": "action",
+                  "value": {
+                    "chosenActionIndex": 0
+                  }
+                }
+              }
+            }
+          },
+          {
+            "time": 1761450000000,
+            "seat": 0,
+            "kind": "decision",
+            "text": "",
+            "detail": {
+              "req": {
+                "request": {
+                  "$case": "action",
+                  "value": {
+                    "action": [
+                      {
+                        "action": {
+                          "$case": "switchActive",
+                          "value": {
+                            "characterId": -500000
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "res": {
+                "response": {
+                  "$case": "action",
+                  "value": {
+                    "chosenActionIndex": 0
+                  }
+                }
+              }
+            }
+          },
+          {
+            "time": 1761450000100,
+            "seat": 0,
+            "kind": "decision",
+            "text": "",
+            "detail": {
+              "req": {
+                "request": {
+                  "$case": "chooseActive",
+                  "value": {}
+                }
+              },
+              "res": {
+                "response": {
+                  "$case": "chooseActive",
+                  "value": {
+                    "activeCharacterId": -500000
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "node_id": "brief",
+      "node_type": "state_brief",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.759,
+      "output": {
+        "text": "回合 1 · 阶段 行动 · 当前行动方：玩家 1\n我方（座位 1） 出战：铁甲熔火帝皇\n  铁甲熔火帝皇 5/5 能量0/2（★出战）\n    装备/状态：重甲蟹壳 护盾5（每层提供1点护盾，保护所附属角色。）\n  托马 12/12 能量0/2\n  赛诺 10/10 能量0/2\n    装备/状态：启途誓使（结束阶段：累积1级「凭依」。如果「凭依」级数至少为8，则「凭依」级数-6。根据「凭依」级数，提供效果：大于等于2级：物理伤害转化为雷元素伤害…）\n  手牌 5 张：旧日鏖战〔敌方出战角色失去1点充能。〕、匿叶龙〔特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌…〕、晨曦酒庄〔我方执行「切换角色」行动时：少花费1个元素骰。（每回合2次）〕、落羽的裁择〔战斗行动：我方出战角色为赛诺时，装备此牌。赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂…〕、熔火铁甲〔入场时：对装备有此牌的铁甲熔火帝皇附着火元素。我方除重甲蟹壳以外的护盾状态或护盾出战状态…〕\n  骰子 8 个：万能、万能、万能、火、雷、冰、草、风\n  牌堆 25 张\n对方（座位 0） 出战：久岐忍\n  久岐忍 10/10 能量0/2（★出战）\n  「女士」 10/10 能量0/2\n    装备/状态：冰封的炽炎魔女（行动阶段开始时：如果所附属角色生命值不多于4，则移除此效果。所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值…）\n  闲云 11/11 能量0/2\n  手牌 5 张（内容不可见）\n  骰子 8 个（骰面不可见）\n  牌堆 25 张\n  已宣布结束回合",
+        "chars": 699,
+        "truncated": false,
+        "me": {},
+        "opponent": {}
+      }
+    },
+    {
+      "node_id": "glog",
+      "node_type": "game_log",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.252,
+      "output": {
+        "text": "- 对方 打出「旧日鏖战」：敌方出战角色失去1点充能\n- 对方 使用技能「重钳碎击」：造成2点物理伤害\n- 对方 元素调和（弃一张手牌换骰）\n- 对方 切换到「久岐忍」\n- 对方 选择出战「久岐忍」",
+        "count": 5,
+        "empty": false
+      }
+    },
+    {
+      "node_id": "hist",
+      "node_type": "winrate_table",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.186,
+      "output": {
+        "text": "（还没有往期估计：这是本局第一次估计胜率）",
+        "count": 0,
+        "latest": null,
+        "first": null,
+        "trend": "",
+        "chars": 0
+      }
+    },
+    {
+      "node_id": "note",
+      "node_type": "json_pick",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.193,
+      "output": {
+        "text": "",
+        "found": false,
+        "type": "absent"
+      }
+    },
+    {
+      "node_id": "rank",
+      "node_type": "action_rank",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.453,
+      "output": {
+        "text": "共 16 项合法动作（全部列出；编号就是原始编号，直接用编号回答）\n当前出战：铁甲熔火帝皇\n  [0] 重钳碎击 ｜ 2任意元素+1火 ｜ 造成 2 点物理伤害 → 久岐忍\n  [1] 烈焰燃绽 ｜ 3火 ｜ 说明：造成1点火元素伤害；如果本角色附属有至少7层重甲蟹壳，则此伤害+1。然后，本角色附属2层重甲蟹壳。 ｜ 造成 1 点火伤害 → 久岐忍\n  [3] 旧日鏖战 ｜ 1秘传 ｜ 牌面：敌方出战角色失去1点充能。\n  [4] 元素调和：弃「旧日鏖战」 → 换 1 个火骰 ｜ 1任意元素\n  [5] 匿叶龙 ｜ 1相同元素 ｜ 牌面：特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌，然后对手抓1张牌…\n  [6] 匿叶龙 ｜ 1相同元素 ｜ 牌面：特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌，然后对手抓1张牌…\n  [7] 匿叶龙 ｜ 1相同元素 ｜ 牌面：特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌，然后对手抓1张牌…\n  [8] 元素调和：弃「匿叶龙」 → 换 1 个火骰 ｜ 1任意元素\n  [9] 晨曦酒庄 ｜ 3任意元素 ｜ 牌面：我方执行「切换角色」行动时：少花费1个元素骰。（每回合2次）\n  [10] 元素调和：弃「晨曦酒庄」 → 换 1 个火骰 ｜ 1任意元素\n  [12] 元素调和：弃「落羽的裁择」 → 换 1 个火骰 ｜ 1任意元素\n  [13] 熔火铁甲 ｜ 1火 ｜ 牌面：入场时：对装备有此牌的铁甲熔火帝皇附着火元素。我方除重甲蟹壳以外的护盾状态或护盾出战状态被移除后：装备有此牌的铁甲熔火帝皇附属2层重甲蟹壳… ｜ 附着元素\n  [14] 元素调和：弃「熔火铁甲」 → 换 1 个火骰 ｜ 1任意元素\n  [15] 切换到 托马 ｜ 1任意元素\n  [16] 切换到 赛诺 ｜ 1任意元素\n  [17] 结束回合（本回合剩余骰子作废）\n【参考】按伤害/治疗/护盾/费用粗排，优先看 [0]、[1]（也可以选任意其他编号）",
+        "hint": "只回答一个方括号里的编号数字；不要解释。",
+        "task": "只回答一个方括号里的编号数字；不要解释。",
+        "indexes": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "scores": [
+          1.76,
+          0.76,
+          -0.08,
+          -0.08,
+          -0.08,
+          -0.08,
+          -0.08,
+          -0.08,
+          -0.24,
+          -0.08,
+          -0.08,
+          -0.08,
+          -0.08,
+          -0.08,
+          -0.08,
+          0
+        ],
+        "total": 16,
+        "shown": 16,
+        "empty": false,
+        "kind": "action"
+      }
+    },
+    {
+      "node_id": "tips",
+      "node_type": "playbook",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.219,
+      "output": {
+        "text": "",
+        "sections": [],
+        "chars": 0,
+        "kind": "action"
+      }
+    },
+    {
+      "node_id": "pack",
+      "node_type": "prompt_pack",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.219,
+      "output": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是七圣召唤（Genius Invokation TCG）的高手，正在替选手决定这一手。牌面效果、场上状态、双方骰子与手牌数、最近发生的事都在下面，先看清它们再想。分析控制在 400 字以内，只说三件事：这手能拿到什么（伤害/充能/护盾/资源）、对手下回合最可能怎么反打、为什么选它。然后单独一行输出方括号编号（例如 [3]），这一行之后不要再写任何内容。",
+            "name": null
+          },
+          {
+            "role": "user",
+            "content": "### 之前发生的事\n请求=action，回合=1，剩余=117000ms\n\n### 往期判断（自己估过的胜率与意图）\n（还没有往期估计：这是本局第一次估计胜率）\n\n### 最近发生的事\n- 对方 打出「旧日鏖战」：敌方出战角色失去1点充能\n- 对方 使用技能「重钳碎击」：造成2点物理伤害\n- 对方 元素调和（弃一张手牌换骰）\n- 对方 切换到「久岐忍」\n- 对方 选择出战「久岐忍」\n\n### 当前局面\n回合 1 · 阶段 行动 · 当前行动方：玩家 1\n我方（座位 1） 出战：铁甲熔火帝皇\n  铁甲熔火帝皇 5/5 能量0/2（★出战）\n    装备/状态：重甲蟹壳 护盾5（每层提供1点护盾，保护所附属角色。）\n  托马 12/12 能量0/2\n  赛诺 10/10 能量0/2\n    装备/状态：启途誓使（结束阶段：累积1级「凭依」。如果「凭依」级数至少为8，则「凭依」级数-6。根据「凭依」级数，提供效果：大于等于2级：物理伤害转化为雷元素伤害…）\n  手牌 5 张：旧日鏖战〔敌方出战角色失去1点充能。〕、匿叶龙〔特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌…〕、晨曦酒庄〔我方执行「切换角色」行动时：少花费1个元素骰。（每回合2次）〕、落羽的裁择〔战斗行动：我方出战角色为赛诺时，装备此牌。赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂…〕、熔火铁甲〔入场时：对装备有此牌的铁甲熔火帝皇附着火元素。我方除重甲蟹壳以外的护盾状态或护盾出战状态…〕\n  骰子 8 个：万能、万能、万能、火、雷、冰、草、风\n  牌堆 25 张\n对方（座位 0） 出战：久岐忍\n  久岐忍 10/10 能量0/2（★出战）\n  「女士」 10/10 能量0/2\n    装备/状态：冰封的炽炎魔女（行动阶段开始时：如果所附属角色生命值不多于4，则移除此效果。所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值…）\n  闲云 11/11 能量0/2\n  手牌 5 张（内容不可见）\n  骰子 8 个（骰面不可见）\n  牌堆 25 张\n  已宣布结束回合\n\n### 可选动作\n共 16 项合法动作（全部列出；编号就是原始编号，直接用编号回答）\n当前出战：铁甲熔火帝皇\n  [0] 重钳碎击 ｜ 2任意元素+1火 ｜ 造成 2 点物理伤害 → 久岐忍\n  [1] 烈焰燃绽 ｜ 3火 ｜ 说明：造成1点火元素伤害；如果本角色附属有至少7层重甲蟹壳，则此伤害+1。然后，本角色附属2层重甲蟹壳。 ｜ 造成 1 点火伤害 → 久岐忍\n  [3] 旧日鏖战 ｜ 1秘传 ｜ 牌面：敌方出战角色失去1点充能。\n  [4] 元素调和：弃「旧日鏖战」 → 换 1 个火骰 ｜ 1任意元素\n  [5] 匿叶龙 ｜ 1相同元素 ｜ 牌面：特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌，然后对手抓1张牌…\n  [6] 匿叶龙 ｜ 1相同元素 ｜ 牌面：特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌，然后对手抓1张牌…\n  [7] 匿叶龙 ｜ 1相同元素 ｜ 牌面：特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌，然后对手抓1张牌…\n  [8] 元素调和：弃「匿叶龙」 → 换 1 个火骰 ｜ 1任意元素\n  [9] 晨曦酒庄 ｜ 3任意元素 ｜ 牌面：我方执行「切换角色」行动时：少花费1个元素骰。（每回合2次）\n  [10] 元素调和：弃「晨曦酒庄」 → 换 1 个火骰 ｜ 1任意元素\n  [12] 元素调和：弃「落羽的裁择」 → 换 1 个火骰 ｜ 1任意元素\n  [13] 熔火铁甲 ｜ 1火 ｜ 牌面：入场时：对装备有此牌的铁甲熔火帝皇附着火元素。我方除重甲蟹壳以外的护盾状态或护盾出战状态被移除后：装备有此牌的铁甲熔火帝皇附属2层重甲蟹壳… ｜ 附着元素\n  [14] 元素调和：弃「熔火铁甲」 → 换 1 个火骰 ｜ 1任意元素\n  [15] 切换到 托马 ｜ 1任意元素\n  [16] 切换到 赛诺 ｜ 1任意元素\n  [17] 结束回合（本回合剩余骰子作废）\n【参考】按伤害/治疗/护盾/费用粗排，优先看 [0]、[1]（也可以选任意其他编号）\n\n### 你的任务\n只回答一个方括号里的编号数字；不要解释。",
+            "name": null
+          }
+        ],
+        "prompt": "### 之前发生的事\n请求=action，回合=1，剩余=117000ms\n\n### 往期判断（自己估过的胜率与意图）\n（还没有往期估计：这是本局第一次估计胜率）\n\n### 最近发生的事\n- 对方 打出「旧日鏖战」：敌方出战角色失去1点充能\n- 对方 使用技能「重钳碎击」：造成2点物理伤害\n- 对方 元素调和（弃一张手牌换骰）\n- 对方 切换到「久岐忍」\n- 对方 选择出战「久岐忍」\n\n### 当前局面\n回合 1 · 阶段 行动 · 当前行动方：玩家 1\n我方（座位 1） 出战：铁甲熔火帝皇\n  铁甲熔火帝皇 5/5 能量0/2（★出战）\n    装备/状态：重甲蟹壳 护盾5（每层提供1点护盾，保护所附属角色。）\n  托马 12/12 能量0/2\n  赛诺 10/10 能量0/2\n    装备/状态：启途誓使（结束阶段：累积1级「凭依」。如果「凭依」级数至少为8，则「凭依」级数-6。根据「凭依」级数，提供效果：大于等于2级：物理伤害转化为雷元素伤害…）\n  手牌 5 张：旧日鏖战〔敌方出战角色失去1点充能。〕、匿叶龙〔特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌…〕、晨曦酒庄〔我方执行「切换角色」行动时：少花费1个元素骰。（每回合2次）〕、落羽的裁择〔战斗行动：我方出战角色为赛诺时，装备此牌。赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂…〕、熔火铁甲〔入场时：对装备有此牌的铁甲熔火帝皇附着火元素。我方除重甲蟹壳以外的护盾状态或护盾出战状态…〕\n  骰子 8 个：万能、万能、万能、火、雷、冰、草、风\n  牌堆 25 张\n对方（座位 0） 出战：久岐忍\n  久岐忍 10/10 能量0/2（★出战）\n  「女士」 10/10 能量0/2\n    装备/状态：冰封的炽炎魔女（行动阶段开始时：如果所附属角色生命值不多于4，则移除此效果。所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值…）\n  闲云 11/11 能量0/2\n  手牌 5 张（内容不可见）\n  骰子 8 个（骰面不可见）\n  牌堆 25 张\n  已宣布结束回合\n\n### 可选动作\n共 16 项合法动作（全部列出；编号就是原始编号，直接用编号回答）\n当前出战：铁甲熔火帝皇\n  [0] 重钳碎击 ｜ 2任意元素+1火 ｜ 造成 2 点物理伤害 → 久岐忍\n  [1] 烈焰燃绽 ｜ 3火 ｜ 说明：造成1点火元素伤害；如果本角色附属有至少7层重甲蟹壳，则此伤害+1。然后，本角色附属2层重甲蟹壳。 ｜ 造成 1 点火伤害 → 久岐忍\n  [3] 旧日鏖战 ｜ 1秘传 ｜ 牌面：敌方出战角色失去1点充能。\n  [4] 元素调和：弃「旧日鏖战」 → 换 1 个火骰 ｜ 1任意元素\n  [5] 匿叶龙 ｜ 1相同元素 ｜ 牌面：特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌，然后对手抓1张牌…\n  [6] 匿叶龙 ｜ 1相同元素 ｜ 牌面：特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌，然后对手抓1张牌…\n  [7] 匿叶龙 ｜ 1相同元素 ｜ 牌面：特技：钩物巧技；可用次数：2；造成1点物理伤害，窃取1张当前元素骰费用最高的对方手牌，然后对手抓1张牌…\n  [8] 元素调和：弃「匿叶龙」 → 换 1 个火骰 ｜ 1任意元素\n  [9] 晨曦酒庄 ｜ 3任意元素 ｜ 牌面：我方执行「切换角色」行动时：少花费1个元素骰。（每回合2次）\n  [10] 元素调和：弃「晨曦酒庄」 → 换 1 个火骰 ｜ 1任意元素\n  [12] 元素调和：弃「落羽的裁择」 → 换 1 个火骰 ｜ 1任意元素\n  [13] 熔火铁甲 ｜ 1火 ｜ 牌面：入场时：对装备有此牌的铁甲熔火帝皇附着火元素。我方除重甲蟹壳以外的护盾状态或护盾出战状态被移除后：装备有此牌的铁甲熔火帝皇附属2层重甲蟹壳… ｜ 附着元素\n  [14] 元素调和：弃「熔火铁甲」 → 换 1 个火骰 ｜ 1任意元素\n  [15] 切换到 托马 ｜ 1任意元素\n  [16] 切换到 赛诺 ｜ 1任意元素\n  [17] 结束回合（本回合剩余骰子作废）\n【参考】按伤害/治疗/护盾/费用粗排，优先看 [0]、[1]（也可以选任意其他编号）\n\n### 你的任务\n只回答一个方括号里的编号数字；不要解释。",
+        "stats": {
+          "budget": 4000,
+          "chars": 1837,
+          "sections": {
+            "memory": 26,
+            "deck_text": 0,
+            "plan": 0,
+            "history": 21,
+            "recent": 99,
+            "state_text": 699,
+            "advice": 0,
+            "menu_text": 892,
+            "task": 20,
+            "extra": 0
+          },
+          "dropped": [],
+          "truncated": [],
+          "kept": [
+            "memory",
+            "history",
+            "recent",
+            "state_text",
+            "menu_text",
+            "task"
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "llm",
+      "node_type": "llm_chat",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 44230.128,
+      "output": {
+        "reply": "[1]",
+        "finish_reason": "stop",
+        "model": "deepseek-flash",
+        "prompt_tokens": 1544,
+        "completion_tokens": 5656,
+        "raw": {
+          "id": "8f878a16-5803-40e8-9376-3f977e03a38a",
+          "object": "chat.completion",
+          "created": 1793018562,
+          "model": "deepseek-flash",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "[1]",
+                "reasoning_content": "我们需要选出最佳动作。需要分析。用户要求分析400字内三件事，然后单独行输出编号。但最后说只回答方括号编号；矛盾。系统要求？用户明确：分析控制400字以内，只说三件事，然后单独一行输出方括号编号，之后不要再写。但最后任务说只回答编号。需要遵循更具体最后？可能需要只输出编号。但“你的任务”只回答一个方括号里的编号数字；不要解释。 所以最终只输出 [编号]。需要决定。\n\n局面：我方铁甲5/5护盾5，能量0/2。对方久岐忍10/10，已宣布结束回合。是的对方已结束回合！当前行动方玩家1，对方已宣布结束。这意味着我方可以继续行动直到结束，对手不会反打本回合。需要选择能拿到什么。回合1行动阶段，对方已结束。我方有8骰，手牌。可打技能/牌。目标最大化本回合价值。\n\n动作 [0] 重钳碎击 2任意+1火 -> 造成2物理伤害久岐忍，消耗3骰，角色充能+1? 使用技能会给铁甲充能1 (0/2 ->1/2)。造成2伤害。\n[1] 烈焰燃绽 3火 -> 造成1火伤害，然后护盾+2 (重甲蟹壳变7? 当前5，加2=7)。能充能？技能会+1充能。消耗3火，造成1伤害，护盾增加。但需要3火骰；我们有万能x3 + 火 =4火可用，可以。伤害低但护盾更强。当前护盾5已经高。敌方结束，无需防守？但下回合需防守。还有手牌熔火铁甲 [13] 1火：装备给铁甲，附着火，并且“我方除重甲蟹壳以外的护盾状态或护盾出战状态被移除后：装备有此牌的铁甲熔火帝皇附属2层重甲蟹壳”。目前铁甲没有其他护盾状态？重甲蟹壳是自己。熔火铁甲可装备。可先[13]装备，消耗1火，然后[1]技能 +2护盾？但装备本身附着火元素（角色附着火？影响元素反应？）而且被动可在其他护盾移除时补2层。但本回合可能用1+3=4骰，造成1伤害，护盾+2和火附着。还可打技能[0]? 总骰8，能[13]+[1]+[0]? [13]1火，[1]3火，[0]3任意 =7? 需要火骰：万能万能万能火雷冰草风。 [13]需1火 -> 用火。剩万能x3雷冰草风。 [1]需3火，万能可转火，用3万能。剩雷冰草风（4）。 [0]需2任意+1火，用雷冰转任意+草转火 = 3。总耗7，可。造成1+2=3伤害，充能2（两次技能），护盾5+2=7。这样很强。但[13]装备后，角色附着火元素；技能[1]是火伤害，不反应。下回合对方可能攻击，火附着可被水/冰反应不利？但护盾吸收。\n\n还能用[5]匿叶龙：1相同元素，造成1物理，窃取手牌，对手抓1。可以多次？同一张牌有三张? 选项[5][6][7]都是匿叶龙，手牌只有？手牌5张包括匿叶龙？展示只有1张匿叶龙但选项出现3次因为可打出多次？可能同一张牌的可选使用次数？奇怪。可打匿叶龙1伤害并窃取手牌，然后对手抓1。对方已结束，手牌5。偷手牌有资源价值，但给对手抓牌。可以配合？消耗1相同元素（任意同色？需要1个相同元素，即任意1?）。可多次。伤害小。\n\n[3]旧日鏖战 1秘传，敌方出战失去1充能。对手久岐忍能量0/2，失去充能无意义？若0不能失去？可能无效。不佳。\n\n[9]晨曦酒庄 3任意，切换减费，长期资源。本回合可下场地。但当前战斗，对方结束，可能为下回合准备。8骰，行动有限。\n\n[15]切托马/ [16]切赛诺。可切赛诺用落羽的裁择？[12]调和弃落羽。手牌落羽可装备赛诺并立刻使用秘仪·律渊渡魂，但需要赛诺出战。可切换赛诺(1任意) 然后装备落羽裁择（战斗行动，装备后立刻使用技能）。这张牌具体费用？动作[12]只是元素调和弃掉，没有装备落羽的选项？可选动作没有“装备落羽的裁择”，因为当前出战不是赛诺？通常装备牌只在对应角色出战时可打出？所以不能。需要先切赛诺后，可能下个行动才出现？但一次选择只能一个动作。或者切换赛诺动作[16]，之后的下一次选择可出现装备。当前对方已结束，可以继续。最终回答一个动作，不是整个回合？需要选择当前最佳第一步，然后可能继续。我们需要输出一个动作编号；之后会继续。所以选择当前动作应基于长期。若对方已结束，我们可以连续行动直到结束。第一动作选择关键。\n\n考虑本回合目标：最大化伤害/充能/护盾/资源。可用8骰。铁甲帝皇是出战，技能有充能。应该打技能充能，尽快开大？铁甲大招是什么？能量2，可能强力。需要积累充能。两次技能可充满（0/2），本回合可放技能两次，然后下回合可用爆发？但连续技能是战斗行动，若对方已结束，我们可打两次技能充满。用[1]和[0]不同技能，每个+1，共2充能满。但伤害和护盾。若能再使用爆发？需要能量满后，大招是否可用？当前可选动作没有爆发，因为能量0。打完两次技能后可能选项出现爆发。8骰：若先[13]装备(1火)，再[1](3火)，再[0](3任意)，总7，剩1。造成3伤害，充满2能量，护盾7。下回合可放大。但若本回合还能用剩余1骰？不能放爆发因为需要费用？铁甲大招可能3火？若能量满后，剩1骰不够。所以下回合爆发。下回合对手可能先手？对方已结束，回合结束进入下回合谁先？可能对方先手（因为本回合我方后结束？）。对方可能有反打。需要防御。\n\n若不打[13]装备，8骰可[1]（3火）+ [0]（3任意）+ 另一技能？[1]可重复？技能每回合不能重复？原神七圣召唤中角色每回合通常只能使用一次元素战技？不，元素战技每回合? 七圣召唤技能：普通攻击、元素战技、元素爆发。元素战技每回合可多次，但每个角色每回合只能使用一次元素战技？不，我记得每个角色每回合可以使用多次技能，但元素战技有每回合一次限制？实际上七圣召唤中角色技能没有每回合一次限制，只有充能爆发一次。可使用多次。但元素战技费用。铁甲[1]可多次？如果[1]重复，护盾叠加快速。可用[1]两次+[0]？需3火+3火+3任意=9，不够8。 [1]两次=6火，需要6火骰；我们只有万能x3+火=4，不够（其他不能转？万能可转，但非万能雷冰草风不能转火，除非元素调和弃牌）。可调和换火。有手牌可弃换火。例如弃旧日/晨曦等。最多可。但行动复杂。\n\n[13]熔火铁甲装备很重要：它提供额外护盾机制，并且装备本身+1火附着。费用1火。它能让之后的护盾移除补充2层。护盾5被打破时，自动补2层，非常强。应该打。\n\n但[13]的动作说明：“入场时：对装备有此牌的铁甲熔火帝皇附着火元素。我方除重甲蟹壳以外的护盾状态或护盾出战状态被移除后：装备有此牌的铁甲熔火帝皇附属2层重甲蟹壳…” 这意味着需要先有除重甲蟹壳以外的护盾被移除。若没有其他护盾，不触发。但装备后角色附着火，可能配合[1]？[1]加护盾，重甲蟹壳是状态。也许其他护盾状态如“火元素护盾”？没有。\n\n也可使用[9]晨曦酒庄为切换减费，因为下回合可能需要切赛诺开大招。但当前铁甲护盾高，适合站场。\n\n对方已结束，无本回合反打。对手下回合最可能：久岐忍用技能/切女士/闲云组合，可能用冰封的炽炎魔女保女士，久岐忍可能扩散/治疗。对方牌组有女士、闲云、久岐忍，可能是召唤/治疗/扩散。女士冰封被动难杀。需要快速充能铁甲爆发。\n\n选择第一动作：应使用[13]熔火铁甲？还是直接[0]重钳碎击？如果先[0]，充能1，造成2伤害。之后还能[1]充能2，护盾+2。耗6，剩2可装备[13]? [13]需1火，可以。顺序无大差。但如果先技能，可能下回合前装备保护？都可以。装备后附着火可能影响技能？[1]火伤害，附着火无反应。若先[1]加护盾，再装备熔火铁甲，附着火，然后护盾状态重甲蟹壳已有7。熔火铁甲被动要有其他护盾移除。也可以。\n\n能造成更多伤害：使用[0]两次？重钳碎击2+2=4伤害，耗6任意+火？[0]需2任意+1火，两次需2火+4任意。我们有万能x3+火=4火（万能可转任意），可以支付两次：第一次用火+万能万能；第二次用万能+雷冰转任意+草转火 =? 总需火2，任意4。可用火、万能x3（其中2火），剩余万能1+雷冰草风支付任意4？总8，需要6。可两次[0]造成4伤害，充能2满。这比[1]多伤害，少护盾。两次技能充满。护盾仍5。如果下回合放大（能量2）但需要费用。本回合剩2骰。可装备[13]？两次[0]耗6，剩2，可[13]耗1火，但火骰已用？重新算：初始8：万、万、万、火、雷、冰、草、风。\n[0]第一次：2任意+1火。用火 + 万+万（万能转任意）? 费用：1火用火，2任意用万+万。剩万、雷、冰、草、风（5骰：万能可转任意）。\n[0]第二次：需1火+2任意。用万能转火，用雷冰转任意（或草风）。剩草风。耗掉三个，剩2骰。造成4伤害，充能2。然后还能用[13]熔火铁甲需1火，但剩余草风不能转火（除非元素调和弃牌换火，如弃旧日鏖战耗1任意？调和需要弃牌+1任意换1火，但剩2骰可以：用草弃旧日换火? 动作[4]元素调和弃旧日→换1火，消耗1任意（用草），获得火；然后[13]需1火用该火。剩风。这样能装备。但行动数：两次[0] + 调和 + [13] =4行动，总费8，可行？调和本身消耗1任意，相当于额外。总：两次[0]6 + 调和1 + 装备1 =8。可造成4伤害，充满，装备熔火铁甲。这比方案[13]+[1]+[0]造成3伤害、护盾7、充满；两次[0]造成4伤害，装备后附着火，护盾仍5。哪个好？护盾7更防守，伤害+1更进攻。铁甲是坦克，可能护盾重要。但下回合对手可能爆发；护盾5加熔火蟹壳已不俗，且装备熔火铁甲后被动可补盾。不过被动需其他护盾移除，暂时无。\n\n还有其他打法：使用[1]两次：每次护盾+2，伤害1。两次耗6火，造成2伤害，护盾+4=9，充能2。然后装备？需火，可以用调和。总耗？两次[1]需6火。初始火资源=万能x3+火=4火；不够，需调和2次换火，各消耗1任意+弃牌。可弃旧日、晨曦。总费用：两次技能6 + 调和2*1=2 + 装备1 =9，超8。不装备则耗8，护盾9，充能2，伤害2。这防守极强。\n\n若本回合目标拿资源，可下晨曦酒庄（3任意）为后续切换减费，然后打技能? 8-3=5，可打[1]（3火）+? 剩2不能[0]。或[0]耗3 +? 剩2。酒庄长线。\n\n考虑下回合对手反打：对方后手结束，下回合应该是对方先手（？七圣召唤回合先手交替：首回合玩家0先手，然后玩家1？当前是回合1，玩家1行动，对方已宣布结束。通常一回合内双方轮流，直到双方都结束。玩家0已结束，玩家1继续。玩家1结束则回合结束。下回合玩家0先手？首回合玩家0开始？可能下回合玩家0。对方下回合最可能用久岐忍技能或切女士。久岐忍是雷元素，可能用技能造成雷伤并召唤？女士有冰封被动，保命。闲云可能风。对方手牌5，骰下回合8。需要准备。\n\n铁甲帝皇怕什么？高护盾但雷/冰？久岐忍雷，女士冰。火附着会被冰打融化？火被冰触发融化，受到+2？七圣召唤元素反应：冰打火=融化+2伤害。若装备熔火铁甲给自身附着火，下回合女士冰技能可能融化痛击。所以[13]装备有风险：附着火会让冰伤+2。对方有女士冰。因此不应轻易装备熔火铁甲？但装备说明附着火，可能不利。描述：“对装备有此牌的铁甲熔火帝皇附着火元素”。是的，会附着火。女士冰封炽炎魔女是冰，下回合可能切女士打冰。火附着导致融化+2，危险。虽然护盾高，但下回合对方可能用冰反应穿透？护盾吸收，仍怕。\n\n[1]技能烈焰燃绽是火伤害；如果我方已附着火，使用火技能不会给自身附着。但装备后附着火。若不装备，无附着，冰打火无。\n\n那么可能避免熔火铁甲，选择两次重钳碎击充能满，高伤害，护盾保持5。但铁甲大招下回合可能没机会？需要能量2。充满后，下回合可放大招，可能高伤害/护盾。对方下回合先手可能打我们，若击杀？铁甲5血+5盾=10有效，久岐忍10血。对方能否一回合杀？有8骰+手牌，可能。护盾5可抵挡。若装备熔火铁甲后附着火被融化，可能多2伤，护盾仍吸收，但会消耗。是否危险取决于伤害。\n\n另外，我方有托马和赛诺。赛诺启途誓使状态：结束阶段累积凭依。当前凭依？未显示等级，可能0。赛诺有落羽裁择配合。长远需要切赛诺。\n\n当前最佳行动也许直接结束回合？不，对方已结束，应尽量行动。\n\n需要根据“参考”建议优先[0][1]。选择[0]或[1]。\n\n具体比较立即行动：打[0]重钳碎击消耗3骰，造成2物理伤害（对方久岐忍10->8），充能+1。打[1]消耗3火，造成1火伤害，护盾+2，充能+1。若只看当前一步，[0]伤害更高；[1]防御更强。由于对方已结束，本回合不会受到伤害，先打哪个？可以先打[0]造成伤害，再打[1]加护盾，两者顺序均可。但若只能选一个最终编号，需选第一动作。通常先打伤害技能[0]以施压，之后可加盾。若先[1]加盾，对方结束无影响，浪费护盾？护盾持续到下回合，不浪费。但[0]伤害更直接。\n\n可能最优是打[1]烈焰燃绽来增加重甲蟹壳层数：从5到7，超过6可能有质变？描述未说明层数效果，每层1护盾。只+2护盾。能量同样+1。伤害少1。所以单看当前，[0]更好。但[1]消耗火骰，保留万能骰更灵活。初始有3万能+1火+杂。打[0]需要1火+2任意，可用火+2万能，剩2万能+雷冰草风；仍可之后打[1]需3火，剩万能x2可转火2，还缺1火（杂色不能用，除非调和）。所以如果先[0]，再打[1]需3火，剩万能2+杂4，只能提供2火，不能直接打[1]；需要调和换火（消耗杂+弃牌）。总可。如果先[1]：需3火，用万能x3（或万能+？） 留火。耗3万能，剩火+雷冰草风。之后[0]需1火+2任意，用火+雷冰转任意，刚好。总耗6，剩草风。所以先[1]后[0]更顺畅，不用调和。总造成1+2=3伤害，护盾7，充能2满。这很优秀。如果先[0]后[1]也能通过调和，但会弃牌，或者剩余万能2+火1？等等，先[0]用火+2万能，剩万能1+雷冰草风。打[1]需3火，万能1+? 雷冰草风不能转，除非调和。所以确实先[1]更好，保留火给[0]。所以第一动作应选[1]烈焰燃绽。之后可[0]重钳碎击，耗6，剩2骰（草风），充满，护盾7，造成3伤害。这样非常美好，不需要装备熔火铁甲（避免火附着风险），保留2骰可下晨曦酒庄？晨曦需3任意，剩2不够。可调和弃旧日换火？无意义。可打匿叶龙？需1相同元素，草风不同，不能。所以结束。\n\n如果先[1]，护盾+2到7，下回合对方需破7盾+5血=12有效，且我们能量满，下回合若未死可放大。但下回合对方先手，可能用女士冰融化？我们未附着火（[1]造成火伤害不会附着自身），所以无融化。护盾7可抗。很好。\n\n是否有可能本回合直接用[0]两次造成4伤害，放弃护盾，充满。对比[1]+[0]：伤害少1，护盾+2。由于下回合对方先手，防守重要，+2护盾可能价值超过1伤害。且护盾可防女士爆发。选择[1]为首。\n\n还有[13]熔火铁甲配合[1]：若先[1]（消耗3万能），剩火+雷冰草风（5骰），可[13]装备耗1火，然后[0]需1火+2任意：剩余雷冰草风？无火了，需万能已无，不能转火，需调和。也可。但附着火风险。不推荐。\n\n所以最终第一动作 [1]。需要输出只编号。注意编号为[1]。但[1]存在。最终只输出[1]。需要确认用户要求最终只回答编号。是的。\n\n不过让我们再考虑：对方已宣布结束回合，当前行动方玩家1。若我方选择结束回合，本回合结束。但可以行动。选择[1]合理。\n\n还需注意：重甲蟹壳护盾5，[1]说明“如果本角色附属有至少7层重甲蟹壳，则伤害+1。然后附属2层”。当前5层，造成1火伤；然后变7层。如果已7层，伤害+1。所以不应先装备熔火铁甲直接加2？装备不加。先[1]仅1伤害。如果先用熔火铁甲，无盾变化。或者用[1]后盾7，之后还能用[1]第二次？第二次[1]时当前7层，伤害+1（共2火伤？说明造成1火伤；如果至少7，则+1=2），然后+2层。这样第二次[1]伤害2且盾9。如果本回合打两次[1]：第一次耗3火，伤害1，盾7；第二次耗3火，伤害2，盾9，充能2。总伤害3，护盾9。耗6火。需要6火，初始4火，需调和2次换火。有手牌可弃旧日、晨曦。用1任意元素+弃牌换1火，两次共耗2杂+2手牌。初始可：第一次[1]用万能x3 (留火+雷冰草风)。剩火雷冰草风5骰。要第二次[1]需3火：有火1，需2火；可用雷、冰分别调和弃旧日、晨曦各换火，消耗雷冰+2手牌，得2火。剩草风。总耗8骰（万能3+火+雷+冰=6? 实际第二次用火+换火*2 =3火；调和各消耗1杂，总：第一次3万能，调和2用雷冰，第二次3火（原火+2换火），共消耗3万能+雷+冰+火=6骰？等等调和换火消耗的雷冰本身变成火，所以第二次[1]的3火包括原始火+雷换的火+冰换的火，共消耗雷冰火。总消耗：万能3 + 雷 + 冰 + 火 =6骰，获得两次技能。剩草风2。总伤害3，盾9，能量2。这比[1]+[0]：伤害3，盾9，而[1]+[0]伤害3，盾7。同样伤害，盾更高，但消耗2手牌（旧日、晨曦）。旧日当前无用（对方久岐忍0充能），晨曦是场地资源。弃晨曦损失长线切换减费，但获得+2盾。是否值得？下回合防守更稳。且两次[1]都获得充能满。但需要先使用元素调和动作，会消耗手牌。多行动。如果最终只选第一动作，先[1]还是元素调和？最好先[1]。之后可选择调和换火再[1]。第一动作[1]仍然最佳。\n\n如果对方下回合有穿透/直接伤害，9盾极强。但弃晨曦酒庄是资源损失，不过晨曦尚未打出，手牌弃掉。手牌还有落羽、熔火铁甲、旧日、晨曦、匿叶龙。弃旧日无大用；弃晨曦可能可惜。也可以弃熔火铁甲？熔火铁甲因火附着风险可能不用，可弃。保留晨曦为后续。有元素调和弃熔火铁甲换火的动作[14]。所以可弃旧日+熔火铁甲换火，保留晨曦。这样盾9且保留晨曦。非常有利。两次[1]似乎严格优于[1]+[0]（同伤害，盾+2，弃两张不太有用牌如旧日、熔火铁甲）。唯一代价是行动/手牌，但对方已结束，本回合可执行。因此整回合最优可能是 [1]→调和弃旧日→[1]（或者先调和？）。\n\n第一动作仍[1]。因为如果先调和弃牌，不产生即时收益；先[1]可开始。但注意：若先[1]用3万能，剩余火+雷+冰+草+风。之后调和弃旧日换火，消耗1任意（例如雷）得火。此时火+火+冰+草+风。然后第二次[1]需3火，只有2火（原有火+换的火），不够。还需再调和一次弃熔火铁甲换火，用冰，得火。此时3火，可第二次[1]。总可以。所以第一动作[1]没问题。\n\n因此最终输出[1]。由于要求只输出编号，不要解释。最终 [1]。"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1544,
+            "completion_tokens": 5656,
+            "total_tokens": 7200,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 5652
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 1544
+          },
+          "system_fingerprint": "e72d3c7f663d3e1383b00b3884cb4501"
+        },
+        "dry_run": false
+      }
+    },
+    {
+      "node_id": "parse",
+      "node_type": "choice_parse",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.409,
+      "output": {
+        "index": 1,
+        "numbers": [
+          1
+        ],
+        "ok": true,
+        "reason": "",
+        "matched": "text:[1]"
+      }
+    },
+    {
+      "node_id": "pick",
+      "node_type": "choice_map",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.225,
+      "output": {
+        "used_dice": null,
+        "kind": "action",
+        "count": 0,
+        "note": "action 不是多选请求，未指定 used_dice",
+        "dropped": []
+      }
+    },
+    {
+      "node_id": "build",
+      "node_type": "rpc_build",
+      "ok": true,
+      "skipped": false,
+      "error": null,
+      "elapsed_ms": 0.254,
+      "output": {
+        "response": {
+          "response": {
+            "$case": "action",
+            "value": {
+              "chosenActionIndex": 1,
+              "usedDice": [
+                3,
+                8,
+                8
+              ]
+            }
+          }
+        },
+        "kind": "action",
+        "ok": true,
+        "used_fallback": false,
+        "note": "采用编号 1：烈焰燃绽"
+      }
+    }
+  ],
+  "errors": [],
+  "error_details": []
+}

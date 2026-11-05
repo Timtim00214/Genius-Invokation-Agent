@@ -1,0 +1,26 @@
+{
+  "name": "@gi-tcg/cbinding",
+  "private": true,
+  "type": "module",
+  "browserslist": "chrome >= 116",
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@gi-tcg/core": "workspace:*",
+    "@gi-tcg/data": "workspace:*",
+    "@gi-tcg/typings": "workspace:*",
+    "@gi-tcg/utils": "workspace:*",
+    "@rollup/plugin-babel": "^7.1.0",
+    "@types/core-js": "^2.5.8",
+    "core-js": "3.49.0",
+    "fast-text-encoding": "^1.0.6",
+    "rolldown": "^1.2.11"
+  },
+  "scripts": {
+    "build": "gnx scripts/prepare.ts",
+    "cmake:configure": "cmake -B build -GNinja",
+    "cmake:build": "cmake --build build --config Release",
+    "cmake:install": "cmake --install build --config Release --prefix install",
+    "cmake:test": "cd build && ctest --output-on-failure -C Release"
+  }
+}

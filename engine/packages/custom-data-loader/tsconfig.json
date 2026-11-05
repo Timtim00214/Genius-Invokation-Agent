@@ -1,0 +1,25 @@
+{
+  "include": ["src/**/*.ts", "scripts/**/*.ts", "tsdown.config.ts"],
+  "exclude": ["src/dev*"],
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "lib": ["ESNext"],
+
+    "declaration": true,
+    "emitDeclarationOnly": true,
+
+    "verbatimModuleSyntax": true,
+
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+
+    "types": ["node"]
+  },
+  "references": [{ "path": "./tsconfig.web.json" }]
+}

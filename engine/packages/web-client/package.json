@@ -1,0 +1,43 @@
+{
+  "name": "@gi-tcg/web-client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "browserslist": "defaults",
+  "dependencies": {
+    "@gi-tcg/assets-manager": "workspace:*",
+    "@gi-tcg/deck-builder": "workspace:*",
+    "@gi-tcg/typings": "workspace:*",
+    "@gi-tcg/web-ui-core": "workspace:*",
+    "@server-sent-stream/web": "^1.0.3",
+    "@solid-primitives/i18n": "^2.2.1",
+    "@solid-primitives/storage": "^4.2.1",
+    "@solidjs/router": "^0.13.5",
+    "@una-ui/preset": "^0.34.0-beta.1",
+    "@unocss/reset": "catalog:",
+    "axios": "catalog:",
+    "core-js": "3.38.1",
+    "dayjs": "^1.11.13",
+    "p-limit": "^7.3.0",
+    "solid-js": "catalog:"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.4",
+    "@babel/preset-env": "^7.24.4",
+    "@gi-tcg/config": "workspace:*",
+    "@gi-tcg/core": "workspace:*",
+    "@iconify-json/mdi": "^1.2.3",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@types/core-js": "^2.5.8",
+    "@unocss/preset-icons": "catalog:",
+    "unocss": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-solid": "catalog:"
+  }
+}

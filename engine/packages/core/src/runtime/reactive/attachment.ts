@@ -1,0 +1,126 @@
+// Copyright (C) 2024-2025 Guyutongxue
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import type { AttachmentState } from "../../base/state";
+import { GiTcgCoreInternalError, GiTcgDataError } from "../../error";
+import { type EntityArea } from "../../base/entity";
+import { getEntityById, type PlainAttachmentState } from "./utils";
+import type { ContextMetaBase, SkillContext } from "../skill_context";
+import {
+  LatestStateSymbol,
+  RawStateSymbol,
+  ReactiveStateBase,
+  ReactiveStateSymbol,
+} from "./base";
+import type { AttachmentDefinition } from "../../base/attachment";
+import type { RxEntityState } from ".";
+import type { TypingInfoBase, RegularTypingInfo } from "../../utils";
+import type { ReactiveVariables } from "./variable";
+
+class ReadonlyAttachment<
+  Meta extends ContextMetaBase,
+  Vars extends string = never,
+>
+  extends ReactiveStateBase<RegularTypingInfo<"attachment", Vars>>
+  implements PlainAttachmentState
+{
+  override get [ReactiveStateSymbol](): "attachment" {
+    return "attachment";
+  }
+  declare [RawStateSymbol]: AttachmentState;
+  override get [LatestStateSymbol](): AttachmentState {
+    const state = getEntityById(
+      this.skillContext.rawState,
+      this.id,
+    ) as AttachmentState;
+    return state;
+  }
+
+  // protected _area: EntityArea | undefined;
+  constructor(
+    protected readonly skillContext: SkillContext<Meta>,
+    public readonly id: number,
+  ) {
+    super();
+  }
+
+  protected get state(): AttachmentState {
+    return this[LatestStateSymbol];
+  }
+  get definition(): AttachmentDefinition {
+    return this.state.definition;
+  }
+  get area(): EntityArea {
+    return this.skillContext._getEntityArea(this.id);
+  }
+  get who() {
+    return this.area.who;
+  }
+  isMine() {
+    return this.area.who === this.skillContext.self.who;
+  }
+  getVariable(name: string): number | undefined {
+    return this.state.variables[name];
+  }
+  setVariable(name: string, value: number): void {
+    throw new GiTcgCoreInternalError(
+      "a call to setVariable have been fallback to this readonly implementation",
+    );
+  }
+
+  get master(): RxEntityState<
+    Meta,
+    TypingInfoBase<"eventCard" | "support" | "equipment">
+  > {
+    if (this.area.type !== "hands" && this.area.type !== "pile") {
+      throw new GiTcgDataError("master expect a hands/pile area");
+    }
+    return this.skillContext.get<"eventCard" | "support" | "equipment">(
+      this.area.cardId,
+    );
+  }
+}
+
+export class Attachment<
+  Meta extends ContextMetaBase,
+  Vars extends string = never,
+> extends ReadonlyAttachment<Meta, Vars> {
+  declare variables: ReactiveVariables<RegularTypingInfo<"attachment", Vars>>;
+  setVariable(prop: string, value: number) {
+    this.skillContext.setVariable(prop, value, this.state);
+  }
+  addVariable(prop: string, value: number) {
+    this.skillContext.addVariable(prop, value, this.state);
+  }
+  resetUsagePerRound() {
+    this.skillContext.mutate({
+      type: "resetVariables",
+      scope: "usagePerRound",
+      state: this.state,
+    });
+  }
+  dispose(): never {
+    throw new GiTcgDataError(
+      "Attachment can not be disposed directly, for now",
+    );
+  }
+}
+
+export type TypedAttachment<
+  Meta extends ContextMetaBase,
+  Vars extends string = never,
+> = Meta["readonly"] extends true
+  ? ReadonlyAttachment<Meta, Vars>
+  : Attachment<Meta, Vars>;

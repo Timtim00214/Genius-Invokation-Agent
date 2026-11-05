@@ -1,0 +1,26 @@
+{
+  "name": "@gi-tcg/local-rules",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsdown",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gi-tcg/core": "workspace:*",
+    "@gi-tcg/typings": "workspace:*"
+  },
+  "devDependencies": {
+    "tsdown": "^0.21.7",
+    "typescript": "catalog:"
+  }
+}

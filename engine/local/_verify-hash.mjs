@@ -1,0 +1,20 @@
+import puppeteer from "../node_modules/.pnpm/puppeteer@19.0.0_supports-color@8.1.1/node_modules/puppeteer/lib/esm/puppeteer/puppeteer.js";
+import path from "node:path";
+import fs from "node:fs";
+
+const url = process.argv[2] ?? "http://127.0.0.1:7717/#workshop";
+const browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox"] });
+const page = await browser.newPage();
+await page.setViewport({ width: 1280, height: 800 });
+const errors = [];
+page.on("pageerror", (e) => errors.push(e.message));
+await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
+await new Promise((r) => setTimeout(r, 800));
+console.log("url:", page.url());
+console.log("title:", await page.evaluate(() => document.querySelector(".ws h1")?.textContent ?? document.querySelector("h1")?.textContent ?? "(none)"));
+console.log("hash:", await page.evaluate(() => location.hash));
+console.log("errors:", errors.join(" | ") || "(none)");
+const outDir = path.join(import.meta.dirname, "_screenshots");
+fs.mkdirSync(outDir, { recursive: true });
+await page.screenshot({ path: path.join(outDir, "hash-workshop.png") });
+await browser.close();

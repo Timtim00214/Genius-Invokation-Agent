@@ -1,0 +1,563 @@
+.ws {
+  --ws-bg: #0b1220;
+  --ws-panel: #0f172a;
+  --ws-panel-2: #131f36;
+  --ws-border: #24344f;
+  --ws-text: #e2e8f0;
+  --ws-muted: #94a3b8;
+  --ws-accent: #67e8f9;
+  --ws-accent-2: #22d3ee;
+  --ws-warn: #fbbf24;
+  --ws-danger: #f87171;
+  --ws-ok: #4ade80;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #16324a 0%, transparent 55%),
+    radial-gradient(900px 500px at 110% 0%, #1e1b4b 0%, transparent 50%),
+    var(--ws-bg);
+  color: var(--ws-text);
+  font-family:
+    "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  padding-bottom: 40px;
+}
+
+.ws * {
+  box-sizing: border-box;
+}
+
+.ws-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgb(11 18 32 / 0.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--ws-border);
+  padding: 14px 22px 10px;
+}
+
+.ws-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.ws-title-row h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: #f8fafc;
+}
+
+.ws-sub {
+  margin-top: 4px;
+  color: var(--ws-muted);
+  font-size: 12px;
+}
+
+.ws-sub b {
+  color: var(--ws-accent);
+  font-weight: 600;
+}
+
+.ws-header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.ws-btn {
+  appearance: none;
+  border: 1px solid var(--ws-border);
+  background: #17243a;
+  color: var(--ws-text);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.15s ease;
+  white-space: nowrap;
+}
+
+.ws-btn:hover:not(:disabled) {
+  border-color: var(--ws-accent-2);
+  background: #1c2f4a;
+}
+
+.ws-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ws-primary {
+  background: linear-gradient(180deg, #0891b2, #0e7490);
+  border-color: #22d3ee;
+  color: #ecfeff;
+  font-weight: 600;
+}
+
+.ws-primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #06b6d4, #0891b2);
+}
+
+.ws-danger {
+  color: var(--ws-danger);
+  border-color: #7f1d1d;
+}
+
+.ws-warn {
+  color: var(--ws-warn);
+  border-color: #78350f;
+}
+
+.ws-preset-bar,
+.ws-status-row,
+.ws-toolbar,
+.ws-batch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ws-preset-bar {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.ws-preset-bar > label {
+  color: var(--ws-muted);
+}
+
+.ws-select,
+.ws-search,
+.ws-input {
+  background: #0c1626;
+  border: 1px solid var(--ws-border);
+  color: var(--ws-text);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  outline: none;
+}
+
+.ws-select:focus,
+.ws-search:focus,
+.ws-input:focus {
+  border-color: var(--ws-accent-2);
+  box-shadow: 0 0 0 2px rgb(34 211 238 / 0.15);
+}
+
+.ws-select {
+  min-width: 220px;
+}
+
+.ws-search {
+  flex: 1;
+  min-width: 260px;
+}
+
+.ws-input {
+  width: 76px;
+  padding: 4px 8px;
+  text-align: right;
+}
+
+.ws-spacer {
+  flex: 1;
+}
+
+.ws-status-row {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--ws-muted);
+}
+
+.ws-dirty {
+  color: var(--ws-warn);
+}
+
+.ws-hint {
+  color: var(--ws-muted);
+  font-size: 12px;
+}
+
+.ws-toolbar {
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--ws-border);
+  background: rgb(15 23 42 / 0.55);
+}
+
+.ws-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.ws-tabs button {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ws-muted);
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.ws-tabs button small {
+  color: inherit;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+.ws-tabs button:hover {
+  color: var(--ws-text);
+  background: #16233a;
+}
+
+.ws-tabs button.active {
+  color: #ecfeff;
+  background: #164e63;
+  border-color: #0e7490;
+}
+
+.ws-batch {
+  margin: 12px 22px 0;
+  padding: 10px 14px;
+  border: 1px dashed var(--ws-border);
+  border-radius: 10px;
+  background: rgb(19 31 54 / 0.6);
+  font-size: 13px;
+  color: var(--ws-muted);
+}
+
+.ws-table-wrap {
+  margin: 12px 22px 0;
+  border: 1px solid var(--ws-border);
+  border-radius: 12px;
+  overflow: auto;
+  max-height: calc(100vh - 260px);
+  background: rgb(15 23 42 / 0.6);
+}
+
+.ws-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+
+.ws-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #101c31;
+  color: var(--ws-muted);
+  font-weight: 500;
+  text-align: left;
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--ws-border);
+  white-space: nowrap;
+}
+
+.ws-table tbody td {
+  padding: 7px 10px;
+  border-bottom: 1px solid rgb(36 52 79 / 0.55);
+  vertical-align: middle;
+}
+
+.ws-table tbody tr:hover {
+  background: rgb(30 41 59 / 0.45);
+}
+
+.ws-table tbody tr.checked {
+  background: rgb(8 145 178 / 0.12);
+}
+
+.ws-table tbody tr.modified {
+  box-shadow: inset 3px 0 0 var(--ws-warn);
+}
+
+.ws-table tbody tr.modified .ws-name {
+  color: #fde68a;
+}
+
+.ws-check {
+  width: 34px;
+  text-align: center;
+}
+
+.ws-check input {
+  accent-color: var(--ws-accent-2);
+  width: 14px;
+  height: 14px;
+}
+
+.ws-name {
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.ws-id {
+  color: #64748b;
+  font-size: 11px;
+  margin-left: 6px;
+  font-weight: 400;
+}
+
+.ws-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ws-tag {
+  color: var(--ws-muted);
+  margin-left: 6px;
+}
+
+.ws-tags {
+  color: var(--ws-muted);
+  font-size: 12px;
+}
+
+.ws-muted {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.ws-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-width: 760px;
+}
+
+.ws-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  border: 1px solid var(--ws-border);
+  background: #0f1b2e;
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 12px;
+  color: #cbd5e1;
+  white-space: nowrap;
+}
+
+.ws-chip i {
+  font-style: normal;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.ws-chip-dmg {
+  border-color: #155e75;
+}
+
+.ws-chip-dmg i {
+  color: var(--ws-accent);
+}
+
+.ws-el {
+  display: inline-block;
+  min-width: 22px;
+  text-align: center;
+  border-radius: 6px;
+  padding: 1px 5px;
+  font-size: 12px;
+  border: 1px solid var(--ws-border);
+  color: #cbd5e1;
+}
+
+.el-cryo { background: #164e63; border-color: #0e7490; color: #cffafe; }
+.el-hydro { background: #1e3a8a; border-color: #2563eb; color: #dbeafe; }
+.el-pyro { background: #7f1d1d; border-color: #dc2626; color: #fee2e2; }
+.el-electro { background: #4c1d95; border-color: #7c3aed; color: #ede9fe; }
+.el-anemo { background: #14532d; border-color: #16a34a; color: #dcfce7; }
+.el-geo { background: #713f12; border-color: #ca8a04; color: #fef9c3; }
+.el-dendro { background: #365314; border-color: #65a30d; color: #ecfccb; }
+.el-none { background: #1e293b; }
+
+.ws-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: #0f766e;
+  color: #ecfeff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid #14b8a6;
+  font-size: 13px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.4);
+}
+
+@media (max-width: 880px) {
+  .ws-table-wrap {
+    max-height: none;
+  }
+  .ws-search {
+    min-width: 160px;
+  }
+  .ws-skills {
+    max-width: 320px;
+  }
+}
+
+/* ---------- 骰子消耗编辑 ---------- */
+.ws-cost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 280px;
+  padding: 2px 6px;
+  border: 1px solid var(--ws-border);
+  border-radius: 8px;
+  background: #0c1626;
+  color: var(--ws-text);
+  cursor: pointer;
+}
+
+.ws-cost-btn:hover {
+  border-color: var(--ws-accent-2);
+  background: #10203a;
+}
+
+.ws-cost-edit {
+  font-size: 10px;
+  color: var(--ws-muted);
+}
+
+.ws-dice-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+}
+
+.ws-dice-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  padding: 1px 5px;
+  border: 1px solid var(--ws-border);
+  border-radius: 6px;
+  background: #111c30;
+  color: #cbd5e1;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.ws-dice-chip i {
+  font-style: normal;
+  font-size: 10px;
+  opacity: 0.82;
+}
+
+.ws-dice-chip.d-empty {
+  color: #64748b;
+}
+
+.ws-dice-chip.d-0 { background: #1e293b; border-color: #475569; }
+.ws-dice-chip.d-1 { background: #164e63; border-color: #0e7490; color: #cffafe; }
+.ws-dice-chip.d-2 { background: #1e3a8a; border-color: #2563eb; color: #dbeafe; }
+.ws-dice-chip.d-3 { background: #7f1d1d; border-color: #dc2626; color: #fee2e2; }
+.ws-dice-chip.d-4 { background: #4c1d95; border-color: #7c3aed; color: #ede9fe; }
+.ws-dice-chip.d-5 { background: #14532d; border-color: #16a34a; color: #dcfce7; }
+.ws-dice-chip.d-6 { background: #713f12; border-color: #ca8a04; color: #fef9c3; }
+.ws-dice-chip.d-7 { background: #365314; border-color: #65a30d; color: #ecfccb; }
+.ws-dice-chip.d-8 { background: #78350f; border-color: #f59e0b; color: #ffedd5; }
+.ws-dice-chip.d-9 { background: #3b0764; border-color: #a855f7; color: #f3e8ff; }
+.ws-dice-chip.d-10 { background: #450a0a; border-color: #ef4444; color: #fee2e2; }
+
+.ws-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(2 6 23 / 0.74);
+  backdrop-filter: blur(3px);
+}
+
+.ws-modal {
+  width: min(700px, 92vw);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 18px 20px;
+  border: 1px solid #155e75;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #0e2236, #0b1524);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.6);
+  color: var(--ws-text);
+}
+
+.ws-modal h3 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  color: #f1f5f9;
+}
+
+.ws-modal-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: var(--ws-muted);
+}
+
+.ws-dice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ws-dice-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--ws-border);
+  border-radius: 8px;
+  background: #0b1524;
+  font-size: 12px;
+}
+
+.ws-dice-row .ws-input {
+  width: 62px;
+}
+
+.ws-dice-name {
+  color: #cbd5e1;
+}
+
+.ws-modal-note {
+  margin-top: 12px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--ws-muted);
+}
+
+.ws-modal-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.ws-modal-total {
+  color: var(--ws-accent);
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .ws-dice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

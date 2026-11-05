@@ -1,0 +1,328 @@
+// Copyright (C) 2024-2025 Guyutongxue
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import {
+  DamageType,
+  type SkillHandle,
+  DiceType,
+  Reaction,
+  originalDiceCostOfCard,
+  $,
+} from "@gi-tcg/core/data";
+
+/**
+ * @id 111162
+ * @name 七相一闪
+ * @description
+ * 所附属角色使用普通攻击时：造成的物理伤害变为冰元素伤害。若可能，消耗至多2点蛇之狡谋，每消耗1点，则少花费1个无色元素。
+ * 自身元素爆发切换为极恶技·尽。
+ * 持续回合：1
+ */
+define status {
+  id 111162 as SevenphaseFlash;
+  since "v6.3.0";
+  duration 1;
+  noDefaultDispose;
+  on deductVoidDiceSkill {
+    when :(
+      :e.isSkillType("normal") && :self.master.variables.serpentsSubtlety
+    );
+    const costSubtelty = Math.min(2, :self.master.variables.serpentsSubtlety!);
+    :self.master.variables.serpentsSubtlety! -= costSubtelty;
+    :e.deductVoidCost(costSubtelty);
+  };
+  on modifySkillDamageType {
+    when :( :e.viaSkillType("normal") );
+    :e.changeDamageType(DamageType.Cryo);
+  };
+  on selfEnter {
+    :transformDefinition(:self.master, Skirk01);
+  };
+  on selfDispose {
+    const ch = :query($.my.character.def(Skirk01));
+    if (ch) {
+      :transformDefinition(ch, Skirk);
+    }
+  };
+};
+
+/**
+ * @id 111164
+ * @name 死河渡断
+ * @description
+ * 所附属角色下次造成的伤害+1。
+ */
+define status {
+  id 111164 as DeathsCrossing;
+  since "v6.3.0";
+  once increaseSkillDamage {
+    :e.increaseDamage(1);
+  };
+};
+
+/**
+ * @id 111161
+ * @name 诸武相授
+ * @cost
+ * @description
+ * 我方丝柯克附属七相一闪。
+ * 回合开始或我方执行切换后：舍弃此牌，获得1点蛇之狡谋。
+ */
+define card {
+  id 111161 as MutualWeaponsMentorship;
+  undiscoverable;
+  addTarget $.my.character.def(Skirk);
+  on actionPhase {
+    :discard(:self);
+    :query(
+      $.my.character.def(Skirk).union($.my.character.def(Skirk01)),
+    )?.addVariable("serpentsSubtlety", 1);
+  };
+  on switchActive {
+    :discard(:self);
+    :query(
+      $.my.character.def(Skirk).union($.my.character.def(Skirk01)),
+    )?.addVariable("serpentsSubtlety", 1);
+  };
+  :characterStatus(SevenphaseFlash, :e.targets[0]);
+};
+
+/**
+ * @id 111163
+ * @name 虚境裂隙
+ * @cost
+ * @description
+ * 战斗行动：我方手牌中存在当前元素骰费用为3的手牌时，舍弃1张当前元素骰费用为3的手牌，我方丝柯克获得2点蛇之狡谋。
+ */
+define card {
+  id 111163 as VoidRift;
+  undiscoverable;
+  tags action;
+  filter :( :query($.my.hand.cost(3)) );
+  const hands = :queryAll($.my.hand.cost(3));
+  if (hands.length > 0) {
+    const target = :random(hands);
+    :discard(target);
+    const skirk = :query(
+      $.union($.my.character.def(Skirk), $.my.character.def(Skirk01)),
+    );
+    skirk?.addVariable("serpentsSubtlety", 2);
+  }
+};
+
+/**
+ * @id 11161
+ * @name 极恶技·断
+ * @cost 1*Cryo, 2*Void
+ * @description
+ * 造成2点物理伤害。
+ */
+define skill {
+  id 11161 as HavocSunder;
+  skillType normal;
+  cost DiceType.Cryo, 1;
+  cost DiceType.Void, 2;
+  :damage(DamageType.Physical, 2);
+};
+
+/**
+ * @id 11162
+ * @name 极恶技·闪
+ * @cost 2*Cryo
+ * @description
+ * 获得2点蛇之狡谋，生成手牌诸武相授。（每回合1次）
+ */
+define skill {
+  id 11162 as HavocWarp;
+  skillType elemental;
+  cost DiceType.Cryo, 2;
+  filter :( :self.definition.id === Skirk && :self.variables.canE );
+  :self.variables.serpentsSubtlety! += 2;
+  :createHandCard(MutualWeaponsMentorship);
+  :self.variables.canE = 0;
+};
+
+/**
+ * @id 11165
+ * @name 极恶技·尽
+ * @cost 1*Cryo
+ * @description
+ * 将2个非万能元素骰转化为冰元素骰，舍弃至多2张当前元素骰费用为0骰的卡牌，每舍弃1张，丝柯克获得1点蛇之狡谋。
+ */
+define skill {
+  id 11165 as HavocExtinction;
+  skillType burst;
+  cost DiceType.Cryo, 1;
+  :convertDice(DiceType.Cryo, 2);
+  for (let i = 0; i < 2; i++) {
+    const hands = :player.hands.filter((card) => card.diceCost() === 0);
+    if (hands.length === 0) {
+      break;
+    }
+    :discard(:random(hands));
+    :self.variables.serpentsSubtlety! += 1;
+  }
+};
+
+/**
+ * @id 11163
+ * @name 极恶技·灭
+ * @cost 3*Cryo, 2*_special_energy
+ * @description
+ * 消耗所有蛇之狡谋，造成等同于消耗蛇之狡谋数量的冰元素伤害，对后台角色造成2点穿透伤害，如果消耗了7点蛇之狡谋，则改为对后台角色造成3点穿透伤害。
+ */
+define skill {
+  id 11163 as HavocRuin;
+  skillType burst;
+  cost DiceType.Cryo, 3;
+  filter :( :self.variables.serpentsSubtlety! >= 2 );
+  const subtilty = :self.variables.serpentsSubtlety!;
+  :self.variables.serpentsSubtlety = 0;
+  if (subtilty >= 7) {
+    :damage(DamageType.Piercing, 3, $.opp.standby);
+  } else {
+    :damage(DamageType.Piercing, 2, $.opp.standby);
+  }
+  :damage(DamageType.Cryo, subtilty);
+};
+
+/**
+ * @id 11164
+ * @name 理外之理
+ * @cost
+ * @description
+ * 【被动】丝柯克无法获得充能，改为可以积累蛇之狡谋，最多7点。
+ * 我方触发冻结/冰扩散/超导/冰结晶反应后：生成手牌 虚境裂隙。（每回合3次）
+ */
+define skill {
+  id 11164 as ReasonBeyondReason;
+  skillType passive {
+    variable serpentsSubtlety, 0 { range 7; };
+    variable canE, 1;
+    on dealReaction {
+      when :(
+        (
+          [
+            Reaction.Frozen,
+            Reaction.SwirlCryo,
+            Reaction.Superconduct,
+            Reaction.CrystallizeCryo,
+          ] as Reaction[]
+        ).includes(:e.type)
+      );
+      listenTo samePlayer;
+      usage perRound, 3 {
+        name "usagePerRound1";
+      };
+      :createHandCard(VoidRift);
+    };
+    on roundEnd {
+      :variables.canE = 1;
+    };
+  };
+};
+
+/**
+ * @id 11167
+ * @name 理外之理
+ * @cost
+ * @description
+ * 【被动】丝柯克无法获得充能，改为可以积累蛇之狡谋，最多7点。
+ * 我方触发冻结/冰扩散/超导/冰结晶反应后：生成手牌 虚境裂隙。（每回合3次）
+ */
+define skill {
+  id 11167 as ReasonBeyondReason01;
+  skillType passive {
+    reserved;
+  };
+};
+
+/**
+ * @id 1116
+ * @name 丝柯克
+ * @hp 10
+ * @energy -1
+ * @description
+ * 星海默然，覆灭无声。
+ */
+define character {
+  id 1116 as Skirk;
+  since "v6.3.0";
+  tags cryo, sword, calamity;
+  health 10;
+  energy 0;
+  specialEnergy "serpentsSubtlety", 7;
+  skills HavocSunder, HavocWarp, HavocRuin, ReasonBeyondReason;
+};
+
+/**
+ * @id 6605
+ * @name 丝柯克
+ * @hp 10
+ * @energy -1
+ * @description
+ * 
+ */
+define character {
+  id 6605 as Skirk01;
+  since "v6.3.0";
+  tags cryo, sword, calamity;
+  health 10;
+  energy 0;
+  specialEnergy "serpentsSubtlety", 7;
+  skills HavocSunder, HavocWarp, HavocExtinction, ReasonBeyondReason;
+};
+
+/**
+ * @id 211161
+ * @name 湮远
+ * @cost 1*Cryo
+ * @description
+ * 快速行动：装备给我方的丝柯克。
+ * 装备有此牌的丝柯克在场，我方打出或舍弃虚境裂隙时：对敌方出战角色造成1点冰元素伤害。（每回合1次）
+ * （牌组中包含丝柯克，才能加入牌组）
+ */
+define card {
+  id 211161 as FarToFall;
+  since "v6.3.0";
+  cost DiceType.Cryo, 1;
+  talent [Skirk, Skirk01], none {
+    on playCard {
+      when :( :e.card.definition.id === VoidRift );
+      usage perRound, 1 { name "usagePerRound1"; };
+      :damage(DamageType.Cryo, 1, $.opp.active);
+    };
+    on discard {
+      when :( :e.entity.definition.id === VoidRift );
+      usage perRound, 1 { name "usagePerRound1"; };
+      :damage(DamageType.Cryo, 1, $.opp.active);
+    };
+  };
+};
+
+/**
+ * @id 11166
+ * @name 理外之理
+ * @cost
+ * @description
+ * 【被动】丝柯克无法获得充能，改为可以积累蛇之狡谋，最多7点。
+ * 我方触发冻结/冰扩散/超导/冰结晶反应后：生成手牌 虚境裂隙。（每回合3次）
+ */
+define skill {
+  id 11166 as ReasonBeyondReason02;
+  skillType passive {
+    reserved;
+  };
+};

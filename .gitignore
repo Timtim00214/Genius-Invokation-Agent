@@ -1,0 +1,41 @@
+# ================= 密钥 / 本地配置（绝不提交） =================
+driver/.env
+.env
+*.env.local
+
+# ================= 运行数据：对局录像 =================
+driver/sessions/
+sessions/
+
+# ================= 发行包 / 便携运行时（走 GitHub Releases，不进仓库） =================
+release/
+_backup/
+dist-portable/
+GeniusInvokation-Portable.zip
+
+# ================= 依赖与构建缓存 =================
+node_modules/
+**/node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# ================= 临时 / 日志 =================
+tmp_*
+*.log
+
+# ================= 截图：仓库只留 README 用的两张 =================
+driver/samples/*.png
+!driver/samples/pass-button.png
+!driver/samples/replay-viewer-2seats.png
+
+# ================= VMAF 自带的 Web 前端（121M，本项目用不到） =================
+ai-backend/vmaf_system/frontend/
+ai-backend/acl-recovery/
+
+# ================= 系统垃圾 =================
+.DS_Store
+Thumbs.db
+desktop.ini
